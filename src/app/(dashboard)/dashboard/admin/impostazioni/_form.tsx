@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ImageUploader } from "@/components/dashboard/image-uploader";
 import {
   updatePlatformSettings,
   type Commissioni,
@@ -107,11 +108,14 @@ export function SettingsForm({ initial }: { initial: PlatformSettings }) {
               className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </Field>
-          <Field label="URL logo" className="sm:col-span-2">
-            <Input
+          <Field label="Logo" className="sm:col-span-2">
+            <ImageUploader
               value={s.site_logo_url ?? ""}
-              onChange={(e) => setField("site_logo_url", e.target.value)}
-              placeholder="https://…/logo.png"
+              onChange={(url) => setField("site_logo_url", url || null)}
+              bucket="platform-assets"
+              folder="logo"
+              accept="image/png,image/jpeg,image/svg+xml,image/webp"
+              label="Carica logo"
             />
           </Field>
         </div>

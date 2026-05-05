@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 type Props = {
   value: string;
   onChange: (url: string) => void;
-  bucket?: "images" | "videos";
+  bucket?: "images" | "videos" | "platform-assets";
   folder?: string; // sub-folder, defaults to user id (set automatically)
   accept?: string;
   className?: string;
