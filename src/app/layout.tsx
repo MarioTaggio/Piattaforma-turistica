@@ -13,7 +13,11 @@ const inter = Inter({
 const DEFAULT_TITLE = "Piattaforma Turistica";
 const DEFAULT_DESCRIPTION =
   "Eventi, B&B, ristoranti, video corsi e tour virtuali in un'unica piattaforma.";
-const DEFAULT_FAVICON = "/favicon.ico";
+// Fallback brand mark (MountainSnow su sfondo brand-600). Stesso glyph
+// usato nella sidebar/header. È un SVG statico in /public; non viene messo
+// in src/app/ perché lì verrebbe auto-iniettato da Next.js, scavalcando le
+// icons restituite da generateMetadata().
+const DEFAULT_FAVICON = "/brand-icon.svg";
 
 // Estensioni che il browser sa interpretare come favicon. Per logo .webp o
 // formati esotici torniamo al .ico statico per evitare icone rotte.
