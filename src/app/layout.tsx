@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const supabase = createAdminClient();
   const { data } = await supabase
     .from("platform_settings")
-    .select("site_nome, site_descrizione, site_logo_url")
+    .select("site_nome, site_descrizione, site_logo_url, updated_at")
     .eq("id", 1)
     .maybeSingle();
 
@@ -31,16 +31,28 @@ export async function generateMetadata(): Promise<Metadata> {
     site_nome?: string | null;
     site_descrizione?: string | null;
     site_logo_url?: string | null;
+    updated_at?: string | null;
   };
 
   const logoUrl = row.site_logo_url?.trim() || null;
+  // Cache buster legato a updated_at: cambia solo quando l'admin tocca le
+  // impostazioni, evitando il re-download della favicon a ogni page-load ma
+  // forzando il refresh appena il logo viene cambiato.
+  const cacheKey = row.updated_at
+    ? new Date(row.updated_at).getTime()
+    : Date.now();
   const favicon =
-    logoUrl && FAVICON_EXT.test(logoUrl) ? logoUrl : DEFAULT_FAVICON;
+    logoUrl && FAVICON_EXT.test(logoUrl)
+      ? `${logoUrl}${logoUrl.includes("?") ? "&" : "?"}v=${cacheKey}`
+      : DEFAULT_FAVICON;
 
   return {
     title: row.site_nome?.trim() || DEFAULT_TITLE,
     description: row.site_descrizione?.trim() || DEFAULT_DESCRIPTION,
-    icons: { icon: favicon },
+    icons: {
+      icon: favicon,
+      apple: favicon,
+    },
   };
 }
 
