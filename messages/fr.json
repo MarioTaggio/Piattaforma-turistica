@@ -61,19 +61,23 @@
     "eventi": {
       "title": "Que se passe-t-il en ville",
       "subtitle": "Concerts, festivals, marchés et rendez-vous spéciaux à venir.",
-      "buy": "Acheter un billet",
+      "buy": "Acheter billet",
+      "registerFree": "S'inscrire gratuitement",
+      "discover": "En savoir plus",
       "empty": "Aucun événement à venir."
     },
     "bnb": {
       "title": "B&B et hébergements sélectionnés",
       "subtitle": "Chambres accueillantes, emplacements stratégiques, hospitalité authentique.",
-      "book": "Réserver une chambre",
+      "book": "Réserver chambre",
+      "discover": "En savoir plus",
       "empty": "Aucun hébergement disponible."
     },
     "ristoranti": {
       "title": "Restaurants du territoire",
       "subtitle": "Cuisine typique, lieux historiques et nouvelles adresses à découvrir.",
-      "book": "Réserver une table",
+      "book": "Réserver table",
+      "discover": "En savoir plus",
       "empty": "Aucun restaurant disponible."
     },
     "shop": {

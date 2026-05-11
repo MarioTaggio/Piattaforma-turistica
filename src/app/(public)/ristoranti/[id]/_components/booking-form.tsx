@@ -25,6 +25,7 @@ export function TavoloBookingForm({ ristoranteId, tavoli }: Props) {
   const router = useRouter();
   const tBooking = useTranslations("booking");
   const tMessages = useTranslations("messages");
+  const tMod = useTranslations("modules");
 
   const defaultDate = (() => {
     const d = new Date();
@@ -145,7 +146,7 @@ export function TavoloBookingForm({ ristoranteId, tavoli }: Props) {
         className="w-full rounded-xl bg-brand-600 hover:bg-brand-700"
       >
         {pending && <Loader2 className="mr-1.5 size-4 animate-spin" />}
-        {tBooking("requestBooking")}
+        {tMod("ristoranti.book")}
       </Button>
     </form>
   );

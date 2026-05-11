@@ -62,18 +62,22 @@
       "title": "What's on in town",
       "subtitle": "Concerts, festivals, markets and upcoming special events.",
       "buy": "Buy ticket",
+      "registerFree": "Register for free",
+      "discover": "Discover more",
       "empty": "No upcoming events."
     },
     "bnb": {
       "title": "Hand-picked B&Bs",
       "subtitle": "Cozy rooms, prime locations, genuine hospitality.",
       "book": "Book room",
+      "discover": "Discover more",
       "empty": "No accommodation available."
     },
     "ristoranti": {
       "title": "Local restaurants",
       "subtitle": "Traditional cuisine, historic venues and new places to discover.",
-      "book": "Book a table",
+      "book": "Book table",
+      "discover": "Discover more",
       "empty": "No restaurants available."
     },
     "shop": {

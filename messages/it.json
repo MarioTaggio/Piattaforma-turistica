@@ -62,18 +62,22 @@
       "title": "Cosa succede in città",
       "subtitle": "Concerti, festival, mercatini e appuntamenti speciali in arrivo.",
       "buy": "Acquista biglietto",
+      "registerFree": "Registrati gratis",
+      "discover": "Scopri di più",
       "empty": "Nessun evento in arrivo."
     },
     "bnb": {
       "title": "B&B e strutture selezionate",
       "subtitle": "Camere accoglienti, posizioni strategiche, ospitalità autentica.",
       "book": "Prenota camera",
+      "discover": "Scopri di più",
       "empty": "Nessuna struttura disponibile."
     },
     "ristoranti": {
       "title": "Ristoranti del territorio",
       "subtitle": "Cucina tipica, locali storici e nuovi indirizzi da scoprire.",
       "book": "Prenota tavolo",
+      "discover": "Scopri di più",
       "empty": "Nessun ristorante disponibile."
     },
     "shop": {

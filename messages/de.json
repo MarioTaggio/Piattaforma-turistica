@@ -62,18 +62,22 @@
       "title": "Was in der Stadt los ist",
       "subtitle": "Konzerte, Festivals, Märkte und besondere Termine.",
       "buy": "Ticket kaufen",
+      "registerFree": "Kostenlos anmelden",
+      "discover": "Mehr erfahren",
       "empty": "Keine bevorstehenden Veranstaltungen."
     },
     "bnb": {
       "title": "Ausgewählte B&Bs und Unterkünfte",
       "subtitle": "Gemütliche Zimmer, strategische Lagen, authentische Gastfreundschaft.",
       "book": "Zimmer buchen",
+      "discover": "Mehr erfahren",
       "empty": "Keine Unterkunft verfügbar."
     },
     "ristoranti": {
       "title": "Lokale Restaurants",
       "subtitle": "Typische Küche, historische Lokale und neue Adressen zum Entdecken.",
       "book": "Tisch reservieren",
+      "discover": "Mehr erfahren",
       "empty": "Keine Restaurants verfügbar."
     },
     "shop": {

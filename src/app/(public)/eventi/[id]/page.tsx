@@ -33,6 +33,7 @@ export default async function EventoDetailPage({
   const tNav = await getTranslations("nav");
   const tDetail = await getTranslations("detail");
   const tCommon = await getTranslations("common");
+  const tMod = await getTranslations("modules");
 
   const { data: evento } = await supabase
     .from("eventi")
@@ -145,7 +146,13 @@ export default async function EventoDetailPage({
                 <BuyTicketButton
                   eventoId={e.id}
                   disabled={soldOut}
-                  label={soldOut ? tCommon("soldOut") : undefined}
+                  label={
+                    soldOut
+                      ? tCommon("soldOut")
+                      : e.prezzo_cents === 0
+                        ? tMod("eventi.registerFree")
+                        : tMod("eventi.buy")
+                  }
                 />
 
                 <p className="text-[11px] text-muted-foreground">

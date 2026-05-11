@@ -36,20 +36,22 @@ export default async function HomePage() {
     supabase
       .from("eventi")
       .select(
-        "id, titolo, descrizione, citta, luogo, data_inizio, prezzo_cents, immagine_url",
+        "id, titolo, descrizione, citta, luogo, data_inizio, prezzo_cents, immagine_url, prenotazione_attiva",
       )
       .eq("stato", "pubblicato")
       .order("data_inizio", { ascending: true })
       .limit(3),
     supabase
       .from("strutture")
-      .select("id, nome, descrizione, citta, immagini")
+      .select("id, nome, descrizione, citta, immagini, prenotazione_attiva")
       .eq("stato", "pubblicato")
       .order("created_at", { ascending: false })
       .limit(3),
     supabase
       .from("ristoranti")
-      .select("id, nome, descrizione, citta, tipo_cucina, immagini")
+      .select(
+        "id, nome, descrizione, citta, tipo_cucina, immagini, prenotazione_attiva",
+      )
       .eq("stato", "pubblicato")
       .order("created_at", { ascending: false })
       .limit(3),
@@ -157,24 +159,32 @@ export default async function HomePage() {
             data_inizio: string;
             prezzo_cents: number;
             immagine_url: string | null;
-          }>).map((e) => (
-            <ListingCard
-              key={e.id}
-              href={`/eventi/${e.id}`}
-              title={e.titolo}
-              description={e.descrizione}
-              imageUrl={e.immagine_url}
-              fallbackIcon={CalendarDays}
-              meta={`${formatDateTime(e.data_inizio)} · ${e.luogo}`}
-              topBadge={e.citta ?? undefined}
-              price={
-                e.prezzo_cents === 0
-                  ? tCommon("free")
-                  : formatEurFromCents(e.prezzo_cents)
-              }
-              cta={tMod("eventi.buy")}
-            />
-          ))}
+            prenotazione_attiva: boolean | null;
+          }>).map((e) => {
+            const cta = !e.prenotazione_attiva
+              ? tMod("eventi.discover")
+              : e.prezzo_cents === 0
+                ? tMod("eventi.registerFree")
+                : tMod("eventi.buy");
+            return (
+              <ListingCard
+                key={e.id}
+                href={`/eventi/${e.id}`}
+                title={e.titolo}
+                description={e.descrizione}
+                imageUrl={e.immagine_url}
+                fallbackIcon={CalendarDays}
+                meta={`${formatDateTime(e.data_inizio)} · ${e.luogo}`}
+                topBadge={e.citta ?? undefined}
+                price={
+                  e.prezzo_cents === 0
+                    ? tCommon("free")
+                    : formatEurFromCents(e.prezzo_cents)
+                }
+                cta={cta}
+              />
+            );
+          })}
           {(eventi ?? []).length === 0 && (
             <EmptyHomeBlock label={tMod("eventi.empty")} />
           )}
@@ -196,6 +206,7 @@ export default async function HomePage() {
             descrizione: string | null;
             citta: string;
             immagini: string[];
+            prenotazione_attiva: boolean | null;
           }>).map((s) => (
             <ListingCard
               key={s.id}
@@ -205,7 +216,7 @@ export default async function HomePage() {
               imageUrl={s.immagini?.[0] ?? null}
               fallbackIcon={Hotel}
               meta={s.citta}
-              cta={tMod("bnb.book")}
+              cta={s.prenotazione_attiva ? tMod("bnb.book") : tMod("bnb.discover")}
             />
           ))}
           {(strutture ?? []).length === 0 && (
@@ -230,6 +241,7 @@ export default async function HomePage() {
             citta: string;
             tipo_cucina: string | null;
             immagini: string[];
+            prenotazione_attiva: boolean | null;
           }>).map((r) => (
             <ListingCard
               key={r.id}
@@ -240,7 +252,11 @@ export default async function HomePage() {
               fallbackIcon={UtensilsCrossed}
               meta={r.tipo_cucina ?? r.citta}
               topBadge={r.citta}
-              cta={tMod("ristoranti.book")}
+              cta={
+                r.prenotazione_attiva
+                  ? tMod("ristoranti.book")
+                  : tMod("ristoranti.discover")
+              }
             />
           ))}
           {(ristoranti ?? []).length === 0 && (

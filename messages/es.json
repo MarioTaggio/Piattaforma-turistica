@@ -62,18 +62,22 @@
       "title": "Qué pasa en la ciudad",
       "subtitle": "Conciertos, festivales, mercados y citas especiales próximas.",
       "buy": "Comprar entrada",
+      "registerFree": "Regístrate gratis",
+      "discover": "Descubrir más",
       "empty": "No hay eventos próximos."
     },
     "bnb": {
       "title": "B&B y alojamientos seleccionados",
       "subtitle": "Habitaciones acogedoras, ubicaciones estratégicas, hospitalidad auténtica.",
       "book": "Reservar habitación",
+      "discover": "Descubrir más",
       "empty": "No hay alojamientos disponibles."
     },
     "ristoranti": {
       "title": "Restaurantes del territorio",
       "subtitle": "Cocina típica, locales históricos y nuevas direcciones por descubrir.",
       "book": "Reservar mesa",
+      "discover": "Descubrir más",
       "empty": "No hay restaurantes disponibles."
     },
     "shop": {

@@ -34,7 +34,7 @@ export default async function PublicEventiPage({
   let query = supabase
     .from("eventi")
     .select(
-      "id, titolo, descrizione, citta, luogo, data_inizio, prezzo_cents, immagine_url",
+      "id, titolo, descrizione, citta, luogo, data_inizio, prezzo_cents, immagine_url, prenotazione_attiva",
     )
     .eq("stato", "pubblicato");
 
@@ -113,8 +113,14 @@ export default async function PublicEventiPage({
               data_inizio: string;
               prezzo_cents: number;
               immagine_url: string | null;
+              prenotazione_attiva: boolean | null;
             }>).map((e) => {
               const rating = ratingMap.get(e.id);
+              const cta = !e.prenotazione_attiva
+                ? tMod("eventi.discover")
+                : e.prezzo_cents === 0
+                  ? tMod("eventi.registerFree")
+                  : tMod("eventi.buy");
               return (
                 <ListingCard
                   key={e.id}
@@ -135,7 +141,7 @@ export default async function PublicEventiPage({
                       ? tCommon("free")
                       : formatEurFromCents(e.prezzo_cents)
                   }
-                  cta={tMod("eventi.buy")}
+                  cta={cta}
                 />
               );
             })}

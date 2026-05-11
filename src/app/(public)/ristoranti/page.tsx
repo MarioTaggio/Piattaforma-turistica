@@ -30,7 +30,9 @@ export default async function PublicRistorantiPage({
   const supabase = createAdminClient();
   let query = supabase
     .from("ristoranti")
-    .select("id, nome, descrizione, citta, tipo_cucina, immagini")
+    .select(
+      "id, nome, descrizione, citta, tipo_cucina, immagini, prenotazione_attiva",
+    )
     .eq("stato", "pubblicato");
 
   if (q) {
@@ -103,6 +105,7 @@ export default async function PublicRistorantiPage({
               citta: string;
               tipo_cucina: string | null;
               immagini: string[];
+              prenotazione_attiva: boolean | null;
             }>).map((r) => {
               const rating = ratingMap.get(r.id);
               return (
@@ -120,7 +123,11 @@ export default async function PublicRistorantiPage({
                       ? `★ ${rating.average}`
                       : undefined
                   }
-                  cta={tMod("ristoranti.book")}
+                  cta={
+                    r.prenotazione_attiva
+                      ? tMod("ristoranti.book")
+                      : tMod("ristoranti.discover")
+                  }
                 />
               );
             })}

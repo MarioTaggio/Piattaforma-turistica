@@ -33,7 +33,7 @@ export default async function PublicBnbPage({
 
   let strutQuery = supabase
     .from("strutture")
-    .select("id, nome, descrizione, citta, immagini")
+    .select("id, nome, descrizione, citta, immagini, prenotazione_attiva")
     .eq("stato", "pubblicato");
 
   if (q) {
@@ -126,6 +126,7 @@ export default async function PublicBnbPage({
               descrizione: string | null;
               citta: string;
               immagini: string[];
+              prenotazione_attiva: boolean | null;
             }>)
               .filter((s) => visibleIds.has(s.id))
               .map((s) => {
@@ -150,7 +151,11 @@ export default async function PublicBnbPage({
                         ? `da ${formatEurFromCents(price)} / notte`
                         : undefined
                     }
-                    cta={tMod("bnb.book")}
+                    cta={
+                      s.prenotazione_attiva
+                        ? tMod("bnb.book")
+                        : tMod("bnb.discover")
+                    }
                   />
                 );
               })}
