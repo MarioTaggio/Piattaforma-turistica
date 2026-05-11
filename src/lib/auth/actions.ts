@@ -23,10 +23,17 @@ export type ActionResult = { error: string } | { success: true };
 async function getSiteUrl(): Promise<string> {
   const envUrl = process.env.NEXT_PUBLIC_SITE_URL;
   if (envUrl) return envUrl.replace(/\/$/, "");
-  const h = await headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host");
-  const proto = h.get("x-forwarded-proto") ?? "https";
-  return `${proto}://${host}`;
+  try {
+    const h = await headers();
+    const host = h.get("x-forwarded-host") ?? h.get("host");
+    if (host) {
+      const proto = h.get("x-forwarded-proto") ?? "https";
+      return `${proto}://${host}`;
+    }
+  } catch {
+    // headers() può fallire in alcuni contesti edge: fallback al dominio prod.
+  }
+  return "https://borghion.it";
 }
 
 export async function signIn(input: LoginInput): Promise<ActionResult> {
@@ -81,11 +88,24 @@ export async function requestPasswordReset(
 
   const supabase = await createClient();
   const siteUrl = await getSiteUrl();
+  const redirectTo = `${siteUrl}/api/auth/callback?type=recovery`;
 
   // Don't leak whether the email exists — always succeed from the user's POV.
-  await supabase.auth.resetPasswordForEmail(parsed.data.email, {
-    redirectTo: `${siteUrl}/api/auth/callback?type=recovery`,
-  });
+  // Errori veri (redirect non whitelisted, rate limit, SMTP down) vengono
+  // loggati lato server per il debug ma NON tornano al client.
+  const { error } = await supabase.auth.resetPasswordForEmail(
+    parsed.data.email,
+    { redirectTo },
+  );
+  if (error) {
+    console.error("[auth] resetPasswordForEmail failed:", {
+      email: parsed.data.email,
+      redirectTo,
+      code: error.code,
+      message: error.message,
+      status: error.status,
+    });
+  }
 
   return { success: true };
 }
