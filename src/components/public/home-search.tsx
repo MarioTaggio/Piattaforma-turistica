@@ -13,6 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+import { PopularSearch } from "./popular-search";
+
 type Tab = "eventi" | "bnb" | "ristoranti" | "tour";
 
 const TABS: { value: Tab; label: string; icon: typeof CalendarDays }[] = [
@@ -117,12 +119,12 @@ export function HomeSearch() {
         >
           {tab === "eventi" && (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1.4fr_1fr_1fr_auto]">
-              <input
-                type="text"
-                placeholder="Città"
+              <PopularSearch
+                type="eventi"
                 value={evCitta}
-                onChange={(e) => setEvCitta(e.target.value)}
-                className={FIELD_BASE}
+                onChange={setEvCitta}
+                placeholder="Città"
+                inputClassName={FIELD_BASE}
               />
               <input
                 type="date"
@@ -154,12 +156,12 @@ export function HomeSearch() {
 
           {tab === "bnb" && (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1.3fr_1fr_1fr_0.7fr_auto]">
-              <input
-                type="text"
-                placeholder="Destinazione"
+              <PopularSearch
+                type="bnb"
                 value={bnbCitta}
-                onChange={(e) => setBnbCitta(e.target.value)}
-                className={FIELD_BASE}
+                onChange={setBnbCitta}
+                placeholder="Destinazione"
+                inputClassName={FIELD_BASE}
               />
               <input
                 type="date"
@@ -195,12 +197,12 @@ export function HomeSearch() {
 
           {tab === "ristoranti" && (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1.4fr_1fr_1fr_0.7fr_auto]">
-              <input
-                type="text"
-                placeholder="Città"
+              <PopularSearch
+                type="ristoranti"
                 value={riCitta}
-                onChange={(e) => setRiCitta(e.target.value)}
-                className={FIELD_BASE}
+                onChange={setRiCitta}
+                placeholder="Città"
+                inputClassName={FIELD_BASE}
               />
               <input
                 type="date"
@@ -234,12 +236,13 @@ export function HomeSearch() {
 
           {tab === "tour" && (
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-[2fr_1fr_auto]">
-              <input
-                type="text"
-                placeholder="Cerca per nome o luogo"
+              <PopularSearch
+                type="tour"
                 value={tourQ}
-                onChange={(e) => setTourQ(e.target.value)}
-                className={FIELD_BASE}
+                onChange={setTourQ}
+                placeholder="Cerca per nome o luogo"
+                popularLabel="Tour più richiesti"
+                inputClassName={FIELD_BASE}
               />
               <select
                 value={tourTipo}
