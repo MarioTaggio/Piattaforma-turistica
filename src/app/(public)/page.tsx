@@ -88,42 +88,49 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* HERO con barra di ricerca integrata */}
-      <section className="relative min-h-[640px] overflow-hidden bg-brand-700 text-white">
-        <div className="absolute inset-0 -z-0 opacity-25 [background-image:radial-gradient(circle_at_top_right,rgba(255,255,255,0.3),transparent_45%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.18),transparent_55%)]" />
-        <div className="relative mx-auto flex max-w-7xl flex-col gap-8 px-4 pb-24 pt-20 sm:px-6 sm:pb-28 sm:pt-24 lg:px-8">
-          <span className="inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white/90 ring-1 ring-white/20">
-            <Sparkles className="size-3.5" />
-            {tHero("badge")}
-          </span>
-          <h1 className="max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
-            {tHero("title")}
-          </h1>
-          <p className="max-w-2xl text-base text-white/85 sm:text-lg">
-            {tHero("subtitle")}
-          </p>
-          <div className="flex flex-wrap gap-3 pt-2">
-            <Button
-              size="lg"
-              className="rounded-xl bg-white text-brand-700 hover:bg-white/90"
-              render={<Link href="/eventi" />}
-            >
-              <Compass className="mr-1.5 size-4" />
-              {tHero("ctaExplore")}
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="rounded-xl border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white"
-              render={<Link href="/login" />}
-            >
-              {tHero("ctaLogin")}
-            </Button>
-          </div>
+      {/* HERO con barra di ricerca integrata.
+          IMPORTANTE: niente overflow-hidden né min-h fissa — la hero
+          si espande naturalmente per contenere tutto il contenuto,
+          search bar inclusa. Il gradient decorativo è dentro un wrapper
+          relative-with-overflow-hidden separato per non clippare i figli. */}
+      <section className="bg-brand-700 pb-16 pt-12 text-white sm:pb-20 sm:pt-16">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="pointer-events-none absolute inset-0 -z-0 overflow-hidden opacity-25 [background-image:radial-gradient(circle_at_top_right,rgba(255,255,255,0.3),transparent_45%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.18),transparent_55%)]" />
 
-          {/* Search bar contestuale — DENTRO la hero, sfondo bianco con shadow */}
-          <div className="mx-auto mt-4 w-full max-w-4xl">
-            <HomeSearch />
+          <div className="relative flex flex-col gap-8">
+            <span className="inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white/90 ring-1 ring-white/20">
+              <Sparkles className="size-3.5" />
+              {tHero("badge")}
+            </span>
+            <h1 className="max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
+              {tHero("title")}
+            </h1>
+            <p className="max-w-2xl text-base text-white/85 sm:text-lg">
+              {tHero("subtitle")}
+            </p>
+            <div className="flex flex-wrap gap-3 pt-2">
+              <Button
+                size="lg"
+                className="rounded-xl bg-white text-brand-700 hover:bg-white/90"
+                render={<Link href="/eventi" />}
+              >
+                <Compass className="mr-1.5 size-4" />
+                {tHero("ctaExplore")}
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="rounded-xl border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white"
+                render={<Link href="/login" />}
+              >
+                {tHero("ctaLogin")}
+              </Button>
+            </div>
+
+            {/* Search bar — DENTRO la hero, sfondo bianco con shadow */}
+            <div className="mx-auto mt-4 w-full max-w-4xl">
+              <HomeSearch />
+            </div>
           </div>
         </div>
       </section>
