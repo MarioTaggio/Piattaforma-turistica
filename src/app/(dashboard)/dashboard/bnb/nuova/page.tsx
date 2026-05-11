@@ -53,7 +53,7 @@ export default async function NuovaStrutturaPage() {
               citta: "",
               cap: "",
               servizi: "",
-              immagini: "",
+              immagini: [],
               stato: "bozza",
             }}
           />

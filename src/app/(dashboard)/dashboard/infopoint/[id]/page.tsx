@@ -82,7 +82,7 @@ export default async function AttrazioneDettaglioPage({
             citta: a.citta,
             categoria: a.categoria ?? "",
             orari: a.orari?.raw ?? "",
-            immagini: a.immagini.join(", "),
+            immagini: a.immagini ?? [],
             tour_url: tour?.url_tour ?? "",
             tour_gratuito: tour?.gratuito ?? true,
             stato: a.stato,

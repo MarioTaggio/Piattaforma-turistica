@@ -49,7 +49,7 @@ export default async function ShopNewPage() {
               indirizzo: "",
               telefono: "",
               email: "",
-              immagini: "",
+              immagini: [],
               stato: "bozza",
             }}
           />

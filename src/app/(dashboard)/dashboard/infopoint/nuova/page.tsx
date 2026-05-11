@@ -52,7 +52,7 @@ export default async function NuovaAttrazionePage() {
               citta: "",
               categoria: "",
               orari: "",
-              immagini: "",
+              immagini: [],
               tour_url: "",
               tour_gratuito: true,
               stato: "bozza",

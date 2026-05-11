@@ -63,7 +63,7 @@ export default async function ShopDettaglioPage({
             indirizzo: s.indirizzo ?? "",
             telefono: s.telefono ?? "",
             email: s.email ?? "",
-            immagini: s.immagini.join(", "),
+            immagini: s.immagini ?? [],
             stato: s.stato,
           }}
         />

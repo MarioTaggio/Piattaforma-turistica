@@ -7,7 +7,7 @@ export const attrazioneSchema = z.object({
   citta: z.string().trim().min(2).max(80),
   categoria: z.string().trim().max(80).optional().or(z.literal("")),
   orari: z.string().trim().max(500).optional().or(z.literal("")),
-  immagini: z.string().optional().default(""),
+  immagini: z.array(z.string().url()).max(10).optional().default([]),
   tour_url: z.string().trim().url().optional().or(z.literal("")),
   tour_gratuito: z.coerce.boolean().default(true),
   stato: z.enum(["bozza", "pubblicato", "archiviato"]),

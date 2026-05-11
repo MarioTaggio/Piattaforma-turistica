@@ -48,7 +48,7 @@ export async function createStruttura(input: StrutturaInput): Promise<Result> {
       citta: v.citta,
       cap: v.cap || null,
       servizi: csvToArray(v.servizi),
-      immagini: csvToArray(v.immagini),
+      immagini: v.immagini ?? [],
       stato: v.stato,
     })
     .select("id")
@@ -77,7 +77,7 @@ export async function updateStruttura(
       citta: v.citta,
       cap: v.cap || null,
       servizi: csvToArray(v.servizi),
-      immagini: csvToArray(v.immagini),
+      immagini: v.immagini ?? [],
       stato: v.stato,
     })
     .eq("id", id);

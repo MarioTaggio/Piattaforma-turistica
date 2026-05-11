@@ -85,7 +85,7 @@ export default async function RistoranteDettaglioPage({
             email: r.email ?? "",
             tipo_cucina: r.tipo_cucina ?? "",
             orari: r.orari?.raw ?? "",
-            immagini: r.immagini.join(", "),
+            immagini: r.immagini ?? [],
             stato: r.stato,
           }}
         />

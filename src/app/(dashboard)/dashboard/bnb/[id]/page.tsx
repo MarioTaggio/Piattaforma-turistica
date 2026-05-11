@@ -83,7 +83,7 @@ export default async function StrutturaDettaglioPage({
             citta: s.citta,
             cap: s.cap ?? "",
             servizi: s.servizi.join(", "),
-            immagini: s.immagini.join(", "),
+            immagini: s.immagini ?? [],
             stato: s.stato,
           }}
         />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
@@ -12,6 +12,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ImageUploaderMulti } from "@/components/dashboard/image-uploader-multi";
 import { createShop, updateShop } from "@/lib/gestore/shop";
 import { shopSchema, type ShopInput } from "@/lib/gestore/shop-schemas";
 
@@ -29,6 +30,7 @@ export function ShopForm({ mode, id, defaultValues }: Props) {
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<z.input<typeof shopSchema>, unknown, ShopInput>({
@@ -93,11 +95,23 @@ export function ShopForm({ mode, id, defaultValues }: Props) {
 
         <Field
           label={tForm("images")}
-          hint={tForm("imagesHint")}
           error={errors.immagini?.message}
           className="sm:col-span-2"
         >
-          <Input {...register("immagini")} />
+          <Controller
+            control={control}
+            name="immagini"
+            render={({ field }) => (
+              <ImageUploaderMulti
+                value={(field.value as string[] | undefined) ?? []}
+                onChange={field.onChange}
+                bucket="prodotti"
+                folder={id ?? "nuovi"}
+                maxImages={10}
+                label="Carica foto dello shop"
+              />
+            )}
+          />
         </Field>
 
         <Field

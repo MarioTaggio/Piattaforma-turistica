@@ -55,7 +55,7 @@ export async function createAttrazione(
       citta: v.citta,
       categoria: v.categoria || null,
       orari: parseOrari(v.orari ?? ""),
-      immagini: csvToArray(v.immagini),
+      immagini: v.immagini ?? [],
       stato: v.stato,
     })
     .select("id")
@@ -97,7 +97,7 @@ export async function updateAttrazione(
       citta: v.citta,
       categoria: v.categoria || null,
       orari: parseOrari(v.orari ?? ""),
-      immagini: csvToArray(v.immagini),
+      immagini: v.immagini ?? [],
       stato: v.stato,
     })
     .eq("id", id);

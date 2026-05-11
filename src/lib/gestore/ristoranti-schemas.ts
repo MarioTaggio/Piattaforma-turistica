@@ -9,7 +9,7 @@ export const ristoranteSchema = z.object({
   email: z.string().email().optional().or(z.literal("")),
   tipo_cucina: z.string().trim().max(80).optional().or(z.literal("")),
   orari: z.string().trim().max(500).optional().or(z.literal("")),
-  immagini: z.string().optional().default(""),
+  immagini: z.array(z.string().url()).max(10).optional().default([]),
   stato: z.enum(["bozza", "pubblicato", "archiviato"]),
 });
 

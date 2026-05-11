@@ -54,7 +54,7 @@ export default async function NuovoRistorantePage() {
               email: "",
               tipo_cucina: "",
               orari: "",
-              immagini: "",
+              immagini: [],
               stato: "bozza",
             }}
           />

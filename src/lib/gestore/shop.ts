@@ -51,7 +51,7 @@ export async function createShop(input: ShopInput): Promise<Result> {
       indirizzo: v.indirizzo || null,
       telefono: v.telefono || null,
       email: v.email || null,
-      immagini: csvToArray(v.immagini),
+      immagini: v.immagini ?? [],
       stato: v.stato,
     })
     .select("id")
@@ -81,7 +81,7 @@ export async function updateShop(
       indirizzo: v.indirizzo || null,
       telefono: v.telefono || null,
       email: v.email || null,
-      immagini: csvToArray(v.immagini),
+      immagini: v.immagini ?? [],
       stato: v.stato,
     })
     .eq("id", id);

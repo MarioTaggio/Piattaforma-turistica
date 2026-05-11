@@ -7,7 +7,7 @@ export const shopSchema = z.object({
   indirizzo: z.string().trim().max(200).optional().or(z.literal("")),
   telefono: z.string().trim().max(20).optional().or(z.literal("")),
   email: z.string().email().optional().or(z.literal("")),
-  immagini: z.string().optional().default(""), // comma-separated
+  immagini: z.array(z.string().url()).max(10).optional().default([]),
   stato: z.enum(["bozza", "pubblicato", "archiviato"]),
 });
 

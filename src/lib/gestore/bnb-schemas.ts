@@ -7,7 +7,7 @@ export const strutturaSchema = z.object({
   citta: z.string().trim().min(2).max(80),
   cap: z.string().trim().max(10).optional().or(z.literal("")),
   servizi: z.string().optional().default(""),
-  immagini: z.string().optional().default(""),
+  immagini: z.array(z.string().url()).max(10).optional().default([]),
   stato: z.enum(["bozza", "pubblicato", "archiviato"]),
 });
 

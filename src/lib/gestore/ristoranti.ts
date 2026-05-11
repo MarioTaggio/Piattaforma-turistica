@@ -60,7 +60,7 @@ export async function createRistorante(
       email: v.email || null,
       tipo_cucina: v.tipo_cucina || null,
       orari: parseOrari(v.orari ?? ""),
-      immagini: csvToArray(v.immagini),
+      immagini: v.immagini ?? [],
       stato: v.stato,
     })
     .select("id")
@@ -91,7 +91,7 @@ export async function updateRistorante(
       email: v.email || null,
       tipo_cucina: v.tipo_cucina || null,
       orari: parseOrari(v.orari ?? ""),
-      immagini: csvToArray(v.immagini),
+      immagini: v.immagini ?? [],
       stato: v.stato,
     })
     .eq("id", id);
