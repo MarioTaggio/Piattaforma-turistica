@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { DeleteButton } from "../../eventi/_components/delete-button";
 import { deleteStruttura } from "@/lib/gestore/bnb";
+import { PrenotazioneAttivaToggle } from "@/components/dashboard/prenotazione-attiva-toggle";
 
 import { StrutturaForm } from "../_components/struttura-form";
 
@@ -46,11 +47,18 @@ export default async function StrutturaDettaglioPage({
     servizi: string[];
     immagini: string[];
     stato: "bozza" | "pubblicato" | "archiviato";
+    prenotazione_attiva: boolean | null;
   };
   if (s.gestore_id !== user.id && !user.roles.includes("admin")) notFound();
 
   return (
-    <Card>
+    <div className="space-y-6">
+      <PrenotazioneAttivaToggle
+        tabella="strutture"
+        id={s.id}
+        initial={!!s.prenotazione_attiva}
+      />
+      <Card>
       <CardHeader className="flex-row items-start justify-between gap-4">
         <div>
           <CardTitle>Informazioni</CardTitle>
@@ -83,5 +91,6 @@ export default async function StrutturaDettaglioPage({
         />
       </CardContent>
     </Card>
+    </div>
   );
 }

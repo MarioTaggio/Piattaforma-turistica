@@ -4,6 +4,7 @@ import { SiteLogo } from "@/components/shared/site-logo";
 import { signOut } from "@/lib/auth/actions";
 import type { SessionUser } from "@/lib/auth/dal";
 import type { UserContentCounts } from "@/lib/auth/user-content";
+import type { GestoreBookingsFlags } from "@/lib/auth/gestore-bookings";
 
 import { SidebarNav, type NavItem, type NavSection } from "./sidebar-nav";
 import { DownloadAppCard } from "./download-app-card";
@@ -11,6 +12,7 @@ import { DownloadAppCard } from "./download-app-card";
 function buildSections(
   user: SessionUser,
   counts: UserContentCounts,
+  bookingsFlags: GestoreBookingsFlags,
 ): NavSection[] {
   const has = (...roles: SessionUser["roles"]) =>
     user.roles.includes("admin") || roles.some((r) => user.roles.includes(r));
@@ -89,37 +91,58 @@ function buildSections(
   // ─────────────────────────────────────────────────────────────────────────
   const gestioniItems: NavItem[] = [];
   if (has("gestore_eventi")) {
+    const eventiChildren: NavItem[] = [
+      { label: "I miei eventi", href: "/dashboard/eventi", icon: "eventi" },
+    ];
+    if (bookingsFlags.eventi)
+      eventiChildren.push({
+        label: "Prenotazioni",
+        href: "/dashboard/eventi",
+        icon: "prenotazioni",
+      });
     gestioniItems.push({
       label: "Gestione Eventi",
       href: "/dashboard/eventi",
       icon: "eventi",
-      children: [
-        { label: "I miei eventi", href: "/dashboard/eventi", icon: "eventi" },
-      ],
+      children: eventiChildren,
     });
   }
   if (has("gestore_bnb")) {
+    const bnbChildren: NavItem[] = [
+      { label: "Le mie strutture", href: "/dashboard/bnb", icon: "bnb" },
+    ];
+    if (bookingsFlags.bnb)
+      bnbChildren.push({
+        label: "Prenotazioni",
+        href: "/dashboard/bnb",
+        icon: "prenotazioni",
+      });
     gestioniItems.push({
       label: "Gestione B&B",
       href: "/dashboard/bnb",
       icon: "bnb",
-      children: [
-        { label: "Le mie strutture", href: "/dashboard/bnb", icon: "bnb" },
-      ],
+      children: bnbChildren,
     });
   }
   if (has("gestore_ristorante")) {
+    const ristChildren: NavItem[] = [
+      {
+        label: "I miei ristoranti",
+        href: "/dashboard/ristoranti",
+        icon: "ristoranti",
+      },
+    ];
+    if (bookingsFlags.ristoranti)
+      ristChildren.push({
+        label: "Prenotazioni",
+        href: "/dashboard/ristoranti",
+        icon: "prenotazioni",
+      });
     gestioniItems.push({
       label: "Gestione Ristoranti",
       href: "/dashboard/ristoranti",
       icon: "ristoranti",
-      children: [
-        {
-          label: "I miei ristoranti",
-          href: "/dashboard/ristoranti",
-          icon: "ristoranti",
-        },
-      ],
+      children: ristChildren,
     });
   }
   if (has("gestore_shop")) {
@@ -271,11 +294,13 @@ function buildSections(
 export function Sidebar({
   user,
   counts,
+  bookingsFlags,
 }: {
   user: SessionUser;
   counts: UserContentCounts;
+  bookingsFlags: GestoreBookingsFlags;
 }) {
-  const sections = buildSections(user, counts);
+  const sections = buildSections(user, counts, bookingsFlags);
 
   return (
     <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar px-5 py-6 lg:flex">

@@ -32,7 +32,7 @@ export default async function RistoranteDetailPage({
       supabase
         .from("ristoranti")
         .select(
-          "id, nome, descrizione, indirizzo, citta, telefono, email, tipo_cucina, orari, immagini, stato",
+          "id, nome, descrizione, indirizzo, citta, telefono, email, tipo_cucina, orari, immagini, stato, prenotazione_attiva",
         )
         .eq("id", id)
         .single(),
@@ -64,7 +64,9 @@ export default async function RistoranteDetailPage({
     tipo_cucina: string | null;
     orari: { raw?: string } | null;
     immagini: string[];
+    prenotazione_attiva: boolean | null;
   };
+  const prenotazioniAttive = !!r.prenotazione_attiva;
   const tavoliData = ((tavoli ?? []) as Array<{
     id: string;
     numero: string;
@@ -104,7 +106,13 @@ export default async function RistoranteDetailPage({
         </div>
       </div>
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[1.6fr_1fr]">
+      <div
+        className={
+          prenotazioniAttive
+            ? "mt-8 grid gap-8 lg:grid-cols-[1.6fr_1fr]"
+            : "mt-8"
+        }
+      >
         <section className="space-y-8">
           <header className="space-y-2">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-brand-700">
@@ -225,11 +233,20 @@ export default async function RistoranteDetailPage({
           })()}
         </section>
 
-        <aside className="rounded-2xl border border-border bg-card p-5 shadow-sm lg:sticky lg:top-24 lg:self-start">
-          <h3 className="mb-4 text-base font-semibold">Prenota un tavolo</h3>
-          <TavoloBookingForm ristoranteId={r.id} tavoli={tavoliData} />
-        </aside>
+        {prenotazioniAttive && (
+          <aside className="rounded-2xl border border-border bg-card p-5 shadow-sm lg:sticky lg:top-24 lg:self-start">
+            <h3 className="mb-4 text-base font-semibold">Prenota un tavolo</h3>
+            <TavoloBookingForm ristoranteId={r.id} tavoli={tavoliData} />
+          </aside>
+        )}
       </div>
+
+      {!prenotazioniAttive && (
+        <p className="mt-8 rounded-2xl border border-dashed border-border bg-muted/30 p-5 text-sm text-muted-foreground">
+          Le prenotazioni online dei tavoli per questo ristorante non sono
+          attive. Per prenotare, contatta direttamente il ristorante.
+        </p>
+      )}
     </article>
   );
 }

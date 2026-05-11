@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { DeleteButton } from "../../eventi/_components/delete-button";
 import { deleteRistorante } from "@/lib/gestore/ristoranti";
+import { PrenotazioneAttivaToggle } from "@/components/dashboard/prenotazione-attiva-toggle";
 
 import { RistoranteForm } from "../_components/ristorante-form";
 
@@ -47,11 +48,18 @@ export default async function RistoranteDettaglioPage({
     orari: { raw?: string };
     immagini: string[];
     stato: "bozza" | "pubblicato" | "archiviato";
+    prenotazione_attiva: boolean | null;
   };
   if (r.gestore_id !== user.id && !user.roles.includes("admin")) notFound();
 
   return (
-    <Card>
+    <div className="space-y-6">
+      <PrenotazioneAttivaToggle
+        tabella="ristoranti"
+        id={r.id}
+        initial={!!r.prenotazione_attiva}
+      />
+      <Card>
       <CardHeader className="flex-row items-start justify-between gap-4">
         <div>
           <CardTitle>Informazioni</CardTitle>
@@ -83,5 +91,6 @@ export default async function RistoranteDettaglioPage({
         />
       </CardContent>
     </Card>
+    </div>
   );
 }

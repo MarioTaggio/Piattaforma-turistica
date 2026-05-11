@@ -24,7 +24,7 @@ export default async function StrutturaDetailPage({
     supabase
       .from("strutture")
       .select(
-        "id, nome, descrizione, indirizzo, citta, cap, stelle, servizi, immagini, stato",
+        "id, nome, descrizione, indirizzo, citta, cap, stelle, servizi, immagini, stato, prenotazione_attiva",
       )
       .eq("id", id)
       .single(),
@@ -48,7 +48,10 @@ export default async function StrutturaDetailPage({
     stelle: number | null;
     servizi: string[];
     immagini: string[];
+    prenotazione_attiva: boolean | null;
   };
+
+  const prenotazioniAttive = !!s.prenotazione_attiva;
 
   const cam = ((camere ?? []) as Array<{
     id: string;
@@ -106,7 +109,13 @@ export default async function StrutturaDetailPage({
         </div>
       </div>
 
-      <div className="mt-8 grid gap-8 lg:grid-cols-[1.6fr_1fr]">
+      <div
+        className={
+          prenotazioniAttive
+            ? "mt-8 grid gap-8 lg:grid-cols-[1.6fr_1fr]"
+            : "mt-8"
+        }
+      >
         <section className="space-y-6">
           <header className="space-y-2">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-brand-700">
@@ -196,11 +205,20 @@ export default async function StrutturaDetailPage({
           </div>
         </section>
 
-        <aside className="rounded-2xl border border-border bg-card p-5 shadow-sm lg:sticky lg:top-24 lg:self-start">
-          <h3 className="mb-4 text-base font-semibold">Prenota il tuo soggiorno</h3>
-          <BnbBookingForm strutturaId={s.id} camere={cam} />
-        </aside>
+        {prenotazioniAttive && (
+          <aside className="rounded-2xl border border-border bg-card p-5 shadow-sm lg:sticky lg:top-24 lg:self-start">
+            <h3 className="mb-4 text-base font-semibold">Prenota il tuo soggiorno</h3>
+            <BnbBookingForm strutturaId={s.id} camere={cam} />
+          </aside>
+        )}
       </div>
+
+      {!prenotazioniAttive && (
+        <p className="mt-8 rounded-2xl border border-dashed border-border bg-muted/30 p-5 text-sm text-muted-foreground">
+          Le prenotazioni online per questa struttura non sono attive. Per
+          informazioni e disponibilità contatta direttamente la struttura.
+        </p>
+      )}
     </article>
   );
 }

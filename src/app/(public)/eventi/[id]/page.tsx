@@ -32,7 +32,7 @@ export default async function EventoDetailPage({
   const { data: evento } = await supabase
     .from("eventi")
     .select(
-      "id, titolo, descrizione, data_inizio, data_fine, luogo, citta, prezzo_cents, posti_totali, posti_disponibili, immagine_url, stato",
+      "id, titolo, descrizione, data_inizio, data_fine, luogo, citta, prezzo_cents, posti_totali, posti_disponibili, immagine_url, stato, prenotazione_attiva",
     )
     .eq("id", id)
     .single();
@@ -52,10 +52,12 @@ export default async function EventoDetailPage({
     posti_totali: number;
     posti_disponibili: number;
     immagine_url: string | null;
+    prenotazione_attiva: boolean | null;
   };
 
   const sold = e.posti_totali - e.posti_disponibili;
   const soldOut = e.posti_disponibili <= 0;
+  const venditaAttiva = !!e.prenotazione_attiva;
 
   return (
     <article className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
@@ -127,22 +129,31 @@ export default async function EventoDetailPage({
               </p>
             </div>
 
-            <div className="rounded-xl bg-brand-50 px-3 py-2 text-xs font-medium text-brand-700">
-              {soldOut
-                ? "Esaurito — tutti i posti sono stati venduti."
-                : `Ancora ${formatNumber(e.posti_disponibili)} posti disponibili`}
-            </div>
+            {venditaAttiva ? (
+              <>
+                <div className="rounded-xl bg-brand-50 px-3 py-2 text-xs font-medium text-brand-700">
+                  {soldOut
+                    ? "Esaurito — tutti i posti sono stati venduti."
+                    : `Ancora ${formatNumber(e.posti_disponibili)} posti disponibili`}
+                </div>
 
-            <BuyTicketButton
-              eventoId={e.id}
-              disabled={soldOut}
-              label={soldOut ? "Esaurito" : undefined}
-            />
+                <BuyTicketButton
+                  eventoId={e.id}
+                  disabled={soldOut}
+                  label={soldOut ? "Esaurito" : undefined}
+                />
 
-            <p className="text-[11px] text-muted-foreground">
-              Riceverai il biglietto nella sezione &laquo;I miei biglietti&raquo; con QR code
-              utilizzabile in loco.
-            </p>
+                <p className="text-[11px] text-muted-foreground">
+                  Riceverai il biglietto nella sezione &laquo;I miei biglietti&raquo; con QR code
+                  utilizzabile in loco.
+                </p>
+              </>
+            ) : (
+              <div className="rounded-xl bg-muted/50 px-3 py-3 text-xs text-muted-foreground">
+                La vendita biglietti per questo evento non è attiva. Per
+                informazioni rivolgiti direttamente agli organizzatori.
+              </div>
+            )}
           </aside>
         </div>
       </div>

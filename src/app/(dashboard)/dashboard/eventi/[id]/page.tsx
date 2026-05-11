@@ -14,6 +14,7 @@ import {
 import { EventoForm } from "../_components/evento-form";
 import { DeleteButton } from "../_components/delete-button";
 import { deleteEvento } from "@/lib/gestore/eventi";
+import { PrenotazioneAttivaToggle } from "@/components/dashboard/prenotazione-attiva-toggle";
 
 export const metadata: Metadata = {
   title: "Dettaglio evento — Piattaforma Turistica",
@@ -54,11 +55,18 @@ export default async function EventoDettaglioPage({
     posti_totali: number;
     immagine_url: string | null;
     stato: "bozza" | "pubblicato" | "archiviato";
+    prenotazione_attiva: boolean | null;
   };
   if (e.gestore_id !== user.id && !user.roles.includes("admin")) notFound();
 
   return (
-    <Card>
+    <div className="space-y-6">
+      <PrenotazioneAttivaToggle
+        tabella="eventi"
+        id={e.id}
+        initial={!!e.prenotazione_attiva}
+      />
+      <Card>
       <CardHeader className="flex-row items-start justify-between gap-4">
         <div>
           <CardTitle>Dettagli evento</CardTitle>
@@ -92,5 +100,6 @@ export default async function EventoDettaglioPage({
         />
       </CardContent>
     </Card>
+    </div>
   );
 }
