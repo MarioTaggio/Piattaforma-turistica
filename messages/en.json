@@ -1,0 +1,133 @@
+{
+  "nav": {
+    "home": "Home",
+    "eventi": "Events",
+    "bnb": "B&B",
+    "ristoranti": "Restaurants",
+    "shop": "Shop",
+    "videolezioni": "Video courses",
+    "infopoint": "Infopoint",
+    "virtualTour": "Virtual tours",
+    "login": "Log in",
+    "register": "Sign up",
+    "logout": "Log out",
+    "dashboard": "Dashboard",
+    "profilo": "Profile",
+    "language": "Language"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "loading": "Loading…",
+    "search": "Search",
+    "filter": "Filter",
+    "all": "All",
+    "yes": "Yes",
+    "no": "No",
+    "from": "From",
+    "to": "To",
+    "free": "Free",
+    "soldOut": "Sold out",
+    "available": "Available",
+    "notAvailable": "Not available"
+  },
+  "hero": {
+    "badge": "Your local platform",
+    "title": "Discover the region in a single digital experience.",
+    "subtitle": "Unmissable events, B&B stays, traditional restaurants, local shops, on-demand video courses and virtual tours of attractions. All in one place.",
+    "ctaExplore": "Explore the platform",
+    "ctaLogin": "Sign in to your account"
+  },
+  "modules": {
+    "eventi": {
+      "title": "What's on in town",
+      "subtitle": "Concerts, festivals, markets and upcoming special events.",
+      "buy": "Buy ticket",
+      "empty": "No upcoming events."
+    },
+    "bnb": {
+      "title": "Hand-picked B&Bs",
+      "subtitle": "Cozy rooms, prime locations, genuine hospitality.",
+      "book": "Book room",
+      "empty": "No accommodation available."
+    },
+    "ristoranti": {
+      "title": "Local restaurants",
+      "subtitle": "Traditional cuisine, historic venues and new places to discover.",
+      "book": "Book a table",
+      "empty": "No restaurants available."
+    },
+    "shop": {
+      "title": "Local products & specialities",
+      "subtitle": "Buy directly from our local partner shops.",
+      "view": "View product",
+      "empty": "The shop will be available soon."
+    },
+    "video": {
+      "title": "Learn with our experts",
+      "subtitle": "On-demand video courses on cooking, wine, local history and traditions.",
+      "view": "View course",
+      "empty": "No courses published yet."
+    },
+    "infopoint": {
+      "title": "Attractions and places to discover",
+      "subtitle": "Everything worth visiting: museums, parks, monuments and itineraries.",
+      "view": "Discover & visit",
+      "empty": "No attractions published."
+    },
+    "virtualTour": {
+      "title": "Visit the region without leaving home.",
+      "subtitle": "360° virtual tours to explore museums, historic buildings and natural attractions. Free preview, full access in a few clicks.",
+      "cta": "Explore the tours",
+      "empty": "We're preparing the first virtual tours. Check back soon!"
+    }
+  },
+  "booking": {
+    "checkIn": "Check-in",
+    "checkOut": "Check-out",
+    "guests": "Guests",
+    "date": "Date",
+    "time": "Time",
+    "table": "Table",
+    "notes": "Notes",
+    "total": "Total",
+    "submit": "Book now",
+    "submitting": "Submitting…"
+  },
+  "dashboard": {
+    "greeting": "Hi",
+    "myAccount": "My account",
+    "myTickets": "My tickets",
+    "myBookings": "My bookings",
+    "myStays": "My stays",
+    "myVisits": "My visits",
+    "myOrders": "My orders",
+    "myCourses": "My courses",
+    "management": "Your management",
+    "administration": "Administration",
+    "settings": "Settings"
+  },
+  "messages": {
+    "saveSuccess": "Changes saved",
+    "deleteSuccess": "Deleted",
+    "bookingSuccess": "Booking submitted",
+    "purchaseSuccess": "Purchase completed",
+    "loginRequired": "Log in to continue",
+    "genericError": "An error occurred, please try again",
+    "networkError": "Network error, check your connection",
+    "notFound": "Not found"
+  },
+  "emails": {
+    "newBookingSubject": "New booking",
+    "newTicketSubject": "New ticket sold",
+    "newOrderSubject": "New order received",
+    "newSubscriberSubject": "New course subscriber",
+    "cta": "Manage now",
+    "footer": "You receive this email as a BorghiON manager."
+  }
+}

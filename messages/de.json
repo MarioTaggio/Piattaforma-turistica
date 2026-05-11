@@ -1,0 +1,133 @@
+{
+  "nav": {
+    "home": "Startseite",
+    "eventi": "Veranstaltungen",
+    "bnb": "B&B",
+    "ristoranti": "Restaurants",
+    "shop": "Shop",
+    "videolezioni": "Videokurse",
+    "infopoint": "Infopunkt",
+    "virtualTour": "Virtuelle Touren",
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "logout": "Abmelden",
+    "dashboard": "Dashboard",
+    "profilo": "Profil",
+    "language": "Sprache"
+  },
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "confirm": "Bestätigen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "loading": "Wird geladen…",
+    "search": "Suchen",
+    "filter": "Filter",
+    "all": "Alle",
+    "yes": "Ja",
+    "no": "Nein",
+    "from": "Von",
+    "to": "Bis",
+    "free": "Kostenlos",
+    "soldOut": "Ausverkauft",
+    "available": "Verfügbar",
+    "notAvailable": "Nicht verfügbar"
+  },
+  "hero": {
+    "badge": "Die Plattform der Region",
+    "title": "Erleben Sie die Region in einem einzigen digitalen Erlebnis.",
+    "subtitle": "Unverpassbare Veranstaltungen, B&B-Aufenthalte, typische Restaurants, lokale Shops, Videokurse unserer Experten und virtuelle Touren der Attraktionen. Alles an einem Ort.",
+    "ctaExplore": "Plattform erkunden",
+    "ctaLogin": "Bei Ihrem Konto anmelden"
+  },
+  "modules": {
+    "eventi": {
+      "title": "Was in der Stadt los ist",
+      "subtitle": "Konzerte, Festivals, Märkte und besondere Termine.",
+      "buy": "Ticket kaufen",
+      "empty": "Keine bevorstehenden Veranstaltungen."
+    },
+    "bnb": {
+      "title": "Ausgewählte B&Bs und Unterkünfte",
+      "subtitle": "Gemütliche Zimmer, strategische Lagen, authentische Gastfreundschaft.",
+      "book": "Zimmer buchen",
+      "empty": "Keine Unterkunft verfügbar."
+    },
+    "ristoranti": {
+      "title": "Lokale Restaurants",
+      "subtitle": "Typische Küche, historische Lokale und neue Adressen zum Entdecken.",
+      "book": "Tisch reservieren",
+      "empty": "Keine Restaurants verfügbar."
+    },
+    "shop": {
+      "title": "Lokale Produkte & Spezialitäten",
+      "subtitle": "Kaufen Sie direkt bei unseren lokalen Partnergeschäften.",
+      "view": "Produkt ansehen",
+      "empty": "Der Shop ist bald verfügbar."
+    },
+    "video": {
+      "title": "Lernen Sie mit unseren Experten",
+      "subtitle": "On-Demand-Videokurse über Kochen, Wein, lokale Geschichte und Traditionen.",
+      "view": "Kurs ansehen",
+      "empty": "Noch keine Kurse veröffentlicht."
+    },
+    "infopoint": {
+      "title": "Attraktionen und Orte zum Entdecken",
+      "subtitle": "Alles, was einen Besuch wert ist: Museen, Parks, Denkmäler und Routen.",
+      "view": "Entdecken & besuchen",
+      "empty": "Keine Attraktionen veröffentlicht."
+    },
+    "virtualTour": {
+      "title": "Besuchen Sie die Region, ohne Ihr Zuhause zu verlassen.",
+      "subtitle": "360°-Virtuelle Touren, um Museen, historische Gebäude und Naturattraktionen zu erkunden. Kostenlose Vorschau, voller Zugang in wenigen Klicks.",
+      "cta": "Touren erkunden",
+      "empty": "Wir bereiten die ersten virtuellen Touren vor. Schauen Sie bald wieder vorbei!"
+    }
+  },
+  "booking": {
+    "checkIn": "Check-in",
+    "checkOut": "Check-out",
+    "guests": "Gäste",
+    "date": "Datum",
+    "time": "Uhrzeit",
+    "table": "Tisch",
+    "notes": "Hinweise",
+    "total": "Gesamt",
+    "submit": "Jetzt buchen",
+    "submitting": "Wird gesendet…"
+  },
+  "dashboard": {
+    "greeting": "Hallo",
+    "myAccount": "Mein Konto",
+    "myTickets": "Meine Tickets",
+    "myBookings": "Meine Buchungen",
+    "myStays": "Meine Aufenthalte",
+    "myVisits": "Meine Besuche",
+    "myOrders": "Meine Bestellungen",
+    "myCourses": "Meine Kurse",
+    "management": "Ihre Verwaltung",
+    "administration": "Verwaltung",
+    "settings": "Einstellungen"
+  },
+  "messages": {
+    "saveSuccess": "Änderungen gespeichert",
+    "deleteSuccess": "Gelöscht",
+    "bookingSuccess": "Buchung gesendet",
+    "purchaseSuccess": "Kauf abgeschlossen",
+    "loginRequired": "Bitte melden Sie sich an, um fortzufahren",
+    "genericError": "Ein Fehler ist aufgetreten, bitte erneut versuchen",
+    "networkError": "Netzwerkfehler, überprüfen Sie Ihre Verbindung",
+    "notFound": "Nicht gefunden"
+  },
+  "emails": {
+    "newBookingSubject": "Neue Buchung",
+    "newTicketSubject": "Neues Ticket verkauft",
+    "newOrderSubject": "Neue Bestellung erhalten",
+    "newSubscriberSubject": "Neuer Kursteilnehmer",
+    "cta": "Jetzt verwalten",
+    "footer": "Sie erhalten diese E-Mail als BorghiON-Manager."
+  }
+}

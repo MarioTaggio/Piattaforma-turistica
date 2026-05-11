@@ -5,6 +5,12 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { notifyGestoreNuovaPrenotazione } from "@/lib/notifications/booking-events";
+import { sendGestoreNotificationEmail } from "@/lib/resend/gestore-notification";
+
+const eurFmt = (cents: number) =>
+  new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(
+    (cents ?? 0) / 100,
+  );
 
 type Result = { error?: string; success?: true; redirectTo?: string };
 
@@ -60,16 +66,57 @@ export async function acquistaBiglietto(eventoId: string): Promise<Result> {
 
   const { data: ev2 } = await admin
     .from("eventi")
-    .select("titolo, gestore_id")
+    .select("titolo, gestore_id, posti_disponibili")
     .eq("id", eventoId)
     .single();
   if (ev2) {
-    const e = ev2 as { titolo: string; gestore_id: string };
+    const e = ev2 as {
+      titolo: string;
+      gestore_id: string;
+      posti_disponibili: number;
+    };
     await notifyGestoreNuovaPrenotazione({
       gestoreId: e.gestore_id,
       modulo: "Evento",
       riferimento: `${e.titolo} — biglietto venduto`,
       link: `/dashboard/eventi/${eventoId}/prenotazioni`,
+    });
+
+    // Recupera codice biglietto appena creato per includerlo nell'email.
+    const { data: big } = await admin
+      .from("biglietti")
+      .select("codice, created_at")
+      .eq("evento_id", eventoId)
+      .eq("utente_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const b = big as { codice: string; created_at: string } | null;
+
+    await sendGestoreNotificationEmail({
+      gestoreId: e.gestore_id,
+      buyerId: userId,
+      modulo: "Evento",
+      subject: `Nuovo biglietto venduto — ${e.titolo}`,
+      evento: "Nuovo biglietto venduto",
+      ctaPath: `/dashboard/eventi/${eventoId}/prenotazioni`,
+      dettagli: [
+        { label: "Evento", value: e.titolo },
+        { label: "Importo pagato", value: eurFmt(ev.prezzo_cents) },
+        ...(b
+          ? [
+              {
+                label: "Data acquisto",
+                value: new Date(b.created_at).toLocaleString("it-IT"),
+              },
+              {
+                label: "Codice biglietto",
+                value: b.codice.slice(0, 8).toUpperCase() + "…",
+              },
+            ]
+          : []),
+        { label: "Posti rimasti", value: String(e.posti_disponibili) },
+      ],
     });
   }
 
@@ -147,6 +194,39 @@ export async function prenotaCamera(input: {
       riferimento: `${s.nome} (${input.checkIn} → ${input.checkOut}, ${input.ospiti} ospiti)`,
       link: `/dashboard/bnb/${input.strutturaId}/prenotazioni`,
     });
+
+    // Recupera nome camera + telefono ospite per arricchire l'email.
+    const [{ data: cam }, { data: buyer }] = await Promise.all([
+      admin.from("camere").select("nome").eq("id", input.cameraId).maybeSingle(),
+      admin
+        .from("users")
+        .select("telefono")
+        .eq("id", userId)
+        .maybeSingle(),
+    ]);
+    const camNome = (cam as { nome: string } | null)?.nome ?? "Camera";
+    const tel = (buyer as { telefono: string | null } | null)?.telefono ?? null;
+
+    await sendGestoreNotificationEmail({
+      gestoreId: s.gestore_id,
+      buyerId: userId,
+      modulo: "B&B",
+      subject: `Nuova prenotazione — ${s.nome}`,
+      evento: "Nuova prenotazione ricevuta",
+      ctaPath: `/dashboard/bnb/${input.strutturaId}/prenotazioni`,
+      dettagli: [
+        { label: "Struttura", value: s.nome },
+        { label: "Camera", value: camNome },
+        ...(tel ? [{ label: "Telefono", value: tel }] : []),
+        { label: "Check-in", value: input.checkIn },
+        { label: "Check-out", value: input.checkOut },
+        {
+          label: "Ospiti",
+          value: `${input.ospiti} ${input.ospiti === 1 ? "persona" : "persone"}`,
+        },
+        { label: "Totale", value: eurFmt(total) },
+      ],
+    });
   }
 
   revalidatePath(`/bnb/${input.strutturaId}`);
@@ -194,6 +274,40 @@ export async function prenotaTavolo(input: {
       modulo: "Ristorante",
       riferimento: `${r.nome} — ${new Date(input.dataOra).toLocaleString("it-IT")} (${input.ospiti} ospiti)`,
       link: `/dashboard/ristoranti/${input.ristoranteId}/prenotazioni`,
+    });
+
+    const [{ data: tav }, { data: buyer }] = await Promise.all([
+      admin
+        .from("tavoli")
+        .select("numero")
+        .eq("id", input.tavoloId)
+        .maybeSingle(),
+      admin.from("users").select("telefono").eq("id", userId).maybeSingle(),
+    ]);
+    const tavNumero = (tav as { numero: string } | null)?.numero ?? "?";
+    const tel = (buyer as { telefono: string | null } | null)?.telefono ?? null;
+
+    await sendGestoreNotificationEmail({
+      gestoreId: r.gestore_id,
+      buyerId: userId,
+      modulo: "Ristorante",
+      subject: `Nuova prenotazione tavolo — ${r.nome}`,
+      evento: "Nuova prenotazione tavolo",
+      ctaPath: `/dashboard/ristoranti/${input.ristoranteId}/prenotazioni`,
+      dettagli: [
+        { label: "Ristorante", value: r.nome },
+        ...(tel ? [{ label: "Telefono", value: tel }] : []),
+        {
+          label: "Data e ora",
+          value: new Date(input.dataOra).toLocaleString("it-IT"),
+        },
+        {
+          label: "Ospiti",
+          value: `${input.ospiti} ${input.ospiti === 1 ? "persona" : "persone"}`,
+        },
+        { label: "Tavolo", value: tavNumero },
+        ...(input.note ? [{ label: "Note", value: input.note }] : []),
+      ],
     });
   }
 
@@ -263,6 +377,39 @@ export async function prenotaVisita(input: {
       riferimento: `${a.nome} — ${input.partecipanti} partecipant${input.partecipanti === 1 ? "e" : "i"}`,
       link: `/dashboard/infopoint/${input.attrazioneId}/prenotazioni`,
     });
+
+    const { data: vis } = await admin
+      .from("visite_guidate")
+      .select("titolo, data_ora")
+      .eq("id", input.visitaId)
+      .maybeSingle();
+    const vs = vis as { titolo: string; data_ora: string } | null;
+
+    await sendGestoreNotificationEmail({
+      gestoreId: a.gestore_id,
+      buyerId: userId,
+      modulo: "Infopoint",
+      subject: `Nuova prenotazione visita — ${a.nome}`,
+      evento: "Nuova prenotazione visita",
+      ctaPath: `/dashboard/infopoint/${input.attrazioneId}/prenotazioni`,
+      dettagli: [
+        { label: "Attrazione", value: a.nome },
+        ...(vs ? [{ label: "Visita", value: vs.titolo }] : []),
+        ...(vs
+          ? [
+              {
+                label: "Data visita",
+                value: new Date(vs.data_ora).toLocaleString("it-IT"),
+              },
+            ]
+          : []),
+        {
+          label: "Partecipanti",
+          value: `${input.partecipanti} ${input.partecipanti === 1 ? "persona" : "persone"}`,
+        },
+        { label: "Totale", value: eurFmt(total) },
+      ],
+    });
   }
 
   revalidatePath(`/infopoint/${input.attrazioneId}`);
@@ -309,6 +456,23 @@ export async function acquistaCorso(corsoId: string): Promise<Result> {
         modulo: "Corso video",
         riferimento: `${co.titolo} — nuovo iscritto`,
         link: `/dashboard/video/${corsoId}/iscritti`,
+      });
+
+      await sendGestoreNotificationEmail({
+        gestoreId: co.gestore_id,
+        buyerId: userId,
+        modulo: "Video",
+        subject: `Nuovo iscritto al corso — ${co.titolo}`,
+        evento: "Nuovo iscritto al corso",
+        ctaPath: `/dashboard/video/${corsoId}/iscritti`,
+        dettagli: [
+          { label: "Corso", value: co.titolo },
+          { label: "Importo pagato", value: eurFmt(c.prezzo_cents) },
+          {
+            label: "Data acquisto",
+            value: new Date().toLocaleString("it-IT"),
+          },
+        ],
       });
     }
   }

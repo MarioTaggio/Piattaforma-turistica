@@ -3,6 +3,7 @@ import { LayoutDashboard, LogIn } from "lucide-react";
 
 import { getSessionUser } from "@/lib/auth/dal";
 import { SiteLogo } from "@/components/shared/site-logo";
+import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { Button } from "@/components/ui/button";
 
 import { MobileMenu } from "./mobile-menu";
@@ -33,6 +34,7 @@ export async function SiteNavbar() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <LanguageSwitcher variant="full" align="right" />
           <CartLink />
           {user ? (
             <Button

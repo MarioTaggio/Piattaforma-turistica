@@ -2,6 +2,8 @@ import { getSessionUser } from "@/lib/auth/dal";
 import { getRecentNotifications } from "@/lib/notifications/queries";
 import { getRecentComunicazioni } from "@/lib/comunicazioni/queries";
 
+import { LanguageSwitcher } from "@/components/shared/language-switcher";
+
 import { ComunicazioniBell } from "./comunicazioni-bell";
 import { HeaderSearch } from "./header-search";
 import { NotificationsBell } from "./notifications-bell";
@@ -24,6 +26,8 @@ export async function Header() {
       </div>
 
       <div className="ml-auto flex items-center gap-1.5">
+        <LanguageSwitcher variant="compact" align="right" />
+
         <ComunicazioniBell
           userId={user.id}
           initialItems={comuni.items}
