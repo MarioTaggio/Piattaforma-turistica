@@ -108,6 +108,46 @@ export async function notifyGestoreNuovaPrenotazione(input: {
 }
 
 /**
+ * Notifica + email di conferma all'utente quando crea una nuova prenotazione.
+ * Best-effort: non solleva eccezioni se manca email o Resend non è configurato.
+ */
+export async function notifyUtenteNuovaPrenotazione(input: {
+  userId: string;
+  email?: string | null;
+  modulo: string;
+  riferimento: string;
+  quando?: string;
+  link: string;
+}): Promise<void> {
+  await createNotifica({
+    userId: input.userId,
+    titolo: `Prenotazione inviata: ${input.modulo}`,
+    messaggio: input.riferimento,
+    tipo: "successo",
+    link: input.link,
+  });
+
+  if (input.email) {
+    const dettagli: { label: string; value: string }[] = [
+      { label: "Riferimento", value: input.riferimento },
+    ];
+    if (input.quando) dettagli.push({ label: "Quando", value: input.quando });
+
+    await sendBookingStateEmail({
+      to: input.email,
+      subject: `Prenotazione ricevuta: ${input.riferimento}`,
+      modulo: input.modulo,
+      stato: "Ricevuta",
+      variante: "info",
+      intro:
+        "Abbiamo ricevuto la tua richiesta. Riceverai un'altra email non appena il gestore confermerà la prenotazione.",
+      dettagli,
+      cta: { label: "Apri prenotazione", url: input.link },
+    });
+  }
+}
+
+/**
  * Lookup utility: dato un user_id ritorna l'email dalla tabella users.
  * Usata dagli helper booking per arricchire notifiche con email.
  */

@@ -17,7 +17,11 @@
     "menu": "Menu",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
-    "goToDashboard": "Go to dashboard"
+    "goToDashboard": "Go to dashboard",
+    "myProfile": "My profile",
+    "myTickets": "My tickets",
+    "myBookings": "My bookings",
+    "account": "Account"
   },
   "common": {
     "save": "Save",

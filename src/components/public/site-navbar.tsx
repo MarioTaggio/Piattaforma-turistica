@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, LogIn } from "lucide-react";
+import { LogIn } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { getSessionUser } from "@/lib/auth/dal";
@@ -10,13 +10,11 @@ import { Button } from "@/components/ui/button";
 import { MobileMenu } from "./mobile-menu";
 import { CartLink } from "./cart-link";
 import { NAV_LINKS } from "./nav-links";
+import { UserMenu } from "./user-menu";
 
 export async function SiteNavbar() {
   const user = await getSessionUser();
   const t = await getTranslations("nav");
-  const initials = user
-    ? ((user.nome ?? user.email)[0] ?? "?").toUpperCase()
-    : "";
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
@@ -24,7 +22,7 @@ export async function SiteNavbar() {
         <SiteLogo />
 
         <nav className="hidden items-center gap-1 lg:flex">
-          {NAV_LINKS.filter((l) => l.key !== "home").map((l) => (
+          {NAV_LINKS.map((l) => (
             <Link
               key={l.href}
               href={l.href}
@@ -39,14 +37,14 @@ export async function SiteNavbar() {
           <LanguageSwitcher variant="full" align="right" />
           <CartLink />
           {user ? (
-            <Button
-              size="sm"
-              className="hidden rounded-xl bg-brand-600 hover:bg-brand-700 sm:inline-flex"
-              render={<Link href="/dashboard" />}
-            >
-              <LayoutDashboard className="mr-1.5 size-4" />
-              {t("dashboard")}
-            </Button>
+            <UserMenu
+              user={{
+                email: user.email,
+                nome: user.nome,
+                cognome: user.cognome,
+                avatar_url: user.avatar_url,
+              }}
+            />
           ) : (
             <Button
               size="sm"
@@ -57,16 +55,7 @@ export async function SiteNavbar() {
               {t("login")}
             </Button>
           )}
-          {user && (
-            <Link
-              href="/dashboard"
-              aria-label={t("dashboard")}
-              className="grid size-9 place-items-center rounded-full bg-brand-50 text-sm font-semibold text-brand-700 ring-1 ring-brand-100 transition hover:bg-brand-100"
-            >
-              {initials}
-            </Link>
-          )}
-          <MobileMenu loggedIn={!!user} />
+          <MobileMenu user={user} />
         </div>
       </div>
     </header>

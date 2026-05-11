@@ -5,7 +5,11 @@ import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { notifyGestoreNuovaPrenotazione } from "@/lib/notifications/booking-events";
+import {
+  getUserEmail,
+  notifyGestoreNuovaPrenotazione,
+  notifyUtenteNuovaPrenotazione,
+} from "@/lib/notifications/booking-events";
 import { sendGestoreNotificationEmail } from "@/lib/resend/gestore-notification";
 
 const eurFmt = (cents: number) =>
@@ -89,6 +93,14 @@ export async function acquistaBiglietto(eventoId: string): Promise<Result> {
       modulo: "Evento",
       riferimento: `${e.titolo} — biglietto venduto`,
       link: `/dashboard/eventi/${eventoId}/prenotazioni`,
+    });
+
+    await notifyUtenteNuovaPrenotazione({
+      userId,
+      email: await getUserEmail(userId),
+      modulo: "Evento",
+      riferimento: e.titolo,
+      link: "/dashboard/biglietti",
     });
 
     // Recupera codice biglietto appena creato per includerlo nell'email.
@@ -205,6 +217,15 @@ export async function prenotaCamera(input: {
       link: `/dashboard/bnb/${input.strutturaId}/prenotazioni`,
     });
 
+    await notifyUtenteNuovaPrenotazione({
+      userId,
+      email: await getUserEmail(userId),
+      modulo: "B&B",
+      riferimento: s.nome,
+      quando: `${input.checkIn} → ${input.checkOut}`,
+      link: "/dashboard/prenotazioni",
+    });
+
     // Recupera nome camera + telefono ospite per arricchire l'email.
     const [{ data: cam }, { data: buyer }] = await Promise.all([
       admin.from("camere").select("nome").eq("id", input.cameraId).maybeSingle(),
@@ -285,6 +306,15 @@ export async function prenotaTavolo(input: {
       modulo: "Ristorante",
       riferimento: `${r.nome} — ${new Date(input.dataOra).toLocaleString("it-IT")} (${input.ospiti} ospiti)`,
       link: `/dashboard/ristoranti/${input.ristoranteId}/prenotazioni`,
+    });
+
+    await notifyUtenteNuovaPrenotazione({
+      userId,
+      email: await getUserEmail(userId),
+      modulo: "Ristorante",
+      riferimento: r.nome,
+      quando: new Date(input.dataOra).toLocaleString("it-IT"),
+      link: "/dashboard/prenotazioni",
     });
 
     const [{ data: tav }, { data: buyer }] = await Promise.all([
@@ -396,6 +426,15 @@ export async function prenotaVisita(input: {
       .eq("id", input.visitaId)
       .maybeSingle();
     const vs = vis as { titolo: string; data_ora: string } | null;
+
+    await notifyUtenteNuovaPrenotazione({
+      userId,
+      email: await getUserEmail(userId),
+      modulo: "Visita guidata",
+      riferimento: vs?.titolo ?? a.nome,
+      quando: vs ? new Date(vs.data_ora).toLocaleString("it-IT") : undefined,
+      link: "/dashboard/prenotazioni",
+    });
 
     await sendGestoreNotificationEmail({
       gestoreId: a.gestore_id,
