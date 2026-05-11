@@ -248,11 +248,11 @@ export async function updatePrenotazioneBnbFull(
   },
 ): Promise<{ error?: string }> {
   if (!input.dataCheckIn || !input.dataCheckOut)
-    return { error: "Date obbligatorie" };
+    return { error: (await tErrors())("datesRequired") };
   if (input.dataCheckOut <= input.dataCheckIn)
-    return { error: "Check-out deve essere dopo il check-in" };
+    return { error: (await tErrors())("checkoutBeforeCheckin") };
   if (!Number.isFinite(input.numOspiti) || input.numOspiti < 1)
-    return { error: "Numero ospiti non valido" };
+    return { error: (await tErrors())("invalidGuestCount") };
 
   const supabase = await createClient();
 
@@ -262,9 +262,9 @@ export async function updatePrenotazioneBnbFull(
     .select("struttura_id")
     .eq("id", input.cameraId)
     .single();
-  if (!cam) return { error: "Camera non trovata" };
+  if (!cam) return { error: (await tErrors())("roomNotFound") };
   if ((cam as { struttura_id: string }).struttura_id !== strutturaId)
-    return { error: "Camera non appartiene a questa struttura" };
+    return { error: (await tErrors())("roomNotInStructure") };
 
   const { error } = await supabase
     .from("prenotazioni_bnb")
@@ -298,9 +298,9 @@ export async function updatePrenotazioneBnbCamera(
     .select("struttura_id")
     .eq("id", cameraId)
     .single();
-  if (!cam) return { error: "Camera non trovata" };
+  if (!cam) return { error: (await tErrors())("roomNotFound") };
   if ((cam as { struttura_id: string }).struttura_id !== strutturaId)
-    return { error: "Camera non appartiene a questa struttura" };
+    return { error: (await tErrors())("roomNotInStructure") };
 
   const { error } = await supabase
     .from("prenotazioni_bnb")

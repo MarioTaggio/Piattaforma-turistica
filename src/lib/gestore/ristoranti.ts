@@ -238,9 +238,9 @@ export async function updatePrenotazioneTavoloFull(
     note?: string;
   },
 ): Promise<{ error?: string }> {
-  if (!input.dataOra) return { error: "Data e ora obbligatorie" };
+  if (!input.dataOra) return { error: (await tErrors())("dateTimeRequired") };
   if (!Number.isFinite(input.numOspiti) || input.numOspiti < 1)
-    return { error: "Numero ospiti non valido" };
+    return { error: (await tErrors())("invalidGuestCount") };
 
   const supabase = await createClient();
 
@@ -250,9 +250,9 @@ export async function updatePrenotazioneTavoloFull(
     .select("ristorante_id")
     .eq("id", input.tavoloId)
     .single();
-  if (!tav) return { error: "Tavolo non trovato" };
+  if (!tav) return { error: (await tErrors())("tableNotFound") };
   if ((tav as { ristorante_id: string }).ristorante_id !== ristoranteId)
-    return { error: "Tavolo non appartiene al ristorante" };
+    return { error: (await tErrors())("tableNotInRestaurant") };
 
   const { error } = await supabase
     .from("prenotazioni_tavolo")
@@ -295,10 +295,10 @@ export async function createManualPrenotazioneTavolo(
   const dataOra = input.dataOra.trim();
   const num = Number(input.numOspiti);
   const nome = input.nomeCliente.trim();
-  if (!tavoloId) return { error: "Seleziona un tavolo" };
-  if (!dataOra) return { error: "Data e ora obbligatorie" };
-  if (!Number.isFinite(num) || num < 1) return { error: "Numero ospiti non valido" };
-  if (!nome || nome.length < 2) return { error: "Nome cliente troppo corto" };
+  if (!tavoloId) return { error: (await tErrors())("selectTable") };
+  if (!dataOra) return { error: (await tErrors())("dateTimeRequired") };
+  if (!Number.isFinite(num) || num < 1) return { error: (await tErrors())("invalidGuestCount") };
+  if (!nome || nome.length < 2) return { error: (await tErrors())("customerNameTooShort") };
 
   const supabase = await createClient();
   const {
@@ -312,9 +312,9 @@ export async function createManualPrenotazioneTavolo(
     .select("ristorante_id")
     .eq("id", tavoloId)
     .single();
-  if (!tav) return { error: "Tavolo non trovato" };
+  if (!tav) return { error: (await tErrors())("tableNotFound") };
   if ((tav as { ristorante_id: string }).ristorante_id !== ristoranteId)
-    return { error: "Tavolo non appartiene al ristorante" };
+    return { error: (await tErrors())("tableNotInRestaurant") };
 
   const noteParts = [
     `Walk-in: ${nome}`,

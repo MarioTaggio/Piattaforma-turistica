@@ -166,7 +166,10 @@
     "loginRequired": "Accedi per continuare",
     "genericError": "Si è verificato un errore, riprova",
     "networkError": "Errore di rete, controlla la connessione",
-    "notFound": "Non trovato"
+    "notFound": "Non trovato",
+    "noRecipients": "Nessun destinatario",
+    "emailSent": "Email inviata",
+    "confirmSendEmail": "Inviare l'email?"
   },
   "emails": {
     "newBookingSubject": "Nuova prenotazione",
@@ -345,7 +348,20 @@
     "saving": "Salvataggio…",
     "creating": "Creazione…",
     "saved": "Salvato",
-    "created": "Creato"
+    "created": "Creato",
+    "subject": "Oggetto",
+    "subjectPlaceholder": "Es. Aggiornamento orario",
+    "message": "Messaggio",
+    "messagePlaceholder": "Scrivi il messaggio da inviare…",
+    "sendEmail": "Invia email",
+    "recipients": "Destinatari",
+    "addRoom": "Aggiungi camera",
+    "addTable": "Aggiungi tavolo",
+    "trackingCode": "Codice tracking",
+    "trackingUrl": "URL tracking",
+    "quantity": "Quantità",
+    "active": "Attivo",
+    "inactive": "Inattivo"
   },
   "validation": {
     "required": "Campo obbligatorio",
@@ -382,7 +398,28 @@
     "courseUnavailable": "Corso non disponibile",
     "paymentFailed": "Pagamento fallito",
     "stripeError": "Errore Stripe",
-    "genericServerError": "Errore del server, riprova più tardi"
+    "genericServerError": "Errore del server, riprova più tardi",
+    "lessonNotFound": "Lezione non trovata",
+    "trackingCodeRequired": "Inserisci il codice tracking",
+    "invalidQuantity": "Quantità non valida (min 1)",
+    "invalidGuestCount": "Numero ospiti non valido",
+    "tableNotFound": "Tavolo non trovato",
+    "tableNotInRestaurant": "Tavolo non appartiene al ristorante",
+    "selectTable": "Seleziona un tavolo",
+    "customerNameTooShort": "Nome cliente troppo corto",
+    "incompleteTicketData": "Dati biglietto incompleti",
+    "ticketNotFound": "Biglietto non trovato",
+    "ticketNotInEvent": "Biglietto non appartiene a questo evento",
+    "ticketAlreadyUsed": "Biglietto già utilizzato",
+    "subjectTooShort": "Oggetto troppo corto",
+    "messageTooShort": "Messaggio troppo corto",
+    "eventNotFound": "Evento non trovato",
+    "noRecipients": "Nessun destinatario",
+    "checkoutBeforeCheckin": "Check-out deve essere dopo il check-in",
+    "roomNotInStructure": "Camera non appartiene a questa struttura",
+    "invalidParticipants": "Numero partecipanti non valido",
+    "attractionNotFound": "Attrazione non trovata",
+    "contentNotFound": "Contenuto non trovato"
   },
   "prenotazioniGestore": {
     "title": "Prenotazioni",

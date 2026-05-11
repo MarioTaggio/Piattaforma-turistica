@@ -166,7 +166,10 @@
     "loginRequired": "Log in to continue",
     "genericError": "An error occurred, please try again",
     "networkError": "Network error, check your connection",
-    "notFound": "Not found"
+    "notFound": "Not found",
+    "noRecipients": "No recipients",
+    "emailSent": "Email sent",
+    "confirmSendEmail": "Send the email?"
   },
   "emails": {
     "newBookingSubject": "New booking",
@@ -345,7 +348,20 @@
     "saving": "Saving…",
     "creating": "Creating…",
     "saved": "Saved",
-    "created": "Created"
+    "created": "Created",
+    "subject": "Subject",
+    "subjectPlaceholder": "E.g. Schedule update",
+    "message": "Message",
+    "messagePlaceholder": "Write the message to send…",
+    "sendEmail": "Send email",
+    "recipients": "Recipients",
+    "addRoom": "Add room",
+    "addTable": "Add table",
+    "trackingCode": "Tracking code",
+    "trackingUrl": "Tracking URL",
+    "quantity": "Quantity",
+    "active": "Active",
+    "inactive": "Inactive"
   },
   "validation": {
     "required": "Required field",
@@ -382,7 +398,28 @@
     "courseUnavailable": "Course unavailable",
     "paymentFailed": "Payment failed",
     "stripeError": "Stripe error",
-    "genericServerError": "Server error, please retry later"
+    "genericServerError": "Server error, please retry later",
+    "lessonNotFound": "Lesson not found",
+    "trackingCodeRequired": "Enter the tracking code",
+    "invalidQuantity": "Invalid quantity (min 1)",
+    "invalidGuestCount": "Invalid number of guests",
+    "tableNotFound": "Table not found",
+    "tableNotInRestaurant": "Table does not belong to this restaurant",
+    "selectTable": "Select a table",
+    "customerNameTooShort": "Customer name too short",
+    "incompleteTicketData": "Incomplete ticket data",
+    "ticketNotFound": "Ticket not found",
+    "ticketNotInEvent": "Ticket does not belong to this event",
+    "ticketAlreadyUsed": "Ticket already used",
+    "subjectTooShort": "Subject too short",
+    "messageTooShort": "Message too short",
+    "eventNotFound": "Event not found",
+    "noRecipients": "No recipients",
+    "checkoutBeforeCheckin": "Check-out must be after check-in",
+    "roomNotInStructure": "Room does not belong to this property",
+    "invalidParticipants": "Invalid number of participants",
+    "attractionNotFound": "Attraction not found",
+    "contentNotFound": "Content not found"
   },
   "prenotazioniGestore": {
     "title": "Bookings",

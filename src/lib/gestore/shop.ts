@@ -221,7 +221,7 @@ export async function updateOrdineShopTracking(
   tracking: { codice: string; url?: string },
 ): Promise<{ error?: string }> {
   const codice = tracking.codice.trim();
-  if (!codice) return { error: "Inserisci il codice tracking" };
+  if (!codice) return { error: (await tErrors())("trackingCodeRequired") };
 
   const supabase = await createClient();
   const { error } = await supabase
@@ -398,7 +398,7 @@ export async function updateOrdineShopItem(
 ): Promise<{ error?: string }> {
   const n = Number(quantita);
   if (!Number.isFinite(n) || n < 1)
-    return { error: "Quantità non valida (min 1)" };
+    return { error: (await tErrors())("invalidQuantity") };
 
   const admin = createAdminClient();
   const { error } = await admin

@@ -166,7 +166,10 @@
     "loginRequired": "Bitte melden Sie sich an, um fortzufahren",
     "genericError": "Ein Fehler ist aufgetreten, bitte erneut versuchen",
     "networkError": "Netzwerkfehler, überprüfen Sie Ihre Verbindung",
-    "notFound": "Nicht gefunden"
+    "notFound": "Nicht gefunden",
+    "noRecipients": "Keine Empfänger",
+    "emailSent": "E-Mail gesendet",
+    "confirmSendEmail": "E-Mail senden?"
   },
   "emails": {
     "newBookingSubject": "Neue Buchung",
@@ -345,7 +348,20 @@
     "saving": "Wird gespeichert…",
     "creating": "Wird erstellt…",
     "saved": "Gespeichert",
-    "created": "Erstellt"
+    "created": "Erstellt",
+    "subject": "Betreff",
+    "subjectPlaceholder": "Z. B. Zeitplan-Update",
+    "message": "Nachricht",
+    "messagePlaceholder": "Nachricht zum Senden schreiben…",
+    "sendEmail": "E-Mail senden",
+    "recipients": "Empfänger",
+    "addRoom": "Zimmer hinzufügen",
+    "addTable": "Tisch hinzufügen",
+    "trackingCode": "Tracking-Code",
+    "trackingUrl": "Tracking-URL",
+    "quantity": "Menge",
+    "active": "Aktiv",
+    "inactive": "Inaktiv"
   },
   "validation": {
     "required": "Pflichtfeld",
@@ -382,7 +398,28 @@
     "courseUnavailable": "Kurs nicht verfügbar",
     "paymentFailed": "Zahlung fehlgeschlagen",
     "stripeError": "Stripe-Fehler",
-    "genericServerError": "Server-Fehler, bitte später erneut versuchen"
+    "genericServerError": "Server-Fehler, bitte später erneut versuchen",
+    "lessonNotFound": "Lektion nicht gefunden",
+    "trackingCodeRequired": "Tracking-Code eingeben",
+    "invalidQuantity": "Ungültige Menge (min. 1)",
+    "invalidGuestCount": "Ungültige Gästezahl",
+    "tableNotFound": "Tisch nicht gefunden",
+    "tableNotInRestaurant": "Tisch gehört nicht zu diesem Restaurant",
+    "selectTable": "Tisch auswählen",
+    "customerNameTooShort": "Kundenname zu kurz",
+    "incompleteTicketData": "Ticketdaten unvollständig",
+    "ticketNotFound": "Ticket nicht gefunden",
+    "ticketNotInEvent": "Ticket gehört nicht zu dieser Veranstaltung",
+    "ticketAlreadyUsed": "Ticket bereits verwendet",
+    "subjectTooShort": "Betreff zu kurz",
+    "messageTooShort": "Nachricht zu kurz",
+    "eventNotFound": "Veranstaltung nicht gefunden",
+    "noRecipients": "Keine Empfänger",
+    "checkoutBeforeCheckin": "Check-out muss nach Check-in liegen",
+    "roomNotInStructure": "Zimmer gehört nicht zu dieser Unterkunft",
+    "invalidParticipants": "Ungültige Teilnehmerzahl",
+    "attractionNotFound": "Attraktion nicht gefunden",
+    "contentNotFound": "Inhalt nicht gefunden"
   },
   "prenotazioniGestore": {
     "title": "Buchungen",

@@ -309,7 +309,7 @@ export async function updatePrenotazioneVisitaFull(
   },
 ): Promise<{ error?: string }> {
   if (!Number.isFinite(input.numPartecipanti) || input.numPartecipanti < 1)
-    return { error: "Numero partecipanti non valido" };
+    return { error: (await tErrors())("invalidParticipants") };
 
   const supabase = await createClient();
   const { error } = await supabase
@@ -333,7 +333,7 @@ export async function updatePrenotazioneVisitaPartecipanti(
 ): Promise<{ error?: string }> {
   const n = Number(num_partecipanti);
   if (!Number.isFinite(n) || n < 1)
-    return { error: "Numero partecipanti non valido" };
+    return { error: (await tErrors())("invalidParticipants") };
   const supabase = await createClient();
   const { error } = await supabase
     .from("prenotazioni_visita")
@@ -354,9 +354,9 @@ export async function sendEmailToAttrazioneVisitatori(
   const subject = input.subject.trim();
   const messaggio = input.messaggio.trim();
   if (!subject || subject.length < 3)
-    return { error: "Oggetto troppo corto" };
+    return { error: (await tErrors())("subjectTooShort") };
   if (!messaggio || messaggio.length < 10)
-    return { error: "Messaggio troppo corto" };
+    return { error: (await tErrors())("messageTooShort") };
 
   const { createAdminClient } = await import("@/lib/supabase/admin");
   const { createNotifica } = await import("@/lib/notifications/create");
@@ -368,7 +368,7 @@ export async function sendEmailToAttrazioneVisitatori(
     .select("nome, gestore_id")
     .eq("id", attrazioneId)
     .single();
-  if (!attr) return { error: "Attrazione non trovata" };
+  if (!attr) return { error: (await tErrors())("attractionNotFound") };
   const a = attr as { nome: string; gestore_id: string };
 
   const { data: rows } = await admin
@@ -388,7 +388,7 @@ export async function sendEmailToAttrazioneVisitatori(
   for (const r of (rows ?? []) as unknown as Row[]) {
     if (r.users?.email) map.set(r.utente_id, r.users.email);
   }
-  if (map.size === 0) return { error: "Nessun destinatario" };
+  if (map.size === 0) return { error: (await tErrors())("noRecipients") };
 
   let sent = 0;
   for (const [userId, email] of map.entries()) {

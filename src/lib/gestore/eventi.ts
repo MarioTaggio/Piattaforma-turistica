@@ -169,7 +169,7 @@ export async function sendBigliettoReminder(
   };
   const row = data as unknown as Row | null;
   if (!row?.users?.email || !row.eventi)
-    return { error: "Dati biglietto incompleti" };
+    return { error: (await tErrors())("incompleteTicketData") };
 
   await createNotifica({
     userId: row.utente_id,
@@ -371,11 +371,11 @@ export async function markBigliettoUtilizzato(
     .eq("id", bigliettoId)
     .single();
   const row = data as { stato: BigliettoStato; evento_id: string } | null;
-  if (!row) return { error: "Biglietto non trovato" };
+  if (!row) return { error: (await tErrors())("ticketNotFound") };
   if (row.evento_id !== eventoId)
-    return { error: "Biglietto non appartiene a questo evento" };
+    return { error: (await tErrors())("ticketNotInEvent") };
   if (row.stato === "utilizzato")
-    return { error: "Biglietto già utilizzato" };
+    return { error: (await tErrors())("ticketAlreadyUsed") };
   if (row.stato !== "valido")
     return { error: `Biglietto ${row.stato}, non può essere validato` };
 
@@ -403,9 +403,9 @@ export async function sendEmailToEventoPartecipanti(
   const subject = input.subject.trim();
   const messaggio = input.messaggio.trim();
   if (!subject || subject.length < 3)
-    return { error: "Oggetto troppo corto" };
+    return { error: (await tErrors())("subjectTooShort") };
   if (!messaggio || messaggio.length < 10)
-    return { error: "Messaggio troppo corto" };
+    return { error: (await tErrors())("messageTooShort") };
 
   const admin = createAdminClient();
   const { data: ev } = await admin
@@ -413,7 +413,7 @@ export async function sendEmailToEventoPartecipanti(
     .select("titolo, gestore_id")
     .eq("id", eventoId)
     .single();
-  if (!ev) return { error: "Evento non trovato" };
+  if (!ev) return { error: (await tErrors())("eventNotFound") };
   const e = ev as { titolo: string; gestore_id: string };
 
   const { data: rows } = await admin
@@ -430,7 +430,7 @@ export async function sendEmailToEventoPartecipanti(
     (r) => r.users?.email,
   );
 
-  if (list.length === 0) return { error: "Nessun destinatario" };
+  if (list.length === 0) return { error: (await tErrors())("noRecipients") };
 
   let sent = 0;
   for (const r of list) {

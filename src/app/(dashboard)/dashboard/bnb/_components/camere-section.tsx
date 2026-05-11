@@ -6,6 +6,7 @@ import { Loader2, Plus, Trash2 } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,9 @@ export function CamereSection({
   camere: Camera[];
 }) {
   const router = useRouter();
+  const tForm = useTranslations("form");
+  const tMessages = useTranslations("messages");
+  const tDetail = useTranslations("detail");
   const [showForm, setShowForm] = useState(camere.length === 0);
   const [pending, startTransition] = useTransition();
 
@@ -61,20 +65,20 @@ export function CamereSection({
       toast.error(result.error);
       return;
     }
-    toast.success("Camera aggiunta");
+    toast.success(tMessages("saveSuccess"));
     reset();
     router.refresh();
   }
 
   function onDelete(id: string) {
-    if (!confirm("Eliminare questa camera?")) return;
+    if (!confirm(tForm("confirmDelete"))) return;
     startTransition(async () => {
       const result = await deleteCamera(id, strutturaId);
       if (result.error) {
         toast.error(result.error);
         return;
       }
-      toast.success("Camera eliminata");
+      toast.success(tMessages("deleteSuccess"));
       router.refresh();
     });
   }
@@ -83,11 +87,9 @@ export function CamereSection({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold">Camere</h3>
+          <h3 className="text-base font-semibold">{tDetail("rooms")}</h3>
           <p className="text-xs text-muted-foreground">
-            {camere.length === 0
-              ? "Aggiungi la prima camera per iniziare ad accettare prenotazioni."
-              : `${camere.length} camera${camere.length === 1 ? "" : "e"} configurata${camere.length === 1 ? "" : "e"}.`}
+            {camere.length}
           </p>
         </div>
         <Button
@@ -98,7 +100,7 @@ export function CamereSection({
           onClick={() => setShowForm((s) => !s)}
         >
           <Plus className="mr-1.5 size-3.5" />
-          Aggiungi camera
+          {tForm("addRoom")}
         </Button>
       </div>
 
@@ -107,10 +109,10 @@ export function CamereSection({
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/40 text-left text-xs uppercase tracking-wider text-muted-foreground">
-                <th className="px-4 py-2 font-medium">Nome</th>
-                <th className="px-4 py-2 font-medium">Capacità</th>
-                <th className="px-4 py-2 font-medium">Prezzo / notte</th>
-                <th className="px-4 py-2 font-medium">Disponibile</th>
+                <th className="px-4 py-2 font-medium">{tForm("name")}</th>
+                <th className="px-4 py-2 font-medium">{tForm("capacity")}</th>
+                <th className="px-4 py-2 font-medium">{tForm("pricePerNight")}</th>
+                <th className="px-4 py-2 font-medium">{tForm("available")}</th>
                 <th className="px-4 py-2"></th>
               </tr>
             </thead>
@@ -130,7 +132,7 @@ export function CamereSection({
                           : "text-muted-foreground"
                       }
                     >
-                      {c.disponibile ? "Sì" : "No"}
+                      {c.disponibile ? tForm("active") : tForm("inactive")}
                     </span>
                   </td>
                   <td className="px-4 py-2 text-right">
@@ -163,8 +165,8 @@ export function CamereSection({
         >
           <div className="grid gap-3 sm:grid-cols-4">
             <div className="space-y-1.5 sm:col-span-2">
-              <Label>Nome</Label>
-              <Input placeholder="Camera Margherita" {...register("nome")} />
+              <Label>{tForm("name")}</Label>
+              <Input {...register("nome")} />
               {errors.nome && (
                 <p className="text-xs text-destructive">
                   {errors.nome.message}
@@ -172,7 +174,7 @@ export function CamereSection({
               )}
             </div>
             <div className="space-y-1.5">
-              <Label>Capacità</Label>
+              <Label>{tForm("capacity")}</Label>
               <Input type="number" min={1} {...register("capacita")} />
               {errors.capacita && (
                 <p className="text-xs text-destructive">
@@ -181,7 +183,7 @@ export function CamereSection({
               )}
             </div>
             <div className="space-y-1.5">
-              <Label>Prezzo / notte</Label>
+              <Label>{tForm("pricePerNight")}</Label>
               <Controller
                 control={control}
                 name="prezzo_notte_cents"
@@ -203,15 +205,12 @@ export function CamereSection({
               )}
             </div>
             <div className="space-y-1.5 sm:col-span-4">
-              <Label>Descrizione (opzionale)</Label>
-              <Input
-                placeholder="Vista giardino, letto matrimoniale…"
-                {...register("descrizione")}
-              />
+              <Label>{tForm("description")}</Label>
+              <Input {...register("descrizione")} />
             </div>
             <label className="flex items-center gap-2 sm:col-span-4">
               <input type="checkbox" defaultChecked {...register("disponibile")} />
-              <span className="text-sm">Camera disponibile</span>
+              <span className="text-sm">{tForm("available")}</span>
             </label>
           </div>
           <div className="flex justify-end gap-2">
@@ -221,7 +220,7 @@ export function CamereSection({
               size="sm"
               onClick={() => setShowForm(false)}
             >
-              Annulla
+              {tForm("cancel")}
             </Button>
             <Button
               type="submit"
@@ -232,7 +231,7 @@ export function CamereSection({
               {isSubmitting && (
                 <Loader2 className="mr-1.5 size-3.5 animate-spin" />
               )}
-              Aggiungi
+              {tForm("create")}
             </Button>
           </div>
         </form>

@@ -6,6 +6,7 @@ import { Loader2, Plus, Trash2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,8 @@ export function TavoliSection({
   tavoli: Tavolo[];
 }) {
   const router = useRouter();
+  const tForm = useTranslations("form");
+  const tMessages = useTranslations("messages");
   const [showForm, setShowForm] = useState(tavoli.length === 0);
   const [pending, startTransition] = useTransition();
 
@@ -59,20 +62,20 @@ export function TavoliSection({
       toast.error(r.error);
       return;
     }
-    toast.success("Tavolo aggiunto");
+    toast.success(tMessages("saveSuccess"));
     reset();
     router.refresh();
   }
 
   function onDelete(id: string) {
-    if (!confirm("Eliminare questo tavolo?")) return;
+    if (!confirm(tForm("confirmDelete"))) return;
     startTransition(async () => {
       const r = await deleteTavolo(id, ristoranteId);
       if (r.error) {
         toast.error(r.error);
         return;
       }
-      toast.success("Tavolo eliminato");
+      toast.success(tMessages("deleteSuccess"));
       router.refresh();
     });
   }
@@ -82,11 +85,7 @@ export function TavoliSection({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-base font-semibold">Tavoli</h3>
-          <p className="text-xs text-muted-foreground">
-            {tavoli.length === 0
-              ? "Aggiungi i tavoli per accettare prenotazioni."
-              : `${tavoli.length} tavolo${tavoli.length === 1 ? "" : "i"} configurato${tavoli.length === 1 ? "" : "i"}.`}
-          </p>
+          <p className="text-xs text-muted-foreground">{tavoli.length}</p>
         </div>
         <Button
           type="button"
@@ -96,7 +95,7 @@ export function TavoliSection({
           onClick={() => setShowForm((s) => !s)}
         >
           <Plus className="mr-1.5 size-3.5" />
-          Aggiungi tavolo
+          {tForm("addTable")}
         </Button>
       </div>
 
@@ -105,10 +104,10 @@ export function TavoliSection({
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/40 text-left text-xs uppercase tracking-wider text-muted-foreground">
-                <th className="px-4 py-2 font-medium">Numero</th>
-                <th className="px-4 py-2 font-medium">Posti</th>
-                <th className="px-4 py-2 font-medium">Posizione</th>
-                <th className="px-4 py-2 font-medium">Attivo</th>
+                <th className="px-4 py-2 font-medium">{tForm("tableNumber")}</th>
+                <th className="px-4 py-2 font-medium">{tForm("tableSeats")}</th>
+                <th className="px-4 py-2 font-medium">{tForm("location")}</th>
+                <th className="px-4 py-2 font-medium">{tForm("active")}</th>
                 <th className="px-4 py-2"></th>
               </tr>
             </thead>
@@ -126,7 +125,7 @@ export function TavoliSection({
                           : "text-muted-foreground"
                       }
                     >
-                      {t.attivo ? "Sì" : "No"}
+                      {t.attivo ? tForm("active") : tForm("inactive")}
                     </span>
                   </td>
                   <td className="px-4 py-2 text-right">
@@ -159,8 +158,8 @@ export function TavoliSection({
         >
           <div className="grid gap-3 sm:grid-cols-4">
             <div className="space-y-1.5">
-              <Label>Numero</Label>
-              <Input placeholder="T1" {...register("numero")} />
+              <Label>{tForm("tableNumber")}</Label>
+              <Input {...register("numero")} />
               {errors.numero && (
                 <p className="text-xs text-destructive">
                   {errors.numero.message}
@@ -168,7 +167,7 @@ export function TavoliSection({
               )}
             </div>
             <div className="space-y-1.5">
-              <Label>Posti</Label>
+              <Label>{tForm("tableSeats")}</Label>
               <Input type="number" min={1} {...register("posti")} />
               {errors.posti && (
                 <p className="text-xs text-destructive">
@@ -177,15 +176,12 @@ export function TavoliSection({
               )}
             </div>
             <div className="space-y-1.5 sm:col-span-2">
-              <Label>Posizione (opzionale)</Label>
-              <Input
-                placeholder="Interno / Esterno / Terrazza"
-                {...register("posizione")}
-              />
+              <Label>{tForm("location")}</Label>
+              <Input {...register("posizione")} />
             </div>
             <label className="flex items-center gap-2 sm:col-span-4">
               <input type="checkbox" defaultChecked {...register("attivo")} />
-              <span className="text-sm">Tavolo attivo</span>
+              <span className="text-sm">{tForm("active")}</span>
             </label>
           </div>
           <div className="flex justify-end gap-2">
@@ -195,7 +191,7 @@ export function TavoliSection({
               size="sm"
               onClick={() => setShowForm(false)}
             >
-              Annulla
+              {tForm("cancel")}
             </Button>
             <Button
               type="submit"
@@ -206,7 +202,7 @@ export function TavoliSection({
               {isSubmitting && (
                 <Loader2 className="mr-1.5 size-3.5 animate-spin" />
               )}
-              Aggiungi
+              {tForm("create")}
             </Button>
           </div>
         </form>

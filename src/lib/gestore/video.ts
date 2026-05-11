@@ -169,7 +169,7 @@ export async function moveLezione(
     .order("ordine", { ascending: true });
   const items = (list ?? []) as { id: string; ordine: number }[];
   const idx = items.findIndex((l) => l.id === lezioneId);
-  if (idx === -1) return { error: "Lezione non trovata" };
+  if (idx === -1) return { error: (await tErrors())("lessonNotFound") };
 
   const swapIdx = direction === "up" ? idx - 1 : idx + 1;
   if (swapIdx < 0 || swapIdx >= items.length) return {}; // no-op

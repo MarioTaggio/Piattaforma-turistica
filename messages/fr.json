@@ -166,7 +166,10 @@
     "loginRequired": "Connectez-vous pour continuer",
     "genericError": "Une erreur s'est produite, réessayez",
     "networkError": "Erreur réseau, vérifiez votre connexion",
-    "notFound": "Introuvable"
+    "notFound": "Introuvable",
+    "noRecipients": "Aucun destinataire",
+    "emailSent": "Email envoyé",
+    "confirmSendEmail": "Envoyer l'email ?"
   },
   "emails": {
     "newBookingSubject": "Nouvelle réservation",
@@ -345,7 +348,20 @@
     "saving": "Enregistrement…",
     "creating": "Création…",
     "saved": "Enregistré",
-    "created": "Créé"
+    "created": "Créé",
+    "subject": "Objet",
+    "subjectPlaceholder": "Ex. Mise à jour de l'horaire",
+    "message": "Message",
+    "messagePlaceholder": "Écrivez le message à envoyer…",
+    "sendEmail": "Envoyer l'email",
+    "recipients": "Destinataires",
+    "addRoom": "Ajouter une chambre",
+    "addTable": "Ajouter une table",
+    "trackingCode": "Code de suivi",
+    "trackingUrl": "URL de suivi",
+    "quantity": "Quantité",
+    "active": "Actif",
+    "inactive": "Inactif"
   },
   "validation": {
     "required": "Champ obligatoire",
@@ -382,7 +398,28 @@
     "courseUnavailable": "Cours indisponible",
     "paymentFailed": "Paiement échoué",
     "stripeError": "Erreur Stripe",
-    "genericServerError": "Erreur serveur, réessayez plus tard"
+    "genericServerError": "Erreur serveur, réessayez plus tard",
+    "lessonNotFound": "Leçon introuvable",
+    "trackingCodeRequired": "Saisissez le code de suivi",
+    "invalidQuantity": "Quantité invalide (min 1)",
+    "invalidGuestCount": "Nombre d'invités invalide",
+    "tableNotFound": "Table introuvable",
+    "tableNotInRestaurant": "La table n'appartient pas à ce restaurant",
+    "selectTable": "Sélectionnez une table",
+    "customerNameTooShort": "Nom du client trop court",
+    "incompleteTicketData": "Données du billet incomplètes",
+    "ticketNotFound": "Billet introuvable",
+    "ticketNotInEvent": "Le billet n'appartient pas à cet événement",
+    "ticketAlreadyUsed": "Billet déjà utilisé",
+    "subjectTooShort": "Objet trop court",
+    "messageTooShort": "Message trop court",
+    "eventNotFound": "Événement introuvable",
+    "noRecipients": "Aucun destinataire",
+    "checkoutBeforeCheckin": "Le départ doit être après l'arrivée",
+    "roomNotInStructure": "La chambre n'appartient pas à cet hébergement",
+    "invalidParticipants": "Nombre de participants invalide",
+    "attractionNotFound": "Attraction introuvable",
+    "contentNotFound": "Contenu introuvable"
   },
   "prenotazioniGestore": {
     "title": "Réservations",

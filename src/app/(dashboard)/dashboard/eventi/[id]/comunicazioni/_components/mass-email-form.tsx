@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,8 @@ type Props = {
 };
 
 export function MassEmailForm({ eventoId, destinatari }: Props) {
+  const tForm = useTranslations("form");
+  const tMessages = useTranslations("messages");
   const [subject, setSubject] = useState("");
   const [messaggio, setMessaggio] = useState("");
   const [pending, startTransition] = useTransition();
@@ -22,15 +25,10 @@ export function MassEmailForm({ eventoId, destinatari }: Props) {
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (destinatari === 0) {
-      toast.error("Nessun partecipante a cui inviare");
+      toast.error(tMessages("noRecipients"));
       return;
     }
-    if (
-      !confirm(
-        `Inviare questa email a ${destinatari} partecipant${destinatari === 1 ? "e" : "i"}?`,
-      )
-    )
-      return;
+    if (!confirm(tMessages("confirmSendEmail"))) return;
     startTransition(async () => {
       const r = await sendEmailToEventoPartecipanti(eventoId, {
         subject,
@@ -40,7 +38,7 @@ export function MassEmailForm({ eventoId, destinatari }: Props) {
         toast.error(r.error);
         return;
       }
-      toast.success(`Email inviata a ${r.sent} destinatari`);
+      toast.success(tMessages("emailSent"));
       setSubject("");
       setMessaggio("");
     });
@@ -49,34 +47,32 @@ export function MassEmailForm({ eventoId, destinatari }: Props) {
   return (
     <form onSubmit={onSubmit} className="space-y-4" noValidate>
       <div className="space-y-1.5">
-        <Label>Oggetto</Label>
+        <Label>{tForm("subject")}</Label>
         <Input
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
-          placeholder="Es. Aggiornamento orario evento"
+          placeholder={tForm("subjectPlaceholder")}
           maxLength={120}
         />
       </div>
       <div className="space-y-1.5">
-        <Label>Messaggio</Label>
+        <Label>{tForm("message")}</Label>
         <textarea
           value={messaggio}
           onChange={(e) => setMessaggio(e.target.value)}
           rows={8}
           maxLength={2000}
-          placeholder="Scrivi il messaggio da inviare ai partecipanti…"
+          placeholder={tForm("messagePlaceholder")}
           className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
         <p className="text-[11px] text-muted-foreground">
-          {messaggio.length}/2000 caratteri. Verrà inserito anche un link
-          alla pagina &laquo;I miei biglietti&raquo;.
+          {messaggio.length}/2000
         </p>
       </div>
       <div className="flex items-center justify-between gap-3 border-t border-border pt-4">
         <p className="text-xs text-muted-foreground">
-          Destinatari:{" "}
-          <strong className="text-foreground">{destinatari}</strong>{" "}
-          partecipant{destinatari === 1 ? "e" : "i"} con biglietto valido
+          {tForm("recipients")}:{" "}
+          <strong className="text-foreground">{destinatari}</strong>
         </p>
         <Button
           type="submit"
@@ -88,7 +84,7 @@ export function MassEmailForm({ eventoId, destinatari }: Props) {
           ) : (
             <Send className="mr-1.5 size-4" />
           )}
-          Invia email
+          {tForm("sendEmail")}
         </Button>
       </div>
     </form>

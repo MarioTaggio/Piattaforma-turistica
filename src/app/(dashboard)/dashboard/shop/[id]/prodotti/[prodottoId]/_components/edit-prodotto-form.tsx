@@ -6,6 +6,7 @@ import { Loader2, Trash2 } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,8 @@ type Props = {
 
 export function EditProdottoForm({ shopId, prodottoId, defaultValues }: Props) {
   const router = useRouter();
+  const tForm = useTranslations("form");
+  const tMessages = useTranslations("messages");
   const [deleting, startDelete] = useTransition();
 
   const {
@@ -59,24 +62,19 @@ export function EditProdottoForm({ shopId, prodottoId, defaultValues }: Props) {
       toast.error(r.error);
       return;
     }
-    toast.success("Modifiche salvate");
+    toast.success(tMessages("saveSuccess"));
     router.refresh();
   }
 
   function onDelete() {
-    if (
-      !confirm(
-        "Eliminare definitivamente questo prodotto? L'azione non è reversibile.",
-      )
-    )
-      return;
+    if (!confirm(tForm("confirmDelete"))) return;
     startDelete(async () => {
       const r = await deleteShopProdotto(prodottoId, shopId);
       if (r.error) {
         toast.error(r.error);
         return;
       }
-      toast.success("Prodotto eliminato");
+      toast.success(tMessages("deleteSuccess"));
       router.push(`/dashboard/shop/${shopId}`);
     });
   }
@@ -89,21 +87,18 @@ export function EditProdottoForm({ shopId, prodottoId, defaultValues }: Props) {
     >
       <div className="grid gap-3 sm:grid-cols-3">
         <div className="space-y-1.5 sm:col-span-2">
-          <Label>Nome</Label>
-          <Input placeholder="Es. Olio EVO 0,5L" {...register("nome")} />
+          <Label>{tForm("name")}</Label>
+          <Input {...register("nome")} />
           {errors.nome && (
             <p className="text-xs text-destructive">{errors.nome.message}</p>
           )}
         </div>
         <div className="space-y-1.5">
-          <Label>Categoria</Label>
-          <Input
-            placeholder="Olio, Vino, Pasta…"
-            {...register("categoria")}
-          />
+          <Label>{tForm("category")}</Label>
+          <Input {...register("categoria")} />
         </div>
         <div className="space-y-1.5">
-          <Label>Prezzo</Label>
+          <Label>{tForm("price")}</Label>
           <Controller
             control={control}
             name="prezzo_cents"
@@ -125,27 +120,26 @@ export function EditProdottoForm({ shopId, prodottoId, defaultValues }: Props) {
           )}
         </div>
         <div className="space-y-1.5 sm:col-span-3">
-          <Label>Descrizione</Label>
+          <Label>{tForm("description")}</Label>
           <textarea
             rows={4}
-            placeholder="Descrizione, ingredienti, note…"
             className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             {...register("descrizione")}
           />
         </div>
         <div className="space-y-1.5 sm:col-span-3">
-          <Label>Immagine prodotto</Label>
+          <Label>{tForm("image")}</Label>
           <ImageUploader
             value={immagineUrl}
             onChange={(url) =>
               setValue("immagine_url", url, { shouldDirty: true })
             }
-            label="Carica una foto del prodotto"
+            label={tForm("imageHint")}
           />
         </div>
         <label className="flex items-center gap-2 sm:col-span-3">
           <input type="checkbox" {...register("disponibile")} />
-          <span className="text-sm">Disponibile in vendita</span>
+          <span className="text-sm">{tForm("available")}</span>
         </label>
       </div>
 
@@ -163,7 +157,7 @@ export function EditProdottoForm({ shopId, prodottoId, defaultValues }: Props) {
           ) : (
             <Trash2 className="mr-1.5 size-3.5" />
           )}
-          Elimina prodotto
+          {tForm("delete")}
         </Button>
         <Button
           type="submit"
@@ -174,7 +168,7 @@ export function EditProdottoForm({ shopId, prodottoId, defaultValues }: Props) {
           {isSubmitting && (
             <Loader2 className="mr-1.5 size-3.5 animate-spin" />
           )}
-          Salva modifiche
+          {tForm("saveChanges")}
         </Button>
       </div>
     </form>

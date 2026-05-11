@@ -1,9 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 
 import { requireUser } from "@/lib/auth/dal";
 import { createAdminClient } from "@/lib/supabase/admin";
+
+async function tErrors() {
+  return getTranslations("errors");
+}
 
 type Tabella = "eventi" | "strutture" | "ristoranti";
 
@@ -36,11 +41,11 @@ export async function setPrenotazioneAttiva(input: {
     .maybeSingle();
 
   if (fetchErr) return { error: fetchErr.message };
-  if (!row) return { error: "Contenuto non trovato" };
+  if (!row) return { error: (await tErrors())("contentNotFound") };
 
   const ownerId = (row as { gestore_id: string }).gestore_id;
   const isAdmin = user.roles.includes("admin");
-  if (ownerId !== user.id && !isAdmin) return { error: "Non autorizzato" };
+  if (ownerId !== user.id && !isAdmin) return { error: (await tErrors())("notAuthorized") };
 
   const { error } = await admin
     .from(tabella)
