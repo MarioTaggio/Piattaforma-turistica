@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Download, Ticket, Users, Wallet } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { requireRole } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
@@ -40,6 +41,8 @@ export default async function EventoPrenotazioniPage({
   const user = await requireRole("gestore_eventi");
   const { id } = await params;
   const supabase = await createClient();
+  const tPg = await getTranslations("prenotazioniGestore");
+  const tTicket = await getTranslations("ticket");
 
   const { data: evento } = await supabase
     .from("eventi")
@@ -75,7 +78,7 @@ export default async function EventoPrenotazioniPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">
-          Tutti i biglietti emessi per questo evento.
+          {tPg("subtitle")}
         </p>
         <Button
           variant="outline"
@@ -90,24 +93,24 @@ export default async function EventoPrenotazioniPage({
           }
         >
           <Download className="mr-1.5 size-3.5" />
-          Esporta CSV
+          {tPg("exportCsv")}
         </Button>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
         <StatCard
           variant="primary"
-          label="Venduti"
+          label={tPg("columnAmount")}
           value={`${formatNumber(venduti)}/${formatNumber(e.posti_totali)}`}
           icon={Ticket}
         />
         <StatCard
-          label="Partecipanti"
+          label={tPg("columnGuests")}
           value={formatNumber(biglietti.length)}
           icon={Users}
         />
         <StatCard
-          label="Incasso"
+          label={tPg("columnAmount")}
           value={formatEurFromCents(revenue)}
           icon={Wallet}
         />
@@ -116,8 +119,8 @@ export default async function EventoPrenotazioniPage({
       {biglietti.length === 0 ? (
         <EmptyState
           icon={Ticket}
-          title="Nessun biglietto venduto"
-          description="Quando qualcuno acquisterà un biglietto lo vedrai qui."
+          title={tPg("noBookings")}
+          description={tPg("subtitle")}
         />
       ) : (
         <div className="overflow-hidden rounded-2xl border border-border bg-card">
@@ -125,12 +128,12 @@ export default async function EventoPrenotazioniPage({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-muted/40 text-left text-xs uppercase tracking-wider text-muted-foreground">
-                  <th className="px-5 py-3 font-medium">Acquirente</th>
-                  <th className="px-5 py-3 font-medium">Codice</th>
-                  <th className="px-5 py-3 font-medium">Stato</th>
-                  <th className="px-5 py-3 font-medium">Acquistato il</th>
-                  <th className="px-5 py-3 text-right font-medium">Prezzo</th>
-                  <th className="px-5 py-3 text-right font-medium">Azioni</th>
+                  <th className="px-5 py-3 font-medium">{tPg("columnCustomer")}</th>
+                  <th className="px-5 py-3 font-medium">{tTicket("code")}</th>
+                  <th className="px-5 py-3 font-medium">{tPg("columnStatus")}</th>
+                  <th className="px-5 py-3 font-medium">{tPg("columnDate")}</th>
+                  <th className="px-5 py-3 text-right font-medium">{tPg("columnAmount")}</th>
+                  <th className="px-5 py-3 text-right font-medium">{tPg("columnActions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">

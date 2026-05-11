@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 import { requireRole } from "@/lib/auth/dal";
 import { PageHeader } from "@/components/dashboard/page-header";
@@ -13,12 +14,13 @@ export const metadata: Metadata = {
 export default async function AdminImpostazioniPage() {
   await requireRole("admin");
   const settings = await getPlatformSettings();
+  const tAdmin = await getTranslations("admin");
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Impostazioni piattaforma"
-        subtitle="Configura branding, moduli attivi, commissioni, email e manutenzione."
+        title={tAdmin("settingsTitle")}
+        subtitle={tAdmin("settingsSubtitle")}
       />
       <SettingsForm initial={settings} />
     </div>

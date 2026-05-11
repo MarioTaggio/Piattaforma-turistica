@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -13,6 +14,13 @@ const eurFmt = (cents: number) =>
   );
 
 type Result = { error?: string; success?: true; redirectTo?: string };
+
+// Carica le traduzioni del namespace "errors" usando il cookie locale
+// corrente (gestito da i18n/request.ts). Una sola istanza per chiamata
+// di action: chi serve errori multipli può inoltrarla.
+async function tErrors() {
+  return getTranslations("errors");
+}
 
 async function currentUserId(): Promise<string | null> {
   const supabase = await createClient();
@@ -36,10 +44,11 @@ export async function acquistaBiglietto(eventoId: string): Promise<Result> {
     .select("id, prezzo_cents, posti_disponibili, stato")
     .eq("id", eventoId)
     .single();
-  if (eErr || !evento) return { error: "Evento non disponibile" };
+  const t = await tErrors();
+  if (eErr || !evento) return { error: t("eventUnavailable") };
   const ev = evento as { prezzo_cents: number; posti_disponibili: number; stato: string };
-  if (ev.stato !== "pubblicato") return { error: "Evento non disponibile" };
-  if (ev.posti_disponibili < 1) return { error: "Evento esaurito" };
+  if (ev.stato !== "pubblicato") return { error: t("eventUnavailable") };
+  if (ev.posti_disponibili < 1) return { error: t("eventSoldOut") };
 
   // Optimistic posti decrement guarded by current value to prevent oversell.
   const { error: updErr } = await admin
@@ -47,7 +56,7 @@ export async function acquistaBiglietto(eventoId: string): Promise<Result> {
     .update({ posti_disponibili: ev.posti_disponibili - 1 })
     .eq("id", eventoId)
     .eq("posti_disponibili", ev.posti_disponibili);
-  if (updErr) return { error: "Posto non più disponibile, riprova." };
+  if (updErr) return { error: t("seatNoLongerAvailable") };
 
   const { error: insErr } = await admin.from("biglietti").insert({
     evento_id: eventoId,
@@ -139,11 +148,12 @@ export async function prenotaCamera(input: {
   if (!userId)
     return { redirectTo: `/login?next=/bnb/${input.strutturaId}` };
 
-  if (!input.checkIn || !input.checkOut) return { error: "Date richieste" };
+  const t = await tErrors();
+  if (!input.checkIn || !input.checkOut) return { error: t("datesRequired") };
   const ci = new Date(input.checkIn);
   const co = new Date(input.checkOut);
-  if (!(co.getTime() > ci.getTime())) return { error: "Date non valide" };
-  if (input.ospiti < 1) return { error: "Almeno 1 ospite" };
+  if (!(co.getTime() > ci.getTime())) return { error: t("invalidDates") };
+  if (input.ospiti < 1) return { error: t("atLeastOneGuest") };
 
   const admin = createAdminClient();
   const { data: camera } = await admin
@@ -151,16 +161,16 @@ export async function prenotaCamera(input: {
     .select("id, prezzo_notte_cents, capacita, disponibile, struttura_id")
     .eq("id", input.cameraId)
     .single();
-  if (!camera) return { error: "Camera non trovata" };
+  if (!camera) return { error: t("roomNotFound") };
   const c = camera as {
     prezzo_notte_cents: number;
     capacita: number;
     disponibile: boolean;
     struttura_id: string;
   };
-  if (!c.disponibile) return { error: "Camera non disponibile" };
+  if (!c.disponibile) return { error: t("roomUnavailable") };
   if (input.ospiti > c.capacita)
-    return { error: `Capacità massima ${c.capacita} ospiti` };
+    return { error: `${t("maxCapacity")} (${c.capacita})` };
 
   const nights = Math.max(
     1,
@@ -248,8 +258,9 @@ export async function prenotaTavolo(input: {
   if (!userId)
     return { redirectTo: `/login?next=/ristoranti/${input.ristoranteId}` };
 
-  if (!input.dataOra) return { error: "Data e ora richieste" };
-  if (input.ospiti < 1) return { error: "Almeno 1 ospite" };
+  const t = await tErrors();
+  if (!input.dataOra) return { error: t("dateTimeRequired") };
+  if (input.ospiti < 1) return { error: t("atLeastOneGuest") };
 
   const admin = createAdminClient();
   const { error: insErr } = await admin.from("prenotazioni_tavolo").insert({
@@ -335,10 +346,11 @@ export async function prenotaVisita(input: {
     .select("id, prezzo_cents, posti_disponibili")
     .eq("id", input.visitaId)
     .single();
-  if (!visita) return { error: "Visita non trovata" };
+  const t = await tErrors();
+  if (!visita) return { error: t("visitNotFound") };
   const v = visita as { prezzo_cents: number; posti_disponibili: number };
   if (v.posti_disponibili < input.partecipanti)
-    return { error: "Posti insufficienti" };
+    return { error: t("notEnoughSeats") };
 
   const total = v.prezzo_cents * input.partecipanti;
   const { error: updErr } = await admin
@@ -346,7 +358,7 @@ export async function prenotaVisita(input: {
     .update({ posti_disponibili: v.posti_disponibili - input.partecipanti })
     .eq("id", input.visitaId)
     .eq("posti_disponibili", v.posti_disponibili);
-  if (updErr) return { error: "Posti non più disponibili" };
+  if (updErr) return { error: t("seatsNoLongerAvailable") };
 
   const { error: insErr } = await admin.from("prenotazioni_visita").insert({
     visita_id: input.visitaId,
@@ -431,9 +443,10 @@ export async function acquistaCorso(corsoId: string): Promise<Result> {
     .select("id, prezzo_cents, stato")
     .eq("id", corsoId)
     .single();
-  if (!corso) return { error: "Corso non trovato" };
+  const t = await tErrors();
+  if (!corso) return { error: t("courseNotFound") };
   const c = corso as { prezzo_cents: number; stato: string };
-  if (c.stato !== "pubblicato") return { error: "Corso non disponibile" };
+  if (c.stato !== "pubblicato") return { error: t("courseUnavailable") };
 
   const { error } = await admin.from("acquisti_video").insert({
     corso_id: corsoId,

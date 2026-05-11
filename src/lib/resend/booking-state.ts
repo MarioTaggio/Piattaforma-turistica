@@ -1,5 +1,9 @@
 import "server-only";
 
+import { getTranslations } from "next-intl/server";
+
+import { DEFAULT_LOCALE, type Locale } from "@/i18n/config";
+
 import { FROM_EMAIL, resend } from "./client";
 
 type BookingStateEmail = {
@@ -18,6 +22,9 @@ type BookingStateEmail = {
   cta?: { label: string; url: string };
   // Nota libera (es. motivazione del rifiuto).
   note?: string;
+  // Locale del destinatario. Usato solo per il footer e label nota:
+  // i contenuti (subject/intro/stato) sono già preparati dal chiamante.
+  locale?: Locale;
 };
 
 const COLOR: Record<NonNullable<BookingStateEmail["variante"]>, string> = {
@@ -38,6 +45,21 @@ export async function sendBookingStateEmail(
 
   const accent = COLOR[data.variante ?? "info"];
 
+  // Carica una piccola slice di traduzioni per i label fissi del template
+  // (footer e prefisso nota). Il resto del contenuto è già localizzato dal
+  // chiamante (subject/intro/stato/labels della tabella).
+  const tEmails = await getTranslations({
+    locale: data.locale ?? DEFAULT_LOCALE,
+    namespace: "emails",
+  });
+  const tCommon = await getTranslations({
+    locale: data.locale ?? DEFAULT_LOCALE,
+    namespace: "booking",
+  });
+  // "Nota" come label: riusiamo booking.notes per coerenza
+  const noteLabel = tCommon("notes");
+  const footerText = tEmails("footer");
+
   const detailsHtml = (data.dettagli ?? [])
     .map(
       (d) =>
@@ -50,7 +72,7 @@ export async function sendBookingStateEmail(
     : "";
 
   const noteHtml = data.note
-    ? `<div style="padding:14px 28px 0;color:#374151;font-size:14px"><strong>Nota:</strong> ${escapeHtml(data.note)}</div>`
+    ? `<div style="padding:14px 28px 0;color:#374151;font-size:14px"><strong>${escapeHtml(noteLabel)}:</strong> ${escapeHtml(data.note)}</div>`
     : "";
 
   const html = `
@@ -72,7 +94,7 @@ export async function sendBookingStateEmail(
     ${noteHtml}
     ${ctaHtml}
     <div style="padding:14px 28px;background:#f9fafb;color:#6b7280;font-size:12px">
-      Hai ricevuto questa email perché sei iscritto alla nostra piattaforma turistica.
+      ${escapeHtml(footerText)}
     </div>
   </div>
 </body></html>`;

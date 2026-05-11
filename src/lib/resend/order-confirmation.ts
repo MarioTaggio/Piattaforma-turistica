@@ -1,5 +1,9 @@
 import "server-only";
 
+import { getTranslations } from "next-intl/server";
+
+import { DEFAULT_LOCALE, type Locale } from "@/i18n/config";
+
 import { FROM_EMAIL, resend } from "./client";
 
 type OrderEmail = {
@@ -17,12 +21,8 @@ type OrderEmail = {
   };
   items: Array<{ nome: string; quantita: number; prezzo_cents: number }>;
   shopName: string;
-};
-
-const SHIPPING_LABEL: Record<OrderEmail["shippingMethod"], string> = {
-  standard: "Spedizione standard (3-5 gg)",
-  express: "Spedizione express (1-2 gg)",
-  ritiro: "Ritiro in punto vendita",
+  // Locale del destinatario. Default IT.
+  locale?: Locale;
 };
 
 function eur(cents: number): string {
@@ -40,6 +40,12 @@ export async function sendOrderConfirmation(
     return { ok: false, error: "Resend non configurato" };
   }
 
+  const t = await getTranslations({
+    locale: data.locale ?? DEFAULT_LOCALE,
+    namespace: "emails",
+  });
+  const shippingLabel = t(`shipping_${data.shippingMethod}`);
+
   const itemsHtml = data.items
     .map(
       (i) =>
@@ -52,22 +58,22 @@ export async function sendOrderConfirmation(
 <html><body style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#f6f7f9;margin:0;padding:24px">
   <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb">
     <div style="padding:24px 28px;border-bottom:1px solid #e5e7eb">
-      <p style="margin:0;font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.06em">Ordine confermato</p>
-      <h1 style="margin:6px 0 0;font-size:22px">Grazie per il tuo ordine!</h1>
-      <p style="margin:8px 0 0;color:#374151">Numero ordine: <strong>${escapeHtml(data.orderNumber)}</strong></p>
+      <p style="margin:0;font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:0.06em">${escapeHtml(t("orderConfirmed"))}</p>
+      <h1 style="margin:6px 0 0;font-size:22px">${escapeHtml(t("thankYou"))}</h1>
+      <p style="margin:8px 0 0;color:#374151">${escapeHtml(t("orderNumber"))}: <strong>${escapeHtml(data.orderNumber)}</strong></p>
     </div>
     <div style="padding:20px 28px">
-      <h2 style="margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:0.06em;color:#6b7280">Riepilogo</h2>
-      <p style="margin:0 0 6px;color:#374151">Venduto da <strong>${escapeHtml(data.shopName)}</strong></p>
+      <h2 style="margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:0.06em;color:#6b7280">${escapeHtml(t("summary"))}</h2>
+      <p style="margin:0 0 6px;color:#374151">${escapeHtml(t("soldBy"))} <strong>${escapeHtml(data.shopName)}</strong></p>
       <table style="width:100%;border-collapse:collapse;font-size:14px;margin-top:8px">
         ${itemsHtml}
         <tr><td colspan="2" style="border-top:1px solid #e5e7eb;padding-top:12px"></td></tr>
-        <tr><td style="padding:4px 0;color:#6b7280">Spedizione</td><td style="padding:4px 0;text-align:right">${escapeHtml(SHIPPING_LABEL[data.shippingMethod])}</td></tr>
-        <tr><td style="padding:4px 0;font-weight:600">Totale pagato</td><td style="padding:4px 0;text-align:right;font-weight:600">${eur(data.totalCents)}</td></tr>
+        <tr><td style="padding:4px 0;color:#6b7280">${escapeHtml(t("shipping"))}</td><td style="padding:4px 0;text-align:right">${escapeHtml(shippingLabel)}</td></tr>
+        <tr><td style="padding:4px 0;font-weight:600">${escapeHtml(t("totalPaid"))}</td><td style="padding:4px 0;text-align:right;font-weight:600">${eur(data.totalCents)}</td></tr>
       </table>
     </div>
     <div style="padding:20px 28px;border-top:1px solid #e5e7eb">
-      <h2 style="margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:0.06em;color:#6b7280">Indirizzo di consegna</h2>
+      <h2 style="margin:0 0 8px;font-size:14px;text-transform:uppercase;letter-spacing:0.06em;color:#6b7280">${escapeHtml(t("deliveryAddress"))}</h2>
       <p style="margin:0;color:#111827;line-height:1.5">
         ${escapeHtml(data.shippingAddress.nome)} ${escapeHtml(data.shippingAddress.cognome)}<br>
         ${escapeHtml(data.shippingAddress.indirizzo)}<br>
@@ -75,7 +81,7 @@ export async function sendOrderConfirmation(
       </p>
     </div>
     <div style="padding:18px 28px;background:#f9fafb;color:#6b7280;font-size:12px">
-      Riceverai un altro avviso quando il tuo ordine sarà spedito.
+      ${escapeHtml(t("shipNotification"))}
     </div>
   </div>
 </body></html>`;
@@ -84,7 +90,7 @@ export async function sendOrderConfirmation(
     const { error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: [data.to],
-      subject: `Conferma ordine #${data.orderNumber}`,
+      subject: `${t("orderConfirmationSubject")} #${data.orderNumber}`,
       html,
     });
     if (error) return { ok: false, error: error.message };

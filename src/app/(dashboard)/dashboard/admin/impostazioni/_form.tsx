@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,6 +38,8 @@ const MODULI_COMMISSIONI: { key: keyof Commissioni; label: string }[] = [
 
 export function SettingsForm({ initial }: { initial: PlatformSettings }) {
   const router = useRouter();
+  const tAdmin = useTranslations("admin");
+  const tMessages = useTranslations("messages");
   const [pending, startTransition] = useTransition();
   const [s, setS] = useState<PlatformSettings>(initial);
 
@@ -68,7 +71,7 @@ export function SettingsForm({ initial }: { initial: PlatformSettings }) {
         toast.error(r.error);
         return;
       }
-      toast.success("Impostazioni salvate");
+      toast.success(tMessages("saveSuccess"));
       router.refresh();
     });
   }
@@ -76,15 +79,15 @@ export function SettingsForm({ initial }: { initial: PlatformSettings }) {
   return (
     <div className="space-y-6">
       {/* Piattaforma */}
-      <Section title="Piattaforma" subtitle="Branding e identità del sito.">
+      <Section title={tAdmin("sectionPlatform")} subtitle={tAdmin("sectionPlatformDescription")}>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Nome sito">
+          <Field label={tAdmin("siteName")}>
             <Input
               value={s.site_nome}
               onChange={(e) => setField("site_nome", e.target.value)}
             />
           </Field>
-          <Field label="Colore primario (hex)">
+          <Field label={tAdmin("primaryColor")}>
             <div className="flex items-center gap-2">
               <Input
                 value={s.site_color_primario}
@@ -100,7 +103,7 @@ export function SettingsForm({ initial }: { initial: PlatformSettings }) {
               />
             </div>
           </Field>
-          <Field label="Descrizione" className="sm:col-span-2">
+          <Field label={tAdmin("siteDescription")} className="sm:col-span-2">
             <textarea
               rows={2}
               value={s.site_descrizione ?? ""}
@@ -108,14 +111,14 @@ export function SettingsForm({ initial }: { initial: PlatformSettings }) {
               className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             />
           </Field>
-          <Field label="Logo" className="sm:col-span-2">
+          <Field label={tAdmin("logo")} className="sm:col-span-2">
             <ImageUploader
               value={s.site_logo_url ?? ""}
               onChange={(url) => setField("site_logo_url", url || null)}
               bucket="platform-assets"
               folder="logo"
               accept="image/png,image/jpeg,image/svg+xml,image/webp"
-              label="Carica logo"
+              label={tAdmin("logoCta")}
             />
           </Field>
         </div>
@@ -123,8 +126,8 @@ export function SettingsForm({ initial }: { initial: PlatformSettings }) {
 
       {/* Moduli */}
       <Section
-        title="Moduli attivi"
-        subtitle="Disattiva moduli per nasconderli nella piattaforma."
+        title={tAdmin("sectionModules")}
+        subtitle={tAdmin("sectionModulesDescription")}
       >
         <ul className="grid gap-2 sm:grid-cols-2">
           {MODULI.map((m) => (
@@ -145,8 +148,8 @@ export function SettingsForm({ initial }: { initial: PlatformSettings }) {
 
       {/* Commissioni */}
       <Section
-        title="Commissioni"
-        subtitle="Percentuale trattenuta dalla piattaforma per ciascun modulo."
+        title={tAdmin("sectionCommissions")}
+        subtitle={tAdmin("sectionCommissionsDescription")}
       >
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {MODULI_COMMISSIONI.map((m) => (
@@ -168,11 +171,11 @@ export function SettingsForm({ initial }: { initial: PlatformSettings }) {
 
       {/* Email */}
       <Section
-        title="Email"
-        subtitle="Mittente delle email transazionali e notifiche."
+        title={tAdmin("sectionEmail")}
+        subtitle={tAdmin("sectionEmailDescription")}
       >
         <div className="grid gap-3 sm:grid-cols-2">
-          <Field label="Nome mittente">
+          <Field label={tAdmin("senderName")}>
             <Input
               value={s.email_mittente_nome ?? ""}
               onChange={(e) =>
@@ -180,7 +183,7 @@ export function SettingsForm({ initial }: { initial: PlatformSettings }) {
               }
             />
           </Field>
-          <Field label="Email mittente">
+          <Field label={tAdmin("senderEmail")}>
             <Input
               type="email"
               value={s.email_mittente_email ?? ""}
@@ -190,7 +193,7 @@ export function SettingsForm({ initial }: { initial: PlatformSettings }) {
               placeholder="noreply@dominio.it"
             />
           </Field>
-          <Field label="Oggetto default" className="sm:col-span-2">
+          <Field label={tAdmin("defaultSubject")} className="sm:col-span-2">
             <Input
               value={s.email_oggetto_default ?? ""}
               onChange={(e) =>
@@ -203,21 +206,21 @@ export function SettingsForm({ initial }: { initial: PlatformSettings }) {
 
       {/* Manutenzione */}
       <Section
-        title="Manutenzione"
-        subtitle="Modalità manutenzione: blocca l'accesso pubblico mostrando un messaggio."
+        title={tAdmin("sectionMaintenance")}
+        subtitle={tAdmin("sectionMaintenanceDescription")}
       >
         <div className="space-y-3">
           <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2">
             <span className="text-sm font-medium">
-              Modalità manutenzione attiva
+              {tAdmin("maintenanceActive")}
             </span>
             <Toggle
               checked={s.manutenzione_attiva}
               onChange={(v) => setField("manutenzione_attiva", v)}
-              ariaLabel="Attiva manutenzione"
+              ariaLabel={tAdmin("maintenanceActive")}
             />
           </div>
-          <Field label="Messaggio mostrato ai visitatori">
+          <Field label={tAdmin("maintenanceMessage")}>
             <textarea
               rows={3}
               value={s.manutenzione_messaggio ?? ""}
@@ -245,7 +248,7 @@ export function SettingsForm({ initial }: { initial: PlatformSettings }) {
           ) : (
             <Save className="mr-1.5 size-4" />
           )}
-          Salva impostazioni
+          {tAdmin("saveSettings")}
         </Button>
       </div>
     </div>
