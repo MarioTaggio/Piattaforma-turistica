@@ -88,10 +88,10 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* HERO */}
-      <section className="relative overflow-hidden bg-brand-700 text-white">
+      {/* HERO con barra di ricerca integrata */}
+      <section className="relative min-h-[640px] overflow-hidden bg-brand-700 text-white">
         <div className="absolute inset-0 -z-0 opacity-25 [background-image:radial-gradient(circle_at_top_right,rgba(255,255,255,0.3),transparent_45%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.18),transparent_55%)]" />
-        <div className="relative mx-auto flex max-w-7xl flex-col gap-8 px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
+        <div className="relative mx-auto flex max-w-7xl flex-col gap-8 px-4 pb-24 pt-20 sm:px-6 sm:pb-28 sm:pt-24 lg:px-8">
           <span className="inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white/90 ring-1 ring-white/20">
             <Sparkles className="size-3.5" />
             {tHero("badge")}
@@ -121,31 +121,10 @@ export default async function HomePage() {
             </Button>
           </div>
 
-          <dl className="mt-6 grid w-full max-w-3xl grid-cols-2 gap-4 text-sm sm:grid-cols-4">
-            {[
-              { label: tNav("eventi"), icon: CalendarDays },
-              { label: tNav("bnb"), icon: Hotel },
-              { label: tNav("ristoranti"), icon: UtensilsCrossed },
-              { label: tNav("virtualTour"), icon: Landmark },
-            ].map(({ label, icon: Icon }) => (
-              <div
-                key={label}
-                className="flex items-center gap-2 rounded-2xl bg-white/10 px-3 py-3 ring-1 ring-white/15"
-              >
-                <span className="grid size-9 place-items-center rounded-xl bg-white/15">
-                  <Icon className="size-4" />
-                </span>
-                <span className="text-sm font-medium">{label}</span>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </section>
-
-      {/* SEARCH BAR contestuale */}
-      <section className="-mt-12 px-4 pb-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-5xl">
-          <HomeSearch />
+          {/* Search bar contestuale — DENTRO la hero, sfondo bianco con shadow */}
+          <div className="mx-auto mt-4 w-full max-w-4xl">
+            <HomeSearch />
+          </div>
         </div>
       </section>
 

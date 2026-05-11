@@ -76,7 +76,7 @@ export function HomeSearch() {
 
   return (
     <div className="rounded-3xl bg-white p-3 text-foreground shadow-2xl ring-1 ring-black/5 sm:p-4">
-      <div className="flex flex-wrap gap-1 border-b border-border pb-3">
+      <div className="grid grid-cols-2 gap-1 border-b border-border pb-3 sm:flex sm:flex-wrap">
         {TABS.map((t) => {
           const Icon = t.icon;
           const isActive = tab === t.value;
@@ -86,7 +86,7 @@ export function HomeSearch() {
               type="button"
               onClick={() => setTab(t.value)}
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium transition",
+                "inline-flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium transition sm:justify-start",
                 isActive
                   ? "bg-brand-600 text-white"
                   : "text-foreground/70 hover:bg-muted",
