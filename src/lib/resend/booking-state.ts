@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 
 import { DEFAULT_LOCALE, type Locale } from "@/i18n/config";
 
-import { FROM_EMAIL, resend } from "./client";
+import { absoluteUrl, FROM_EMAIL, resend } from "./client";
 
 type BookingStateEmail = {
   to: string;
@@ -68,7 +68,7 @@ export async function sendBookingStateEmail(
     .join("");
 
   const ctaHtml = data.cta
-    ? `<div style="padding:0 28px 28px"><a href="${escapeHtml(data.cta.url)}" style="display:inline-block;background:#1B4332;color:#fff;border-radius:12px;padding:10px 18px;font-weight:600;font-size:14px;text-decoration:none">${escapeHtml(data.cta.label)}</a></div>`
+    ? `<div style="padding:0 28px 28px"><a href="${escapeHtml(absoluteUrl(data.cta.url))}" style="display:inline-block;background:#1B4332;color:#fff;border-radius:12px;padding:10px 18px;font-weight:600;font-size:14px;text-decoration:none">${escapeHtml(data.cta.label)}</a></div>`
     : "";
 
   const noteHtml = data.note

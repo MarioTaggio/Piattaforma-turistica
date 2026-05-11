@@ -5,7 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { DEFAULT_LOCALE, type Locale } from "@/i18n/config";
 
-import { FROM_EMAIL, resend } from "./client";
+import { absoluteUrl, FROM_EMAIL, resend } from "./client";
 
 /**
  * Notifica email al gestore quando un utente prenota o acquista un suo
@@ -137,16 +137,6 @@ export async function sendGestoreNotificationEmail(
       error: e instanceof Error ? e.message : "Errore invio",
     };
   }
-}
-
-function absoluteUrl(path: string): string {
-  const base = (
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    process.env.NEXT_PUBLIC_APP_URL ||
-    ""
-  ).replace(/\/$/, "");
-  if (!base) return path;
-  return path.startsWith("http") ? path : `${base}${path}`;
 }
 
 function render(input: {
