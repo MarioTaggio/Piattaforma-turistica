@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,8 @@ type Props = {
 
 export function RistoranteForm({ mode, id, defaultValues }: Props) {
   const router = useRouter();
+  const tForm = useTranslations("form");
+  const tMessages = useTranslations("messages");
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
@@ -47,9 +50,7 @@ export function RistoranteForm({ mode, id, defaultValues }: Props) {
       toast.error(result.error);
       return;
     }
-    toast.success(
-      mode === "create" ? "Ristorante creato" : "Ristorante aggiornato",
-    );
+    toast.success(tMessages("saveSuccess"));
     router.push(`/dashboard/ristoranti/${result.id}`);
     router.refresh();
   }
@@ -58,85 +59,72 @@ export function RistoranteForm({ mode, id, defaultValues }: Props) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field
-          label="Nome"
+          label={tForm("name")}
           error={errors.nome?.message}
           className="sm:col-span-2"
         >
-          <Input placeholder="Es. Trattoria del Borgo" {...register("nome")} />
+          <Input {...register("nome")} />
         </Field>
 
         <Field
-          label="Descrizione"
+          label={tForm("description")}
           error={errors.descrizione?.message}
           className="sm:col-span-2"
         >
           <textarea
             rows={4}
             className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            placeholder="Cucina, atmosfera, specialità…"
             {...register("descrizione")}
           />
         </Field>
 
         <Field
-          label="Indirizzo"
+          label={tForm("address")}
           error={errors.indirizzo?.message}
           className="sm:col-span-2"
         >
-          <Input placeholder="Via Roma 12" {...register("indirizzo")} />
+          <Input {...register("indirizzo")} />
         </Field>
 
-        <Field label="Città" error={errors.citta?.message}>
-          <Input placeholder="Bologna" {...register("citta")} />
+        <Field label={tForm("city")} error={errors.citta?.message}>
+          <Input {...register("citta")} />
         </Field>
 
-        <Field label="Telefono" error={errors.telefono?.message}>
-          <Input placeholder="+39 ..." {...register("telefono")} />
+        <Field label={tForm("phone")} error={errors.telefono?.message}>
+          <Input {...register("telefono")} />
         </Field>
 
-        <Field label="Email" error={errors.email?.message}>
-          <Input
-            type="email"
-            placeholder="info@..."
-            {...register("email")}
-          />
+        <Field label={tForm("email")} error={errors.email?.message}>
+          <Input type="email" {...register("email")} />
         </Field>
 
-        <Field label="Tipo cucina" error={errors.tipo_cucina?.message}>
-          <Input
-            placeholder="Italiana, Pizza, Sushi…"
-            {...register("tipo_cucina")}
-          />
+        <Field label={tForm("cuisine")} error={errors.tipo_cucina?.message}>
+          <Input {...register("tipo_cucina")} />
         </Field>
 
         <Field
-          label="Orari"
-          hint="Testo libero, es: 'Lun-Ven 12:00-15:00, 19:00-23:00'"
+          label={tForm("hours")}
           error={errors.orari?.message}
           className="sm:col-span-2"
         >
           <textarea
             rows={2}
             className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            placeholder="Lun-Ven 12:00-15:00, 19:00-23:00"
             {...register("orari")}
           />
         </Field>
 
         <Field
-          label="Immagini"
-          hint="URL separati da virgola"
+          label={tForm("images")}
+          hint={tForm("imagesHint")}
           error={errors.immagini?.message}
           className="sm:col-span-2"
         >
-          <Input
-            placeholder="https://..., https://..."
-            {...register("immagini")}
-          />
+          <Input {...register("immagini")} />
         </Field>
 
         <Field
-          label="Stato"
+          label={tForm("stato")}
           error={errors.stato?.message}
           className="sm:col-span-2"
         >
@@ -144,9 +132,9 @@ export function RistoranteForm({ mode, id, defaultValues }: Props) {
             className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             {...register("stato")}
           >
-            <option value="bozza">Bozza</option>
-            <option value="pubblicato">Pubblicato</option>
-            <option value="archiviato">Archiviato</option>
+            <option value="bozza">{tForm("stato_bozza")}</option>
+            <option value="pubblicato">{tForm("stato_pubblicato")}</option>
+            <option value="archiviato">{tForm("stato_archiviato")}</option>
           </select>
         </Field>
       </div>
@@ -167,7 +155,7 @@ export function RistoranteForm({ mode, id, defaultValues }: Props) {
           onClick={() => router.back()}
           className="rounded-xl"
         >
-          Annulla
+          {tForm("cancel")}
         </Button>
         <Button
           type="submit"
@@ -175,7 +163,7 @@ export function RistoranteForm({ mode, id, defaultValues }: Props) {
           className="rounded-xl bg-brand-600 hover:bg-brand-700"
         >
           {isSubmitting && <Loader2 className="mr-2 size-4 animate-spin" />}
-          {mode === "create" ? "Crea ristorante" : "Salva modifiche"}
+          {mode === "create" ? tForm("create") : tForm("saveChanges")}
         </Button>
       </div>
     </form>

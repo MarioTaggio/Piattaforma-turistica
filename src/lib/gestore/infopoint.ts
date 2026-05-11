@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -9,6 +10,13 @@ import {
   type AttrazioneInput,
   type VisitaInput,
 } from "./infopoint-schemas";
+
+async function tErrors() {
+  return getTranslations("errors");
+}
+async function tValidation() {
+  return getTranslations("validation");
+}
 
 type Result = { error: string } | { success: true; id: string };
 
@@ -28,13 +36,13 @@ export async function createAttrazione(
   input: AttrazioneInput,
 ): Promise<Result> {
   const parsed = attrazioneSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Sessione scaduta" };
+  if (!user) return { error: (await tErrors())("sessionExpired") };
 
   const v = parsed.data;
   const { data, error } = await supabase
@@ -76,7 +84,7 @@ export async function updateAttrazione(
   input: AttrazioneInput,
 ): Promise<Result> {
   const parsed = attrazioneSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const v = parsed.data;
@@ -145,13 +153,13 @@ export async function createVisita(
   input: VisitaInput,
 ): Promise<{ error?: string }> {
   const parsed = visitaSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Sessione scaduta" };
+  if (!user) return { error: (await tErrors())("sessionExpired") };
 
   const v = parsed.data;
   const { error } = await supabase.from("visite_guidate").insert({
@@ -178,7 +186,7 @@ export async function updateVisita(
   input: VisitaInput,
 ): Promise<{ error?: string }> {
   const parsed = visitaSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const v = parsed.data;

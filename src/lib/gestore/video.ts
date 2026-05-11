@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -11,6 +12,13 @@ import {
 } from "./video-schemas";
 
 type Result = { error: string } | { success: true; id: string };
+
+async function tErrors() {
+  return getTranslations("errors");
+}
+async function tValidation() {
+  return getTranslations("validation");
+}
 
 async function recomputeDurata(corsoId: string) {
   const supabase = await createClient();
@@ -30,13 +38,13 @@ async function recomputeDurata(corsoId: string) {
 
 export async function createCorso(input: CorsoInput): Promise<Result> {
   const parsed = corsoSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Sessione scaduta" };
+  if (!user) return { error: (await tErrors())("sessionExpired") };
 
   const v = parsed.data;
   const { data, error } = await supabase
@@ -62,7 +70,7 @@ export async function updateCorso(
   input: CorsoInput,
 ): Promise<Result> {
   const parsed = corsoSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const v = parsed.data;
@@ -96,7 +104,7 @@ export async function createLezione(
   input: LezioneInput,
 ): Promise<{ error?: string }> {
   const parsed = lezioneSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const v = parsed.data;
@@ -121,7 +129,7 @@ export async function updateLezione(
   input: LezioneInput,
 ): Promise<{ error?: string }> {
   const parsed = lezioneSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const v = parsed.data;

@@ -1,8 +1,16 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/lib/supabase/server";
+
+async function tErrors() {
+  return getTranslations("errors");
+}
+async function tValidation() {
+  return getTranslations("validation");
+}
 import {
   ristoranteSchema,
   tavoloSchema,
@@ -31,13 +39,13 @@ export async function createRistorante(
   input: RistoranteInput,
 ): Promise<Result> {
   const parsed = ristoranteSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Sessione scaduta" };
+  if (!user) return { error: (await tErrors())("sessionExpired") };
 
   const v = parsed.data;
   const { data, error } = await supabase
@@ -68,7 +76,7 @@ export async function updateRistorante(
   input: RistoranteInput,
 ): Promise<Result> {
   const parsed = ristoranteSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const v = parsed.data;
@@ -109,7 +117,7 @@ export async function createTavolo(
   input: TavoloInput,
 ): Promise<{ error?: string }> {
   const parsed = tavoloSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const v = parsed.data;
@@ -131,7 +139,7 @@ export async function updateTavolo(
   input: TavoloInput,
 ): Promise<{ error?: string }> {
   const parsed = tavoloSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const v = parsed.data;
@@ -296,7 +304,7 @@ export async function createManualPrenotazioneTavolo(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Sessione scaduta" };
+  if (!user) return { error: (await tErrors())("sessionExpired") };
 
   // Verifica che il tavolo appartenga al ristorante (anti-tamper)
   const { data: tav } = await supabase
@@ -335,7 +343,7 @@ export async function createProdotto(
   input: ProdottoInput,
 ): Promise<{ error?: string }> {
   const parsed = prodottoSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const v = parsed.data;
@@ -359,7 +367,7 @@ export async function updateProdotto(
   input: ProdottoInput,
 ): Promise<{ error?: string }> {
   const parsed = prodottoSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const v = parsed.data;

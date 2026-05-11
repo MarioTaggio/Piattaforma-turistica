@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import {
   CheckCircle2,
   ChefHat,
@@ -123,6 +124,7 @@ export default async function ShopOrdiniSingoloPage({
   searchParams: Promise<SearchParams>;
 }) {
   const user = await requireRole("gestore_shop");
+  const tPg = await getTranslations("prenotazioniGestore");
   const { id: shopId } = await params;
   const sp = await searchParams;
   const stato = (sp.stato as string | undefined) || undefined;
@@ -311,18 +313,18 @@ export default async function ShopOrdiniSingoloPage({
       {ordini.length === 0 ? (
         <EmptyState
           icon={Package}
-          title="Nessun ordine"
+          title={tPg("noBookings")}
           description="Quando arriverà un ordine sui prodotti di questo shop apparirà qui."
         />
       ) : (
         <DataTable page={page} totalPages={totalPages(total, pageSize)}>
           <TableHead>
-            <Th>Ordine</Th>
-            <Th>Cliente</Th>
-            <Th className="text-center">Articoli</Th>
-            <Th className="text-right">Totale</Th>
-            <Th>Stato</Th>
-            <Th>Pagamento</Th>
+            <Th>{tPg("columnDate")}</Th>
+            <Th>{tPg("columnCustomer")}</Th>
+            <Th className="text-center">{tPg("columnGuests")}</Th>
+            <Th className="text-right">{tPg("columnAmount")}</Th>
+            <Th>{tPg("columnStatus")}</Th>
+            <Th>{tPg("columnPayment")}</Th>
             <Th />
           </TableHead>
           <TableBody>

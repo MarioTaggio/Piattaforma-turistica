@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ClipboardList } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { requireRole } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
@@ -43,6 +44,7 @@ export default async function AttrazionePrenotazioniPage({
   params: Promise<{ id: string }>;
 }) {
   const user = await requireRole("gestore_infopoint");
+  const tPg = await getTranslations("prenotazioniGestore");
   const { id } = await params;
   const supabase = await createClient();
 
@@ -79,7 +81,7 @@ export default async function AttrazionePrenotazioniPage({
       {prenotazioni.length === 0 ? (
         <EmptyState
           icon={ClipboardList}
-          title="Nessuna prenotazione"
+          title={tPg("noBookings")}
           description="Quando qualcuno prenoterà una visita la troverai qui."
         />
       ) : (
@@ -88,12 +90,12 @@ export default async function AttrazionePrenotazioniPage({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-muted/40 text-left text-xs uppercase tracking-wider text-muted-foreground">
-                  <th className="px-5 py-3 font-medium">Cliente</th>
+                  <th className="px-5 py-3 font-medium">{tPg("columnCustomer")}</th>
                   <th className="px-5 py-3 font-medium">Visita</th>
                   <th className="px-5 py-3 font-medium">Partecipanti</th>
-                  <th className="px-5 py-3 font-medium">Stato</th>
+                  <th className="px-5 py-3 font-medium">{tPg("columnStatus")}</th>
                   <th className="px-5 py-3 text-right font-medium">Totale</th>
-                  <th className="px-5 py-3 text-right font-medium">Azioni</th>
+                  <th className="px-5 py-3 text-right font-medium">{tPg("columnActions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">

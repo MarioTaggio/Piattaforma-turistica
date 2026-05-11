@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,8 @@ type Props = {
 
 export function CorsoForm({ mode, id, defaultValues }: Props) {
   const router = useRouter();
+  const tForm = useTranslations("form");
+  const tMessages = useTranslations("messages");
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
@@ -51,7 +54,7 @@ export function CorsoForm({ mode, id, defaultValues }: Props) {
       toast.error(result.error);
       return;
     }
-    toast.success(mode === "create" ? "Corso creato" : "Corso aggiornato");
+    toast.success(tMessages("saveSuccess"));
     router.push(`/dashboard/video/${result.id}`);
     router.refresh();
   }
@@ -59,44 +62,40 @@ export function CorsoForm({ mode, id, defaultValues }: Props) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
       <div className="space-y-2">
-        <Label>Copertina</Label>
+        <Label>{tForm("image")}</Label>
         <ImageUploader
           value={cover}
           onChange={(url) =>
             setValue("immagine_copertina", url, { shouldDirty: true })
           }
-          label="Carica la copertina del corso"
+          label={tForm("imageHint")}
         />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field
-          label="Titolo"
+          label={tForm("title")}
           error={errors.titolo?.message}
           className="sm:col-span-2"
         >
-          <Input
-            placeholder="Es. Cucina locale per principianti"
-            {...register("titolo")}
-          />
+          <Input {...register("titolo")} />
         </Field>
 
         <Field
-          label="Descrizione"
+          label={tForm("description")}
           error={errors.descrizione?.message}
           className="sm:col-span-2"
         >
           <textarea
             rows={4}
             className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            placeholder="A chi è rivolto, cosa si impara…"
             {...register("descrizione")}
           />
         </Field>
 
         <Field
-          label="Prezzo"
-          hint="Lascia 0 per corso gratuito"
+          label={tForm("price")}
+          hint={tForm("priceHint")}
           error={errors.prezzo_cents?.message}
         >
           <Controller
@@ -115,7 +114,7 @@ export function CorsoForm({ mode, id, defaultValues }: Props) {
           />
         </Field>
 
-        <Field label="Livello" error={errors.livello?.message}>
+        <Field label={tForm("level")} error={errors.livello?.message}>
           <select
             className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             {...register("livello")}
@@ -128,7 +127,7 @@ export function CorsoForm({ mode, id, defaultValues }: Props) {
         </Field>
 
         <Field
-          label="Stato"
+          label={tForm("stato")}
           error={errors.stato?.message}
           className="sm:col-span-2"
         >
@@ -136,9 +135,9 @@ export function CorsoForm({ mode, id, defaultValues }: Props) {
             className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             {...register("stato")}
           >
-            <option value="bozza">Bozza</option>
-            <option value="pubblicato">Pubblicato</option>
-            <option value="archiviato">Archiviato</option>
+            <option value="bozza">{tForm("stato_bozza")}</option>
+            <option value="pubblicato">{tForm("stato_pubblicato")}</option>
+            <option value="archiviato">{tForm("stato_archiviato")}</option>
           </select>
         </Field>
       </div>
@@ -159,7 +158,7 @@ export function CorsoForm({ mode, id, defaultValues }: Props) {
           onClick={() => router.back()}
           className="rounded-xl"
         >
-          Annulla
+          {tForm("cancel")}
         </Button>
         <Button
           type="submit"
@@ -167,7 +166,7 @@ export function CorsoForm({ mode, id, defaultValues }: Props) {
           className="rounded-xl bg-brand-600 hover:bg-brand-700"
         >
           {isSubmitting && <Loader2 className="mr-2 size-4 animate-spin" />}
-          {mode === "create" ? "Crea corso" : "Salva modifiche"}
+          {mode === "create" ? tForm("create") : tForm("saveChanges")}
         </Button>
       </div>
     </form>

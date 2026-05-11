@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ClipboardList } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { requireRole } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
@@ -49,6 +50,8 @@ export default async function StrutturaPrenotazioniPage({
   const user = await requireRole("gestore_bnb");
   const { id } = await params;
   const supabase = await createClient();
+  const tPg = await getTranslations("prenotazioniGestore");
+  const tBooking = await getTranslations("booking");
 
   const { data: struttura } = await supabase
     .from("strutture")
@@ -86,14 +89,14 @@ export default async function StrutturaPrenotazioniPage({
   return (
     <div className="space-y-6">
       <p className="text-sm text-muted-foreground">
-        Conferma o rifiuta le richieste di prenotazione.
+        {tPg("subtitle")}
       </p>
 
       {prenotazioni.length === 0 ? (
         <EmptyState
           icon={ClipboardList}
-          title="Nessuna prenotazione"
-          description="Quando un ospite prenoterà una camera la troverai qui."
+          title={tPg("noBookings")}
+          description={tPg("subtitle")}
         />
       ) : (
         <div className="overflow-hidden rounded-2xl border border-border bg-card">
@@ -101,12 +104,12 @@ export default async function StrutturaPrenotazioniPage({
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-muted/40 text-left text-xs uppercase tracking-wider text-muted-foreground">
-                  <th className="px-5 py-3 font-medium">Ospite</th>
-                  <th className="px-5 py-3 font-medium">Camera</th>
-                  <th className="px-5 py-3 font-medium">Periodo</th>
-                  <th className="px-5 py-3 font-medium">Stato</th>
-                  <th className="px-5 py-3 text-right font-medium">Totale</th>
-                  <th className="px-5 py-3 text-right font-medium">Azioni</th>
+                  <th className="px-5 py-3 font-medium">{tPg("columnCustomer")}</th>
+                  <th className="px-5 py-3 font-medium">{tBooking("room")}</th>
+                  <th className="px-5 py-3 font-medium">{tPg("columnDate")}</th>
+                  <th className="px-5 py-3 font-medium">{tPg("columnStatus")}</th>
+                  <th className="px-5 py-3 text-right font-medium">{tPg("columnAmount")}</th>
+                  <th className="px-5 py-3 text-right font-medium">{tPg("columnActions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">

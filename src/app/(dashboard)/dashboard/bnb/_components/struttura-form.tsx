@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,8 @@ type Props = {
 
 export function StrutturaForm({ mode, id, defaultValues }: Props) {
   const router = useRouter();
+  const tForm = useTranslations("form");
+  const tMessages = useTranslations("messages");
   const [serverError, setServerError] = useState<string | null>(null);
 
   const {
@@ -47,7 +50,7 @@ export function StrutturaForm({ mode, id, defaultValues }: Props) {
       toast.error(result.error);
       return;
     }
-    toast.success(mode === "create" ? "Struttura creata" : "Struttura aggiornata");
+    toast.success(tMessages("saveSuccess"));
     router.push(`/dashboard/bnb/${result.id}`);
     router.refresh();
   }
@@ -56,45 +59,44 @@ export function StrutturaForm({ mode, id, defaultValues }: Props) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field
-          label="Nome struttura"
+          label={tForm("name")}
           error={errors.nome?.message}
           className="sm:col-span-2"
         >
-          <Input placeholder="Es. Casa Verde" {...register("nome")} />
+          <Input {...register("nome")} />
         </Field>
 
         <Field
-          label="Descrizione"
+          label={tForm("description")}
           error={errors.descrizione?.message}
           className="sm:col-span-2"
         >
           <textarea
             rows={4}
             className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            placeholder="Cosa rende speciale la tua struttura…"
             {...register("descrizione")}
           />
         </Field>
 
         <Field
-          label="Indirizzo"
+          label={tForm("address")}
           error={errors.indirizzo?.message}
           className="sm:col-span-2"
         >
-          <Input placeholder="Via Roma 12" {...register("indirizzo")} />
+          <Input {...register("indirizzo")} />
         </Field>
 
-        <Field label="Città" error={errors.citta?.message}>
-          <Input placeholder="Bologna" {...register("citta")} />
+        <Field label={tForm("city")} error={errors.citta?.message}>
+          <Input {...register("citta")} />
         </Field>
 
-        <Field label="CAP" error={errors.cap?.message}>
-          <Input placeholder="40100" {...register("cap")} />
+        <Field label={tForm("zip")} error={errors.cap?.message}>
+          <Input {...register("cap")} />
         </Field>
 
         <Field
-          label="Stelle"
-          hint="Da 1 a 5 (opzionale)"
+          label={tForm("stars")}
+          hint={tForm("starsHint")}
           error={errors.stelle?.message}
         >
           <Input
@@ -106,41 +108,35 @@ export function StrutturaForm({ mode, id, defaultValues }: Props) {
         </Field>
 
         <Field
-          label="Stato"
+          label={tForm("stato")}
           error={errors.stato?.message}
         >
           <select
             className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             {...register("stato")}
           >
-            <option value="bozza">Bozza</option>
-            <option value="pubblicato">Pubblicato</option>
-            <option value="archiviato">Archiviato</option>
+            <option value="bozza">{tForm("stato_bozza")}</option>
+            <option value="pubblicato">{tForm("stato_pubblicato")}</option>
+            <option value="archiviato">{tForm("stato_archiviato")}</option>
           </select>
         </Field>
 
         <Field
-          label="Servizi"
-          hint="Separati da virgola: Wi-Fi, Parcheggio, Colazione…"
+          label={tForm("amenities")}
+          hint={tForm("amenitiesHint")}
           error={errors.servizi?.message}
           className="sm:col-span-2"
         >
-          <Input
-            placeholder="Wi-Fi, Parcheggio, Colazione"
-            {...register("servizi")}
-          />
+          <Input {...register("servizi")} />
         </Field>
 
         <Field
-          label="Immagini"
-          hint="URL separati da virgola"
+          label={tForm("images")}
+          hint={tForm("imagesHint")}
           error={errors.immagini?.message}
           className="sm:col-span-2"
         >
-          <Input
-            placeholder="https://..., https://..."
-            {...register("immagini")}
-          />
+          <Input {...register("immagini")} />
         </Field>
       </div>
 
@@ -160,7 +156,7 @@ export function StrutturaForm({ mode, id, defaultValues }: Props) {
           onClick={() => router.back()}
           className="rounded-xl"
         >
-          Annulla
+          {tForm("cancel")}
         </Button>
         <Button
           type="submit"
@@ -168,7 +164,7 @@ export function StrutturaForm({ mode, id, defaultValues }: Props) {
           className="rounded-xl bg-brand-600 hover:bg-brand-700"
         >
           {isSubmitting && <Loader2 className="mr-2 size-4 animate-spin" />}
-          {mode === "create" ? "Crea struttura" : "Salva modifiche"}
+          {mode === "create" ? tForm("create") : tForm("saveChanges")}
         </Button>
       </div>
     </form>

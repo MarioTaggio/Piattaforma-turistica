@@ -330,6 +330,8 @@
     "level": "Niveau",
     "duration": "Dauer",
     "videoUrl": "Video-URL",
+    "tourUrl": "URL der virtuellen Tour",
+    "tourFree": "Virtuelle Tour kostenlos zugänglich",
     "freePreview": "Kostenlose Vorschau",
     "lessonOrder": "Lektion-Reihenfolge",
     "notes": "Hinweise",

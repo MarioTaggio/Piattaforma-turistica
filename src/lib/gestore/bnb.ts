@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -9,6 +10,13 @@ import {
   type StrutturaInput,
   type CameraInput,
 } from "./bnb-schemas";
+
+async function tErrors() {
+  return getTranslations("errors");
+}
+async function tValidation() {
+  return getTranslations("validation");
+}
 
 type Result = { error: string } | { success: true; id: string };
 
@@ -21,13 +29,13 @@ function csvToArray(s: string | undefined): string[] {
 
 export async function createStruttura(input: StrutturaInput): Promise<Result> {
   const parsed = strutturaSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Sessione scaduta" };
+  if (!user) return { error: (await tErrors())("sessionExpired") };
 
   const v = parsed.data;
   const { data, error } = await supabase
@@ -57,7 +65,7 @@ export async function updateStruttura(
   input: StrutturaInput,
 ): Promise<Result> {
   const parsed = strutturaSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const v = parsed.data;
@@ -95,7 +103,7 @@ export async function createCamera(
   input: CameraInput,
 ): Promise<{ error?: string }> {
   const parsed = cameraSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const v = parsed.data;
@@ -119,7 +127,7 @@ export async function updateCamera(
   input: CameraInput,
 ): Promise<{ error?: string }> {
   const parsed = cameraSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const v = parsed.data;

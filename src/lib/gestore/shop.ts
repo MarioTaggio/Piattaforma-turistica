@@ -1,8 +1,16 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/lib/supabase/server";
+
+async function tErrors() {
+  return getTranslations("errors");
+}
+async function tValidation() {
+  return getTranslations("validation");
+}
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createNotifica } from "@/lib/notifications/create";
 import { sendBookingStateEmail } from "@/lib/resend/booking-state";
@@ -24,13 +32,13 @@ function csvToArray(s: string | undefined): string[] {
 
 export async function createShop(input: ShopInput): Promise<Result> {
   const parsed = shopSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Sessione scaduta" };
+  if (!user) return { error: (await tErrors())("sessionExpired") };
 
   const v = parsed.data;
   const { data, error } = await supabase
@@ -60,7 +68,7 @@ export async function updateShop(
   input: ShopInput,
 ): Promise<Result> {
   const parsed = shopSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const v = parsed.data;
@@ -99,7 +107,7 @@ export async function createShopProdotto(
   input: ShopProdottoInput,
 ): Promise<{ error?: string }> {
   const parsed = shopProdottoSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const v = parsed.data;
@@ -124,7 +132,7 @@ export async function updateShopProdotto(
   input: ShopProdottoInput,
 ): Promise<{ error?: string }> {
   const parsed = shopProdottoSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await tValidation())("invalidData") };
 
   const supabase = await createClient();
   const v = parsed.data;

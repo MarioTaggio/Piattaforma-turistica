@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -8,19 +9,25 @@ import { createNotifica } from "@/lib/notifications/create";
 import { sendBookingStateEmail } from "@/lib/resend/booking-state";
 import { eventoSchema, type EventoInput } from "./eventi-schemas";
 
+// Helper: carica le traduzioni "errors" usando il cookie locale corrente
+// gestito da i18n/request.ts. Una sola istanza per chiamata di action.
+async function tErrors() {
+  return getTranslations("errors");
+}
+
 type Result =
   | { error: string }
   | { success: true; id: string };
 
 export async function createEvento(input: EventoInput): Promise<Result> {
   const parsed = eventoSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await getTranslations("validation"))("invalidData") };
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Sessione scaduta" };
+  if (!user) return { error: (await tErrors())("sessionExpired") };
 
   const v = parsed.data;
   const { data, error } = await supabase
@@ -52,7 +59,7 @@ export async function updateEvento(
   input: EventoInput,
 ): Promise<Result> {
   const parsed = eventoSchema.safeParse(input);
-  if (!parsed.success) return { error: "Dati non validi" };
+  if (!parsed.success) return { error: (await getTranslations("validation"))("invalidData") };
 
   const supabase = await createClient();
   const v = parsed.data;

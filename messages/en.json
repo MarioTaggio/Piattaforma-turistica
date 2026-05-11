@@ -330,6 +330,8 @@
     "level": "Level",
     "duration": "Duration",
     "videoUrl": "Video URL",
+    "tourUrl": "Virtual tour URL",
+    "tourFree": "Virtual tour accessible for free",
     "freePreview": "Free preview",
     "lessonOrder": "Lesson order",
     "notes": "Notes",
