@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PageHeader } from "@/components/dashboard/page-header";
@@ -55,6 +56,9 @@ export default async function AdminOrdiniPage({
   const { page, pageSize, offset } = parsePage(sp, DEFAULT_PAGE_SIZE);
 
   const supabase = createAdminClient();
+  const tDashboard = await getTranslations("dashboard");
+  const tPg = await getTranslations("prenotazioniGestore");
+  const tCommon = await getTranslations("common");
   let query = supabase
     .from("ordini")
     .select(
@@ -73,33 +77,33 @@ export default async function AdminOrdiniPage({
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Tutti gli ordini"
+        title={tDashboard("ordini")}
         subtitle={`${formatNumber(total)} ordini ricevuti.`}
         actions={<CsvExportButton href="/api/admin/exports/ordini" />}
       />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <SearchInput placeholder="Cerca…" className="sm:max-w-sm sm:flex-1" />
+        <SearchInput placeholder={tCommon("searchPlaceholder")} className="sm:max-w-sm sm:flex-1" />
         <FilterSelect paramName="stato" options={STATO_OPTIONS} placeholder="Tutti gli stati" />
         <FilterSelect paramName="pagamento" options={PAGAMENTO_OPTIONS} placeholder="Pagamento" />
       </div>
 
       <DataTable page={page} totalPages={totalPages(total, pageSize)}>
         <TableHead>
-          <Th>Ordine</Th>
-          <Th>Cliente</Th>
-          <Th>Ristorante</Th>
-          <Th>Tipo</Th>
-          <Th>Stato</Th>
-          <Th>Pagamento</Th>
-          <Th>Totale</Th>
-          <Th>Creato</Th>
+          <Th>{tPg("columnDate")}</Th>
+          <Th>{tPg("columnCustomer")}</Th>
+          <Th>{tDashboard("ristoranti")}</Th>
+          <Th>{tPg("columnGuests")}</Th>
+          <Th>{tPg("columnStatus")}</Th>
+          <Th>{tPg("columnPayment")}</Th>
+          <Th>{tPg("columnAmount")}</Th>
+          <Th>{tPg("columnDate")}</Th>
         </TableHead>
         <TableBody>
           {(data ?? []).length === 0 && (
             <tr>
               <td colSpan={8} className="px-4 py-12 text-center text-sm text-muted-foreground">
-                Nessun ordine.
+                {tPg("noBookings")}
               </td>
             </tr>
           )}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PageHeader } from "@/components/dashboard/page-header";
@@ -50,6 +51,9 @@ export default async function AdminUtentiPage({
   const { page, pageSize, offset } = parsePage(sp, DEFAULT_PAGE_SIZE);
 
   const supabase = createAdminClient();
+  const tDashboard = await getTranslations("dashboard");
+  const tAdmin = await getTranslations("admin");
+  const tCommon = await getTranslations("common");
 
   // If filtering by role, first fetch matching user_ids.
   let userIdsForRole: string[] | null = null;
@@ -103,28 +107,28 @@ export default async function AdminUtentiPage({
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Utenti"
+        title={tDashboard("utenti")}
         subtitle={`${total.toLocaleString("it-IT")} utenti registrati sulla piattaforma.`}
         actions={<CsvExportButton href="/api/admin/exports/utenti" />}
       />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <SearchInput
-          placeholder="Cerca per nome o email…"
+          placeholder={tCommon("searchPlaceholder")}
           className="sm:max-w-sm sm:flex-1"
         />
         <FilterSelect
           paramName="role"
           options={ROLE_OPTIONS}
-          placeholder="Tutti i ruoli"
+          placeholder={tCommon("all")}
         />
       </div>
 
       <DataTable page={page} totalPages={totalPages(total, pageSize)}>
         <TableHead>
-          <Th>Utente</Th>
-          <Th>Ruoli</Th>
-          <Th>Registrato</Th>
+          <Th>{tAdmin("userColumns.name")}</Th>
+          <Th>{tAdmin("userColumns.roles")}</Th>
+          <Th>{tAdmin("userColumns.registered")}</Th>
           <Th />
         </TableHead>
         <TableBody>

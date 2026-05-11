@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import {
   Users,
   UserCog,
@@ -64,6 +65,7 @@ const dayLabel = new Intl.DateTimeFormat("it-IT", {
 
 export default async function AdminOverviewPage() {
   const supabase = createAdminClient();
+  const tAdmin = await getTranslations("admin");
   const today = startOfToday().toISOString();
   const monthStart = startOfMonth().toISOString();
   const thirty = daysAgo(29).toISOString();
@@ -326,8 +328,8 @@ export default async function AdminOverviewPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Panoramica piattaforma"
-        subtitle="KPI principali, prenotazioni recenti e attività della community."
+        title={tAdmin("panoramicaTitle")}
+        subtitle={tAdmin("panoramicaSubtitle")}
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

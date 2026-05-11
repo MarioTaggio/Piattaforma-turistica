@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PageHeader } from "@/components/dashboard/page-header";
@@ -56,6 +57,8 @@ export default async function AdminGestoriPage({
   const { page, pageSize, offset } = parsePage(sp, DEFAULT_PAGE_SIZE);
 
   const supabase = createAdminClient();
+  const tDashboard = await getTranslations("dashboard");
+  const tCommon = await getTranslations("common");
 
   const { data: roleRows } = await supabase
     .from("user_roles")
@@ -137,7 +140,7 @@ export default async function AdminGestoriPage({
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Gestori"
+        title={tDashboard("gestori")}
         subtitle={`${formatNumber(totalGestori)} gestori attivi sulla piattaforma.`}
       />
 
@@ -149,19 +152,19 @@ export default async function AdminGestoriPage({
       </SectionCard>
 
       <SearchInput
-        placeholder="Cerca gestore per nome o email…"
+        placeholder={tCommon("searchPlaceholder")}
         className="max-w-sm"
       />
 
       <DataTable page={page} totalPages={totalPages(totalFiltered, pageSize)}>
         <TableHead>
-          <Th>Gestore</Th>
-          <Th>Ruoli</Th>
-          <Th className="text-center">Eventi</Th>
-          <Th className="text-center">B&B</Th>
-          <Th className="text-center">Ristoranti</Th>
-          <Th className="text-center">Video</Th>
-          <Th className="text-center">Attrazioni</Th>
+          <Th>{tDashboard("gestori")}</Th>
+          <Th>{tDashboard("administration")}</Th>
+          <Th className="text-center">{tDashboard("eventi")}</Th>
+          <Th className="text-center">{tDashboard("bnb")}</Th>
+          <Th className="text-center">{tDashboard("ristoranti")}</Th>
+          <Th className="text-center">{tDashboard("video")}</Th>
+          <Th className="text-center">{tDashboard("infopoint")}</Th>
           <Th />
         </TableHead>
         <TableBody>

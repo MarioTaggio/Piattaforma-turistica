@@ -10,6 +10,7 @@ import {
   UtensilsCrossed,
   type LucideIcon,
 } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { requireRole } from "@/lib/auth/dal";
 import { PageHeader } from "@/components/dashboard/page-header";
@@ -34,12 +35,13 @@ const MODULE_ICON: Record<string, LucideIcon> = {
 export default async function AdminAnalyticsPage() {
   await requireRole("admin");
   const data = await getAnalyticsData();
+  const tAdmin = await getTranslations("admin");
 
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Analytics"
-        subtitle="Revenue, trend di crescita e top performer della piattaforma."
+        title={tAdmin("analyticsTitle")}
+        subtitle={tAdmin("analyticsSubtitle")}
       />
 
       {/* Revenue cards per modulo */}

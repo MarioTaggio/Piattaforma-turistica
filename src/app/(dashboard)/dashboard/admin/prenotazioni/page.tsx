@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PageHeader } from "@/components/dashboard/page-header";
@@ -65,6 +66,8 @@ export default async function AdminPrenotazioniPage({
   const { page, pageSize, offset } = parsePage(sp, DEFAULT_PAGE_SIZE);
 
   const supabase = createAdminClient();
+  const tDashboard = await getTranslations("dashboard");
+  const tPg = await getTranslations("prenotazioniGestore");
 
   const wantBnb = !tipo || tipo === "bnb";
   const wantTavolo = !tipo || tipo === "tavolo";
@@ -191,7 +194,7 @@ export default async function AdminPrenotazioniPage({
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Tutte le prenotazioni"
+        title={tDashboard("prenotazioni")}
         subtitle={`${formatNumber(total)} prenotazioni B&B, tavoli e visite.`}
         actions={<CsvExportButton href="/api/admin/exports/prenotazioni" />}
       />
@@ -216,7 +219,7 @@ export default async function AdminPrenotazioniPage({
           {visible.length === 0 && (
             <tr>
               <td colSpan={7} className="px-4 py-12 text-center text-sm text-muted-foreground">
-                Nessuna prenotazione.
+                {tPg("noBookings")}
               </td>
             </tr>
           )}
