@@ -88,16 +88,10 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* HERO con barra di ricerca integrata.
-          IMPORTANTE: niente overflow-hidden né min-h fissa — la hero
-          si espande naturalmente per contenere tutto il contenuto,
-          search bar inclusa. Il gradient decorativo è dentro un wrapper
-          relative-with-overflow-hidden separato per non clippare i figli. */}
+      {/* HERO — fondo verde brand puro, nessun overlay/gradient sopra */}
       <section className="bg-brand-700 pb-16 pt-12 text-white sm:pb-20 sm:pt-16">
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="pointer-events-none absolute inset-0 -z-0 overflow-hidden opacity-25 [background-image:radial-gradient(circle_at_top_right,rgba(255,255,255,0.3),transparent_45%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.18),transparent_55%)]" />
-
-          <div className="relative flex flex-col gap-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-8">
             <span className="inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white/90 ring-1 ring-white/20">
               <Sparkles className="size-3.5" />
               {tHero("badge")}
