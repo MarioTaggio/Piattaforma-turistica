@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Landmark } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PageHero } from "@/components/public/page-hero";
@@ -18,6 +19,9 @@ export default async function PublicInfopointPage({
   searchParams: Promise<SearchParams>;
 }) {
   const sp = await searchParams;
+  const tNav = await getTranslations("nav");
+  const tMod = await getTranslations("modules");
+  const tCommon = await getTranslations("common");
   const q = (sp.q as string | undefined)?.trim() ?? "";
   const citta = (sp.citta as string | undefined)?.trim() ?? "";
   const categoria = (sp.categoria as string | undefined)?.trim() ?? "";
@@ -56,25 +60,25 @@ export default async function PublicInfopointPage({
   return (
     <>
       <PageHero
-        eyebrow="Info point"
-        title="Attrazioni e luoghi da scoprire"
-        subtitle="Musei, monumenti, parchi e itinerari del territorio. Visite guidate e tour virtuali a portata di clic."
+        eyebrow={tNav("infopoint")}
+        title={tMod("infopoint.title")}
+        subtitle={tMod("infopoint.subtitle")}
       />
 
       <div className="mx-auto max-w-7xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
         <FilterBar
           fields={[
-            { type: "search", param: "q", placeholder: "Cerca attrazione…" },
+            { type: "search", param: "q", placeholder: tCommon("searchPlaceholder") },
             {
               type: "select",
               param: "citta",
-              placeholder: "Tutte le città",
+              placeholder: tCommon("allCities"),
               options: cities.map((c) => ({ value: c, label: c })),
             },
             {
               type: "select",
               param: "categoria",
-              placeholder: "Tutte le categorie",
+              placeholder: tCommon("all"),
               options: cats.map((c) => ({ value: c, label: c })),
             },
           ]}
@@ -82,7 +86,7 @@ export default async function PublicInfopointPage({
 
         {(data ?? []).length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-card p-16 text-center text-sm text-muted-foreground">
-            Nessuna attrazione trovata.
+            {tCommon("noResults")}
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -103,7 +107,7 @@ export default async function PublicInfopointPage({
                 fallbackIcon={Landmark}
                 meta={a.categoria ?? a.citta}
                 topBadge={a.citta}
-                cta="Scopri di più"
+                cta={tMod("infopoint.view")}
               />
             ))}
           </div>

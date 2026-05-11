@@ -9,6 +9,7 @@ import {
   UtensilsCrossed,
   Compass,
 } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,10 @@ import { formatDateTime, formatEurFromCents } from "@/lib/utils/format";
 
 export default async function HomePage() {
   const supabase = createAdminClient();
+  const tHero = await getTranslations("hero");
+  const tNav = await getTranslations("nav");
+  const tMod = await getTranslations("modules");
+  const tCommon = await getTranslations("common");
 
   const [
     { data: eventi },
@@ -86,15 +91,13 @@ export default async function HomePage() {
         <div className="relative mx-auto flex max-w-7xl flex-col gap-8 px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
           <span className="inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white/90 ring-1 ring-white/20">
             <Sparkles className="size-3.5" />
-            La piattaforma del territorio
+            {tHero("badge")}
           </span>
           <h1 className="max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
-            Vivi il territorio in un&apos;unica esperienza digitale.
+            {tHero("title")}
           </h1>
           <p className="max-w-2xl text-base text-white/85 sm:text-lg">
-            Eventi da non perdere, soggiorni in B&amp;B, ristoranti tipici, shop
-            del territorio, video lezioni dei nostri esperti e tour virtuali
-            delle attrazioni. Tutto in un solo posto.
+            {tHero("subtitle")}
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
             <Button
@@ -103,7 +106,7 @@ export default async function HomePage() {
               render={<Link href="/eventi" />}
             >
               <Compass className="mr-1.5 size-4" />
-              Esplora la piattaforma
+              {tHero("ctaExplore")}
             </Button>
             <Button
               size="lg"
@@ -111,16 +114,16 @@ export default async function HomePage() {
               className="rounded-xl border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white"
               render={<Link href="/login" />}
             >
-              Accedi al tuo account
+              {tHero("ctaLogin")}
             </Button>
           </div>
 
           <dl className="mt-6 grid w-full max-w-3xl grid-cols-2 gap-4 text-sm sm:grid-cols-4">
             {[
-              { label: "Eventi", icon: CalendarDays },
-              { label: "B&B", icon: Hotel },
-              { label: "Ristoranti", icon: UtensilsCrossed },
-              { label: "Tour virtuali", icon: Landmark },
+              { label: tNav("eventi"), icon: CalendarDays },
+              { label: tNav("bnb"), icon: Hotel },
+              { label: tNav("ristoranti"), icon: UtensilsCrossed },
+              { label: tNav("virtualTour"), icon: Landmark },
             ].map(({ label, icon: Icon }) => (
               <div
                 key={label}
@@ -139,9 +142,9 @@ export default async function HomePage() {
       {/* EVENTI */}
       <section className="mx-auto max-w-7xl space-y-8 px-4 pt-16 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Eventi"
-          title="Cosa succede in città"
-          subtitle="Concerti, festival, mercatini e appuntamenti speciali in arrivo."
+          eyebrow={tNav("eventi")}
+          title={tMod("eventi.title")}
+          subtitle={tMod("eventi.subtitle")}
           ctaHref="/eventi"
         />
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -165,13 +168,15 @@ export default async function HomePage() {
               meta={`${formatDateTime(e.data_inizio)} · ${e.luogo}`}
               topBadge={e.citta ?? undefined}
               price={
-                e.prezzo_cents === 0 ? "Gratis" : formatEurFromCents(e.prezzo_cents)
+                e.prezzo_cents === 0
+                  ? tCommon("free")
+                  : formatEurFromCents(e.prezzo_cents)
               }
-              cta="Acquista biglietto"
+              cta={tMod("eventi.buy")}
             />
           ))}
           {(eventi ?? []).length === 0 && (
-            <EmptyHomeBlock label="Nessun evento in arrivo." />
+            <EmptyHomeBlock label={tMod("eventi.empty")} />
           )}
         </div>
       </section>
@@ -179,9 +184,9 @@ export default async function HomePage() {
       {/* B&B */}
       <section className="mx-auto max-w-7xl space-y-8 px-4 pt-16 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Soggiorni"
-          title="B&B e strutture selezionate"
-          subtitle="Camere accoglienti, posizioni strategiche, ospitalità autentica."
+          eyebrow={tNav("bnb")}
+          title={tMod("bnb.title")}
+          subtitle={tMod("bnb.subtitle")}
           ctaHref="/bnb"
         />
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -202,11 +207,11 @@ export default async function HomePage() {
               fallbackIcon={Hotel}
               meta={s.citta}
               topBadge={s.stelle ? `${s.stelle}★` : undefined}
-              cta="Prenota camera"
+              cta={tMod("bnb.book")}
             />
           ))}
           {(strutture ?? []).length === 0 && (
-            <EmptyHomeBlock label="Nessuna struttura disponibile." />
+            <EmptyHomeBlock label={tMod("bnb.empty")} />
           )}
         </div>
       </section>
@@ -214,9 +219,9 @@ export default async function HomePage() {
       {/* RISTORANTI */}
       <section className="mx-auto max-w-7xl space-y-8 px-4 pt-16 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Sapori"
-          title="Ristoranti del territorio"
-          subtitle="Cucina tipica, locali storici e nuovi indirizzi da scoprire."
+          eyebrow={tNav("ristoranti")}
+          title={tMod("ristoranti.title")}
+          subtitle={tMod("ristoranti.subtitle")}
           ctaHref="/ristoranti"
         />
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -237,11 +242,11 @@ export default async function HomePage() {
               fallbackIcon={UtensilsCrossed}
               meta={r.tipo_cucina ?? r.citta}
               topBadge={r.citta}
-              cta="Prenota tavolo"
+              cta={tMod("ristoranti.book")}
             />
           ))}
           {(ristoranti ?? []).length === 0 && (
-            <EmptyHomeBlock label="Nessun ristorante disponibile." />
+            <EmptyHomeBlock label={tMod("ristoranti.empty")} />
           )}
         </div>
       </section>
@@ -249,9 +254,9 @@ export default async function HomePage() {
       {/* SHOP */}
       <section className="mx-auto max-w-7xl space-y-8 px-4 pt-16 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Shop"
-          title="Prodotti tipici e specialità"
-          subtitle="Acquista direttamente dagli shop dei nostri partner del territorio."
+          eyebrow={tNav("shop")}
+          title={tMod("shop.title")}
+          subtitle={tMod("shop.subtitle")}
           ctaHref="/shop"
         />
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -275,11 +280,11 @@ export default async function HomePage() {
                 fallbackIcon={Store}
                 meta={p.shops?.nome}
                 price={formatEurFromCents(p.prezzo_cents)}
-                cta="Vedi prodotto"
+                cta={tMod("shop.view")}
               />
             ))}
           {(prodotti ?? []).length === 0 && (
-            <EmptyHomeBlock label="Lo shop sarà presto attivo." />
+            <EmptyHomeBlock label={tMod("shop.empty")} />
           )}
         </div>
       </section>
@@ -287,9 +292,9 @@ export default async function HomePage() {
       {/* VIDEO */}
       <section className="mx-auto max-w-7xl space-y-8 px-4 pt-16 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Video lezioni"
-          title="Impara con i nostri esperti"
-          subtitle="Corsi video on-demand su cucina, vino, storia locale e tradizioni."
+          eyebrow={tNav("videolezioni")}
+          title={tMod("video.title")}
+          subtitle={tMod("video.subtitle")}
           ctaHref="/videolezioni"
         />
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -308,15 +313,17 @@ export default async function HomePage() {
               description={c.descrizione}
               imageUrl={c.immagine_copertina}
               fallbackIcon={PlayCircle}
-              meta={c.livello ?? "Corso video"}
+              meta={c.livello ?? tNav("videolezioni")}
               price={
-                c.prezzo_cents === 0 ? "Gratis" : formatEurFromCents(c.prezzo_cents)
+                c.prezzo_cents === 0
+                  ? tCommon("free")
+                  : formatEurFromCents(c.prezzo_cents)
               }
-              cta="Vedi corso"
+              cta={tMod("video.view")}
             />
           ))}
           {(corsi ?? []).length === 0 && (
-            <EmptyHomeBlock label="Nessun corso pubblicato al momento." />
+            <EmptyHomeBlock label={tMod("video.empty")} />
           )}
         </div>
       </section>
@@ -324,9 +331,9 @@ export default async function HomePage() {
       {/* INFOPOINT */}
       <section className="mx-auto max-w-7xl space-y-8 px-4 pt-16 sm:px-6 lg:px-8">
         <SectionHeading
-          eyebrow="Info point"
-          title="Attrazioni e luoghi da scoprire"
-          subtitle="Tutto quello che vale la pena visitare: musei, parchi, monumenti e itinerari."
+          eyebrow={tNav("infopoint")}
+          title={tMod("infopoint.title")}
+          subtitle={tMod("infopoint.subtitle")}
           ctaHref="/infopoint"
         />
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -347,11 +354,11 @@ export default async function HomePage() {
               fallbackIcon={Landmark}
               meta={a.categoria ?? a.citta}
               topBadge={a.citta}
-              cta="Scopri & visita"
+              cta={tMod("infopoint.view")}
             />
           ))}
           {(attrazioni ?? []).length === 0 && (
-            <EmptyHomeBlock label="Nessuna attrazione pubblicata." />
+            <EmptyHomeBlock label={tMod("infopoint.empty")} />
           )}
         </div>
       </section>
@@ -363,15 +370,13 @@ export default async function HomePage() {
             <div className="space-y-4">
               <span className="inline-flex w-fit items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider">
                 <Sparkles className="size-3.5" />
-                Virtual tour
+                {tNav("virtualTour")}
               </span>
               <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                Visita il territorio senza muoverti da casa.
+                {tMod("virtualTour.title")}
               </h2>
               <p className="max-w-xl text-white/85">
-                Tour virtuali a 360° per esplorare musei, palazzi storici e
-                attrazioni naturali. Anteprima gratuita, accesso completo con
-                pochi clic.
+                {tMod("virtualTour.subtitle")}
               </p>
               <div className="flex gap-3 pt-2">
                 <Button
@@ -379,7 +384,7 @@ export default async function HomePage() {
                   className="rounded-xl bg-white text-brand-700 hover:bg-white/90"
                   render={<Link href="/virtual-tour" />}
                 >
-                  Esplora i tour
+                  {tMod("virtualTour.cta")}
                 </Button>
               </div>
             </div>
@@ -410,7 +415,7 @@ export default async function HomePage() {
                     </div>
                     <span className="shrink-0 rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider">
                       {t.gratuito || t.prezzo_cents === 0
-                        ? "Gratuito"
+                        ? tCommon("free")
                         : formatEurFromCents(t.prezzo_cents)}
                     </span>
                   </div>
@@ -418,7 +423,7 @@ export default async function HomePage() {
               ))}
               {(tour ?? []).length === 0 && (
                 <p className="rounded-2xl bg-white/10 p-4 text-sm text-white/80">
-                  Stiamo preparando i primi tour virtuali. Torna presto!
+                  {tMod("virtualTour.empty")}
                 </p>
               )}
             </div>

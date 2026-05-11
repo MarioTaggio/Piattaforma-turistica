@@ -1,4 +1,5 @@
 import { LogOut } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { SiteLogo } from "@/components/shared/site-logo";
 import { signOut } from "@/lib/auth/actions";
@@ -9,10 +10,13 @@ import type { GestoreBookingsFlags } from "@/lib/auth/gestore-bookings";
 import { SidebarNav, type NavItem, type NavSection } from "./sidebar-nav";
 import { DownloadAppCard } from "./download-app-card";
 
+type T = (key: string) => string;
+
 function buildSections(
   user: SessionUser,
   counts: UserContentCounts,
   bookingsFlags: GestoreBookingsFlags,
+  t: T,
 ): NavSection[] {
   const has = (...roles: SessionUser["roles"]) =>
     user.roles.includes("admin") || roles.some((r) => user.roles.includes(r));
@@ -23,7 +27,7 @@ function buildSections(
   // ─────────────────────────────────────────────────────────────────────────
   const generale: NavSection = {
     items: [
-      { label: "Dashboard", href: "/dashboard", icon: "dashboard" },
+      { label: t("dashboard"), href: "/dashboard", icon: "dashboard" },
     ],
   };
 
@@ -35,37 +39,37 @@ function buildSections(
   const accountChildren: NavItem[] = [];
   if (counts.biglietti > 0)
     accountChildren.push({
-      label: "I miei biglietti",
+      label: t("myTickets"),
       href: "/dashboard/biglietti",
       icon: "biglietti",
     });
   if (counts.prenotazioniBnb > 0)
     accountChildren.push({
-      label: "I miei soggiorni",
+      label: t("myStays"),
       href: "/dashboard/prenotazioni",
       icon: "prenotazioni",
     });
   if (counts.prenotazioniTavolo > 0)
     accountChildren.push({
-      label: "Le mie prenotazioni",
+      label: t("myBookings"),
       href: "/dashboard/prenotazioni",
       icon: "prenotazioni",
     });
   if (counts.prenotazioniVisita > 0)
     accountChildren.push({
-      label: "Le mie visite",
+      label: t("myVisits"),
       href: "/dashboard/prenotazioni",
       icon: "prenotazioni",
     });
   if (counts.ordiniShop > 0 || counts.ordiniRistorante > 0)
     accountChildren.push({
-      label: "I miei ordini",
+      label: t("myOrders"),
       href: "/dashboard/ordini",
       icon: "ordini",
     });
   if (counts.videoAcquistati > 0)
     accountChildren.push({
-      label: "I miei corsi",
+      label: t("myCourses"),
       href: "/dashboard/miei-video",
       icon: "corsi",
     });
@@ -75,10 +79,10 @@ function buildSections(
   );
 
   const accountSection: NavSection = {
-    heading: "Il mio account",
+    heading: t("myAccount"),
     items: [
       {
-        label: "Account",
+        label: t("account"),
         href: "/dashboard/profilo",
         icon: "profilo",
         children: accountChildrenDedup,
@@ -92,16 +96,16 @@ function buildSections(
   const gestioniItems: NavItem[] = [];
   if (has("gestore_eventi")) {
     const eventiChildren: NavItem[] = [
-      { label: "I miei eventi", href: "/dashboard/eventi", icon: "eventi" },
+      { label: t("myEvents"), href: "/dashboard/eventi", icon: "eventi" },
     ];
     if (bookingsFlags.eventi)
       eventiChildren.push({
-        label: "Prenotazioni",
+        label: t("prenotazioni"),
         href: "/dashboard/eventi",
         icon: "prenotazioni",
       });
     gestioniItems.push({
-      label: "Gestione Eventi",
+      label: t("gestioneEventi"),
       href: "/dashboard/eventi",
       icon: "eventi",
       children: eventiChildren,
@@ -109,16 +113,16 @@ function buildSections(
   }
   if (has("gestore_bnb")) {
     const bnbChildren: NavItem[] = [
-      { label: "Le mie strutture", href: "/dashboard/bnb", icon: "bnb" },
+      { label: t("myStructures"), href: "/dashboard/bnb", icon: "bnb" },
     ];
     if (bookingsFlags.bnb)
       bnbChildren.push({
-        label: "Prenotazioni",
+        label: t("prenotazioni"),
         href: "/dashboard/bnb",
         icon: "prenotazioni",
       });
     gestioniItems.push({
-      label: "Gestione B&B",
+      label: t("gestioneBnb"),
       href: "/dashboard/bnb",
       icon: "bnb",
       children: bnbChildren,
@@ -127,19 +131,19 @@ function buildSections(
   if (has("gestore_ristorante")) {
     const ristChildren: NavItem[] = [
       {
-        label: "I miei ristoranti",
+        label: t("myRestaurants"),
         href: "/dashboard/ristoranti",
         icon: "ristoranti",
       },
     ];
     if (bookingsFlags.ristoranti)
       ristChildren.push({
-        label: "Prenotazioni",
+        label: t("prenotazioni"),
         href: "/dashboard/ristoranti",
         icon: "prenotazioni",
       });
     gestioniItems.push({
-      label: "Gestione Ristoranti",
+      label: t("gestioneRistoranti"),
       href: "/dashboard/ristoranti",
       icon: "ristoranti",
       children: ristChildren,
@@ -147,32 +151,32 @@ function buildSections(
   }
   if (has("gestore_shop")) {
     gestioniItems.push({
-      label: "Gestione Shop",
+      label: t("gestioneShop"),
       href: "/dashboard/shop",
       icon: "shop",
       children: [
-        { label: "I miei shop", href: "/dashboard/shop", icon: "shop" },
+        { label: t("myShops"), href: "/dashboard/shop", icon: "shop" },
       ],
     });
   }
   if (has("gestore_video")) {
     gestioniItems.push({
-      label: "Gestione Video",
+      label: t("gestioneVideo"),
       href: "/dashboard/video",
       icon: "video",
       children: [
-        { label: "I miei corsi", href: "/dashboard/video", icon: "corsi" },
+        { label: t("myCourses"), href: "/dashboard/video", icon: "corsi" },
       ],
     });
   }
   if (has("gestore_infopoint")) {
     gestioniItems.push({
-      label: "Gestione Infopoint",
+      label: t("gestioneInfopoint"),
       href: "/dashboard/infopoint",
       icon: "infopoint",
       children: [
         {
-          label: "Le mie attrazioni",
+          label: t("myAttractions"),
           href: "/dashboard/infopoint",
           icon: "infopoint",
         },
@@ -181,7 +185,7 @@ function buildSections(
   }
 
   const gestioniSection: NavSection | null = gestioniItems.length
-    ? { heading: "Le tue gestioni", items: gestioniItems }
+    ? { heading: t("management"), items: gestioniItems }
     : null;
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -190,90 +194,90 @@ function buildSections(
   let adminSection: NavSection | null = null;
   if (user.roles.includes("admin")) {
     adminSection = {
-      heading: "Amministrazione",
+      heading: t("administration"),
       items: [
         {
-          label: "Amministrazione",
+          label: t("administration"),
           href: "/dashboard/admin",
           icon: "panoramica",
           children: [
             {
-              label: "Panoramica",
+              label: t("panoramica"),
               href: "/dashboard/admin",
               icon: "panoramica",
             },
             {
-              label: "Utenti",
+              label: t("utenti"),
               href: "/dashboard/admin/utenti",
               icon: "utenti",
             },
             {
-              label: "Gestori",
+              label: t("gestori"),
               href: "/dashboard/admin/gestori",
               icon: "gestori",
             },
             {
-              label: "Contenuti",
+              label: t("contenuti"),
               href: "/dashboard/admin/eventi",
               icon: "panoramica",
               children: [
                 {
-                  label: "Eventi",
+                  label: t("eventi"),
                   href: "/dashboard/admin/eventi",
                   icon: "eventi",
                 },
-                { label: "B&B", href: "/dashboard/admin/bnb", icon: "bnb" },
+                { label: t("bnb"), href: "/dashboard/admin/bnb", icon: "bnb" },
                 {
-                  label: "Ristoranti",
+                  label: t("ristoranti"),
                   href: "/dashboard/admin/ristoranti",
                   icon: "ristoranti",
                 },
                 {
-                  label: "Shop",
+                  label: t("shop"),
                   href: "/dashboard/admin/shop",
                   icon: "shop",
                 },
                 {
-                  label: "Video",
+                  label: t("video"),
                   href: "/dashboard/admin/video",
                   icon: "video",
                 },
                 {
-                  label: "Infopoint",
+                  label: t("infopoint"),
                   href: "/dashboard/admin/infopoint",
                   icon: "infopoint",
                 },
               ],
             },
             {
-              label: "Transazioni",
+              label: t("transazioni"),
               href: "/dashboard/admin/prenotazioni",
               icon: "ordini",
               children: [
                 {
-                  label: "Prenotazioni",
+                  label: t("prenotazioni"),
                   href: "/dashboard/admin/prenotazioni",
                   icon: "prenotazioni",
                 },
                 {
-                  label: "Ordini",
+                  label: t("ordini"),
                   href: "/dashboard/admin/ordini",
                   icon: "ordini",
                 },
                 {
-                  label: "Biglietti",
+                  label: t("biglietti"),
                   href: "/dashboard/admin/biglietti",
                   icon: "biglietti",
                 },
               ],
             },
             {
-              label: "Analytics",
+              label: t("analytics"),
               href: "/dashboard/admin/analytics",
               icon: "analytics",
             },
             {
-              label: "Impostazioni",
+              label: t("settings"),
               href: "/dashboard/admin/impostazioni",
               icon: "impostazioni",
             },
@@ -291,7 +295,7 @@ function buildSections(
   ];
 }
 
-export function Sidebar({
+export async function Sidebar({
   user,
   counts,
   bookingsFlags,
@@ -300,7 +304,8 @@ export function Sidebar({
   counts: UserContentCounts;
   bookingsFlags: GestoreBookingsFlags;
 }) {
-  const sections = buildSections(user, counts, bookingsFlags);
+  const t = await getTranslations("dashboard");
+  const sections = buildSections(user, counts, bookingsFlags, t);
 
   return (
     <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar px-5 py-6 lg:flex">
@@ -320,7 +325,7 @@ export function Sidebar({
             className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-foreground/70 transition hover:bg-muted hover:text-foreground"
           >
             <LogOut className="size-4 text-muted-foreground" />
-            Logout
+            {t("logout")}
           </button>
         </form>
       </div>

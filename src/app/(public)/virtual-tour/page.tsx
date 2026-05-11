@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Compass, MapPin } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PageHero } from "@/components/public/page-hero";
@@ -13,6 +14,9 @@ export const metadata: Metadata = {
 
 export default async function VirtualTourPage() {
   const supabase = createAdminClient();
+  const tNav = await getTranslations("nav");
+  const tMod = await getTranslations("modules");
+  const tCommon = await getTranslations("common");
 
   const { data: tours } = await supabase
     .from("tour_virtuali")
@@ -35,15 +39,15 @@ export default async function VirtualTourPage() {
   return (
     <>
       <PageHero
-        eyebrow="Virtual tour"
-        title="Esplora il territorio a 360°"
-        subtitle="Visita musei, palazzi storici e attrazioni naturali senza muoverti da casa."
+        eyebrow={tNav("virtualTour")}
+        title={tMod("virtualTour.title")}
+        subtitle={tMod("virtualTour.subtitle")}
       />
 
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         {visible.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-card p-16 text-center text-sm text-muted-foreground">
-            Stiamo preparando i primi tour virtuali. Torna presto!
+            {tMod("virtualTour.empty")}
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -71,10 +75,10 @@ export default async function VirtualTourPage() {
                     )}
                     <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-brand-700 shadow-sm">
                       <Compass className="size-3" />
-                      Virtual tour
+                      {tNav("virtualTour")}
                     </span>
                     <span className="absolute right-3 top-3 inline-flex items-center rounded-full bg-brand-600 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white shadow">
-                      {free ? "Gratuito" : formatEurFromCents(t.prezzo_cents)}
+                      {free ? tCommon("free") : formatEurFromCents(t.prezzo_cents)}
                     </span>
                   </div>
                   <div className="flex flex-1 flex-col gap-3 p-5">

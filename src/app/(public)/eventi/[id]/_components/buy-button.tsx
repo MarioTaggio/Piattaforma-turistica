@@ -4,6 +4,7 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Ticket } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { acquistaBiglietto } from "@/lib/public/actions";
@@ -16,6 +17,8 @@ type Props = {
 
 export function BuyTicketButton({ eventoId, disabled, label }: Props) {
   const router = useRouter();
+  const tBooking = useTranslations("booking");
+  const tMessages = useTranslations("messages");
   const [pending, startTransition] = useTransition();
 
   function onClick() {
@@ -26,7 +29,7 @@ export function BuyTicketButton({ eventoId, disabled, label }: Props) {
         return;
       }
       if (r.redirectTo) {
-        if (r.success) toast.success("Biglietto acquistato");
+        if (r.success) toast.success(tMessages("purchaseSuccess"));
         router.push(r.redirectTo);
       }
     });
@@ -45,7 +48,7 @@ export function BuyTicketButton({ eventoId, disabled, label }: Props) {
       ) : (
         <Ticket className="mr-1.5 size-4" />
       )}
-      {label ?? "Acquista biglietto"}
+      {label ?? tBooking("buyTicket")}
     </Button>
   );
 }

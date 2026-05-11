@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { prenotaCamera } from "@/lib/public/actions";
@@ -29,6 +30,8 @@ function nightsBetween(a: string, b: string) {
 
 export function BnbBookingForm({ strutturaId, camere }: Props) {
   const router = useRouter();
+  const tBooking = useTranslations("booking");
+  const tMessages = useTranslations("messages");
   const today = new Date().toISOString().slice(0, 10);
   const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 
@@ -48,7 +51,7 @@ export function BnbBookingForm({ strutturaId, camere }: Props) {
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!cameraId) {
-      toast.error("Seleziona una camera");
+      toast.error(tMessages("genericError"));
       return;
     }
     startTransition(async () => {
@@ -64,7 +67,7 @@ export function BnbBookingForm({ strutturaId, camere }: Props) {
         return;
       }
       if (r.redirectTo) {
-        if (r.success) toast.success("Richiesta inviata");
+        if (r.success) toast.success(tMessages("bookingSuccess"));
         router.push(r.redirectTo);
       }
     });
@@ -73,7 +76,7 @@ export function BnbBookingForm({ strutturaId, camere }: Props) {
   if (camere.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">
-        Al momento non ci sono camere prenotabili.
+        {tBooking("noRoomsAvailable")}
       </p>
     );
   }
@@ -82,7 +85,7 @@ export function BnbBookingForm({ strutturaId, camere }: Props) {
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
         <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          Camera
+          {tBooking("room")}
         </label>
         <select
           value={cameraId}
@@ -100,7 +103,7 @@ export function BnbBookingForm({ strutturaId, camere }: Props) {
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Check-in
+            {tBooking("checkIn")}
           </label>
           <input
             type="date"
@@ -112,7 +115,7 @@ export function BnbBookingForm({ strutturaId, camere }: Props) {
         </div>
         <div>
           <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Check-out
+            {tBooking("checkOut")}
           </label>
           <input
             type="date"
@@ -126,7 +129,7 @@ export function BnbBookingForm({ strutturaId, camere }: Props) {
 
       <div>
         <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          Ospiti
+          {tBooking("guests")}
         </label>
         <input
           type="number"
@@ -140,7 +143,7 @@ export function BnbBookingForm({ strutturaId, camere }: Props) {
 
       <div className="flex items-center justify-between rounded-xl bg-brand-50 px-3 py-2.5">
         <span className="text-xs uppercase tracking-wider text-brand-700">
-          {nights} {nights === 1 ? "notte" : "notti"}
+          {tBooking("nights", { n: nights })}
         </span>
         <span className="text-base font-semibold text-foreground">
           {formatEurFromCents(total)}
@@ -154,10 +157,10 @@ export function BnbBookingForm({ strutturaId, camere }: Props) {
         className="w-full rounded-xl bg-brand-600 hover:bg-brand-700"
       >
         {pending && <Loader2 className="mr-1.5 size-4 animate-spin" />}
-        Richiedi prenotazione
+        {tBooking("requestBooking")}
       </Button>
       <p className="text-[11px] text-muted-foreground">
-        La richiesta resta in attesa fino alla conferma del gestore.
+        {tBooking("pendingApproval")}
       </p>
     </form>
   );

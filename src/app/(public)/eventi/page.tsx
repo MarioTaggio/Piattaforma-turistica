@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { CalendarDays } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PageHero } from "@/components/public/page-hero";
@@ -20,6 +21,9 @@ export default async function PublicEventiPage({
   searchParams: Promise<SearchParams>;
 }) {
   const sp = await searchParams;
+  const tNav = await getTranslations("nav");
+  const tMod = await getTranslations("modules");
+  const tCommon = await getTranslations("common");
   const q = (sp.q as string | undefined)?.trim() ?? "";
   const citta = (sp.citta as string | undefined)?.trim() ?? "";
   const dataDa = (sp.dataDa as string | undefined) ?? "";
@@ -65,26 +69,26 @@ export default async function PublicEventiPage({
   return (
     <>
       <PageHero
-        eyebrow="Eventi"
-        title="Cosa succede vicino a te"
-        subtitle="Filtra per data, città o prezzo. Tutti gli eventi pubblicati dai nostri gestori, in un colpo d'occhio."
+        eyebrow={tNav("eventi")}
+        title={tMod("eventi.title")}
+        subtitle={tMod("eventi.subtitle")}
       />
 
       <div className="mx-auto max-w-7xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
         <FilterBar
           fields={[
-            { type: "search", param: "q", placeholder: "Cerca evento o luogo…" },
+            { type: "search", param: "q", placeholder: tCommon("searchPlaceholder") },
             {
               type: "select",
               param: "citta",
-              placeholder: "Tutte le città",
+              placeholder: tCommon("allCities"),
               options: cities.map((c) => ({ value: c, label: c })),
             },
-            { type: "date", param: "dataDa", placeholder: "Da" },
+            { type: "date", param: "dataDa", placeholder: tCommon("dateFrom") },
             {
               type: "number",
               param: "prezzoMax",
-              placeholder: "Prezzo max (€)",
+              placeholder: tCommon("priceMax"),
               min: 0,
             },
           ]}
@@ -92,7 +96,7 @@ export default async function PublicEventiPage({
 
         {(data ?? []).length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-card p-16 text-center text-sm text-muted-foreground">
-            Nessun evento trovato con questi filtri.
+            {tCommon("noResults")}
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -117,10 +121,10 @@ export default async function PublicEventiPage({
                 topBadge={e.citta ?? undefined}
                 price={
                   e.prezzo_cents === 0
-                    ? "Gratis"
+                    ? tCommon("free")
                     : formatEurFromCents(e.prezzo_cents)
                 }
-                cta="Acquista biglietto"
+                cta={tMod("eventi.buy")}
               />
             ))}
           </div>

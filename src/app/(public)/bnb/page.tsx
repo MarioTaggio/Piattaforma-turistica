@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Hotel } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PageHero } from "@/components/public/page-hero";
@@ -20,6 +21,9 @@ export default async function PublicBnbPage({
   searchParams: Promise<SearchParams>;
 }) {
   const sp = await searchParams;
+  const tNav = await getTranslations("nav");
+  const tMod = await getTranslations("modules");
+  const tCommon = await getTranslations("common");
   const q = (sp.q as string | undefined)?.trim() ?? "";
   const citta = (sp.citta as string | undefined)?.trim() ?? "";
   const stelle = (sp.stelle as string | undefined) ?? "";
@@ -88,25 +92,25 @@ export default async function PublicBnbPage({
   return (
     <>
       <PageHero
-        eyebrow="Soggiorni"
-        title="B&B e strutture ricettive"
-        subtitle="Cerca per città, stelle o budget. Tutte strutture verificate dai nostri gestori."
+        eyebrow={tNav("bnb")}
+        title={tMod("bnb.title")}
+        subtitle={tMod("bnb.subtitle")}
       />
 
       <div className="mx-auto max-w-7xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
         <FilterBar
           fields={[
-            { type: "search", param: "q", placeholder: "Cerca struttura…" },
+            { type: "search", param: "q", placeholder: tCommon("searchPlaceholder") },
             {
               type: "select",
               param: "citta",
-              placeholder: "Tutte le città",
+              placeholder: tCommon("allCities"),
               options: cities.map((c) => ({ value: c, label: c })),
             },
             {
               type: "select",
               param: "stelle",
-              placeholder: "Stelle (min)",
+              placeholder: "★",
               options: [
                 { value: "1", label: "1★ +" },
                 { value: "2", label: "2★ +" },
@@ -118,7 +122,7 @@ export default async function PublicBnbPage({
             {
               type: "number",
               param: "prezzoMax",
-              placeholder: "€/notte max",
+              placeholder: tCommon("priceMax"),
               min: 0,
             },
           ]}
@@ -126,7 +130,7 @@ export default async function PublicBnbPage({
 
         {filteredByPrice.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-card p-16 text-center text-sm text-muted-foreground">
-            Nessuna struttura trovata con questi filtri.
+            {tCommon("noResults")}
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -158,7 +162,7 @@ export default async function PublicBnbPage({
                         ? `da ${formatEurFromCents(price)} / notte`
                         : undefined
                     }
-                    cta="Vedi camere"
+                    cta={tMod("bnb.book")}
                   />
                 );
               })}

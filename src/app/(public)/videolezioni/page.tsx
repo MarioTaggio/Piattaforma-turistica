@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PlayCircle } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PageHero } from "@/components/public/page-hero";
@@ -19,6 +20,9 @@ export default async function PublicVideoPage({
   searchParams: Promise<SearchParams>;
 }) {
   const sp = await searchParams;
+  const tNav = await getTranslations("nav");
+  const tMod = await getTranslations("modules");
+  const tCommon = await getTranslations("common");
   const q = (sp.q as string | undefined)?.trim() ?? "";
   const livello = (sp.livello as string | undefined) ?? "";
   const free = sp.gratis as string | undefined;
@@ -42,19 +46,19 @@ export default async function PublicVideoPage({
   return (
     <>
       <PageHero
-        eyebrow="Video lezioni"
-        title="Impara con i nostri esperti"
-        subtitle="Corsi on-demand su cucina, vino, storia locale e cultura del territorio."
+        eyebrow={tNav("videolezioni")}
+        title={tMod("video.title")}
+        subtitle={tMod("video.subtitle")}
       />
 
       <div className="mx-auto max-w-7xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
         <FilterBar
           fields={[
-            { type: "search", param: "q", placeholder: "Cerca corso…" },
+            { type: "search", param: "q", placeholder: tCommon("searchPlaceholder") },
             {
               type: "select",
               param: "livello",
-              placeholder: "Tutti i livelli",
+              placeholder: tCommon("all"),
               options: [
                 { value: "principiante", label: "Principiante" },
                 { value: "intermedio", label: "Intermedio" },
@@ -64,15 +68,15 @@ export default async function PublicVideoPage({
             {
               type: "select",
               param: "gratis",
-              placeholder: "Prezzo",
-              options: [{ value: "true", label: "Solo gratuiti" }],
+              placeholder: tCommon("free"),
+              options: [{ value: "true", label: tCommon("free") }],
             },
           ]}
         />
 
         {(data ?? []).length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-card p-16 text-center text-sm text-muted-foreground">
-            Nessun corso trovato.
+            {tCommon("noResults")}
           </div>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -92,13 +96,13 @@ export default async function PublicVideoPage({
                 description={c.descrizione}
                 imageUrl={c.immagine_copertina}
                 fallbackIcon={PlayCircle}
-                meta={c.livello ?? "Corso video"}
+                meta={c.livello ?? tNav("videolezioni")}
                 price={
                   c.prezzo_cents === 0
-                    ? "Gratis"
+                    ? tCommon("free")
                     : formatEurFromCents(c.prezzo_cents)
                 }
-                cta="Vedi corso"
+                cta={tMod("video.view")}
               />
             ))}
           </div>

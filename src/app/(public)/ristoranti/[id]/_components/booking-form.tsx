@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { prenotaTavolo } from "@/lib/public/actions";
@@ -22,6 +23,8 @@ type Props = {
 
 export function TavoloBookingForm({ ristoranteId, tavoli }: Props) {
   const router = useRouter();
+  const tBooking = useTranslations("booking");
+  const tMessages = useTranslations("messages");
 
   const defaultDate = (() => {
     const d = new Date();
@@ -43,11 +46,11 @@ export function TavoloBookingForm({ ristoranteId, tavoli }: Props) {
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!tavoloId) {
-      toast.error("Seleziona un tavolo");
+      toast.error(tMessages("genericError"));
       return;
     }
     if (tavolo && ospiti > tavolo.posti) {
-      toast.error(`Tavolo da ${tavolo.posti} posti`);
+      toast.error(`${tBooking("table")}: ${tavolo.posti}`);
       return;
     }
     startTransition(async () => {
@@ -63,7 +66,7 @@ export function TavoloBookingForm({ ristoranteId, tavoli }: Props) {
         return;
       }
       if (r.redirectTo) {
-        if (r.success) toast.success("Richiesta inviata");
+        if (r.success) toast.success(tMessages("bookingSuccess"));
         router.push(r.redirectTo);
       }
     });
@@ -72,7 +75,7 @@ export function TavoloBookingForm({ ristoranteId, tavoli }: Props) {
   if (tavoli.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">
-        Nessun tavolo prenotabile online al momento.
+        {tBooking("noTablesAvailable")}
       </p>
     );
   }
@@ -81,7 +84,7 @@ export function TavoloBookingForm({ ristoranteId, tavoli }: Props) {
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
         <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          Tavolo
+          {tBooking("table")}
         </label>
         <select
           value={tavoloId}
@@ -90,7 +93,7 @@ export function TavoloBookingForm({ ristoranteId, tavoli }: Props) {
         >
           {tavoli.map((t) => (
             <option key={t.id} value={t.id}>
-              Tavolo {t.numero} — {t.posti} posti
+              {tBooking("table")} {t.numero} — {t.posti}
               {t.posizione ? ` · ${t.posizione}` : ""}
             </option>
           ))}
@@ -99,7 +102,7 @@ export function TavoloBookingForm({ ristoranteId, tavoli }: Props) {
 
       <div>
         <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          Data e ora
+          {tBooking("date")}
         </label>
         <input
           type="datetime-local"
@@ -111,7 +114,7 @@ export function TavoloBookingForm({ ristoranteId, tavoli }: Props) {
 
       <div>
         <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          Ospiti
+          {tBooking("guests")}
         </label>
         <input
           type="number"
@@ -125,13 +128,12 @@ export function TavoloBookingForm({ ristoranteId, tavoli }: Props) {
 
       <div>
         <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-          Note (opzionale)
+          {tBooking("notes")}
         </label>
         <textarea
           rows={2}
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          placeholder="Allergie, occasioni speciali…"
           className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         />
       </div>
@@ -143,7 +145,7 @@ export function TavoloBookingForm({ ristoranteId, tavoli }: Props) {
         className="w-full rounded-xl bg-brand-600 hover:bg-brand-700"
       >
         {pending && <Loader2 className="mr-1.5 size-4 animate-spin" />}
-        Richiedi prenotazione
+        {tBooking("requestBooking")}
       </Button>
     </form>
   );

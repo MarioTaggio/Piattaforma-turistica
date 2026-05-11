@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { LayoutDashboard, LogIn, Menu, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 
@@ -10,6 +11,7 @@ import { NAV_LINKS } from "./nav-links";
 
 export function MobileMenu({ loggedIn }: { loggedIn: boolean }) {
   const [open, setOpen] = useState(false);
+  const t = useTranslations("nav");
 
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
@@ -25,7 +27,7 @@ export function MobileMenu({ loggedIn }: { loggedIn: boolean }) {
         type="button"
         onClick={() => setOpen(true)}
         className="grid size-9 place-items-center rounded-lg text-foreground/80 hover:bg-muted lg:hidden"
-        aria-label="Apri menu"
+        aria-label={t("openMenu")}
       >
         <Menu className="size-5" />
       </button>
@@ -36,18 +38,18 @@ export function MobileMenu({ loggedIn }: { loggedIn: boolean }) {
             type="button"
             onClick={() => setOpen(false)}
             className="absolute inset-0 bg-foreground/40 backdrop-blur-sm"
-            aria-label="Chiudi menu"
+            aria-label={t("closeMenu")}
           />
           <div className="absolute right-0 top-0 flex h-full w-72 flex-col bg-background p-6 shadow-2xl">
             <div className="flex items-center justify-between">
               <span className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                Menu
+                {t("menu")}
               </span>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
                 className="grid size-8 place-items-center rounded-lg hover:bg-muted"
-                aria-label="Chiudi"
+                aria-label={t("closeMenu")}
               >
                 <X className="size-4" />
               </button>
@@ -60,7 +62,7 @@ export function MobileMenu({ loggedIn }: { loggedIn: boolean }) {
                   onClick={() => setOpen(false)}
                   className="rounded-xl px-3 py-2.5 text-sm font-medium text-foreground/80 hover:bg-brand-50 hover:text-brand-700"
                 >
-                  {l.label}
+                  {t(l.key)}
                 </Link>
               ))}
             </nav>
@@ -71,7 +73,7 @@ export function MobileMenu({ loggedIn }: { loggedIn: boolean }) {
                   render={<Link href="/dashboard" onClick={() => setOpen(false)} />}
                 >
                   <LayoutDashboard className="mr-1.5 size-4" />
-                  Vai alla dashboard
+                  {t("goToDashboard")}
                 </Button>
               ) : (
                 <Button
@@ -79,7 +81,7 @@ export function MobileMenu({ loggedIn }: { loggedIn: boolean }) {
                   render={<Link href="/login" onClick={() => setOpen(false)} />}
                 >
                   <LogIn className="mr-1.5 size-4" />
-                  Accedi
+                  {t("login")}
                 </Button>
               )}
             </div>

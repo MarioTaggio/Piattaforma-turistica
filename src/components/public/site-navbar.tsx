@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { LayoutDashboard, LogIn } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { getSessionUser } from "@/lib/auth/dal";
 import { SiteLogo } from "@/components/shared/site-logo";
@@ -12,6 +13,7 @@ import { NAV_LINKS } from "./nav-links";
 
 export async function SiteNavbar() {
   const user = await getSessionUser();
+  const t = await getTranslations("nav");
   const initials = user
     ? ((user.nome ?? user.email)[0] ?? "?").toUpperCase()
     : "";
@@ -22,13 +24,13 @@ export async function SiteNavbar() {
         <SiteLogo />
 
         <nav className="hidden items-center gap-1 lg:flex">
-          {NAV_LINKS.map((l) => (
+          {NAV_LINKS.filter((l) => l.key !== "home").map((l) => (
             <Link
               key={l.href}
               href={l.href}
               className="rounded-lg px-3 py-1.5 text-sm font-medium text-foreground/80 transition hover:bg-brand-50 hover:text-brand-700"
             >
-              {l.label}
+              {t(l.key)}
             </Link>
           ))}
         </nav>
@@ -43,7 +45,7 @@ export async function SiteNavbar() {
               render={<Link href="/dashboard" />}
             >
               <LayoutDashboard className="mr-1.5 size-4" />
-              Dashboard
+              {t("dashboard")}
             </Button>
           ) : (
             <Button
@@ -52,13 +54,13 @@ export async function SiteNavbar() {
               render={<Link href="/login" />}
             >
               <LogIn className="mr-1.5 size-4" />
-              Accedi
+              {t("login")}
             </Button>
           )}
           {user && (
             <Link
               href="/dashboard"
-              aria-label="Area personale"
+              aria-label={t("dashboard")}
               className="grid size-9 place-items-center rounded-full bg-brand-50 text-sm font-semibold text-brand-700 ring-1 ring-brand-100 transition hover:bg-brand-100"
             >
               {initials}
