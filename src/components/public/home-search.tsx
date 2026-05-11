@@ -79,8 +79,9 @@ export function HomeSearch() {
   }
 
   return (
-    <div className="space-y-3">
-      {/* Bottoni categoria — pill glassmorphism, allineati a sinistra */}
+    <>
+      {/* Bottoni categoria — pill glassmorphism, allineati a sinistra,
+          direttamente sulla hero verde senza wrapper */}
       <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-start">
         {TABS.map((t) => {
           const Icon = t.icon;
@@ -104,8 +105,9 @@ export function HomeSearch() {
         })}
       </div>
 
-      {/* Card glassmorphism */}
-      <div className="rounded-3xl border border-white/30 bg-white/20 p-6 shadow-2xl backdrop-blur-md sm:p-8">
+      {/* Box search bar — UNICO contenitore, glassmorphism, direttamente
+          sulla hero verde, niente wrapper esterno */}
+      <div className="mt-4 rounded-3xl border border-white/30 bg-white/20 p-6 shadow-2xl backdrop-blur-md sm:p-8">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -261,6 +263,6 @@ export function HomeSearch() {
           )}
         </form>
       </div>
-    </div>
+    </>
   );
 }
