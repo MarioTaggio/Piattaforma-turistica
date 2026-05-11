@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PlayCircle, Clock, BookOpen, Compass } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { requireUser } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
@@ -34,6 +35,7 @@ type AcquistoRow = {
 export default async function MieiVideoPage() {
   const user = await requireUser();
   const supabase = await createClient();
+  const tVideo = await getTranslations("video");
 
   const { data } = await supabase
     .from("acquisti_video")
@@ -70,22 +72,22 @@ export default async function MieiVideoPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="I miei video"
-        subtitle="Tutti i corsi video che hai acquistato. Riprendi da dove avevi lasciato."
+        title={tVideo("title")}
+        subtitle={tVideo("subtitle")}
       />
 
       {acquisti.length === 0 ? (
         <EmptyState
           icon={PlayCircle}
-          title="Nessun corso acquistato"
-          description="Quando acquisterai un corso video lo troverai qui, sempre disponibile per la riproduzione."
+          title={tVideo("noCourses")}
+          description={tVideo("noCoursesDescription")}
           action={
             <Button
               render={<Link href="/video" />}
               className="rounded-xl bg-brand-600 hover:bg-brand-700"
             >
               <Compass className="mr-1.5 size-4" />
-              Esplora i corsi
+              {tVideo("exploreCourses")}
             </Button>
           }
         />
@@ -134,8 +136,7 @@ export default async function MieiVideoPage() {
                   <ul className="flex flex-wrap gap-3 text-xs text-muted-foreground">
                     <li className="flex items-center gap-1.5">
                       <BookOpen className="size-3.5" />
-                      {formatNumber(lezioniCount)} lezion
-                      {lezioniCount === 1 ? "e" : "i"}
+                      {formatNumber(lezioniCount)} {tVideo("lessons")}
                     </li>
                     {c?.durata_totale_secondi != null && (
                       <li className="flex items-center gap-1.5">
@@ -147,7 +148,7 @@ export default async function MieiVideoPage() {
 
                   <div className="mt-auto flex items-center justify-between border-t border-border pt-3">
                     <span className="text-[11px] text-muted-foreground">
-                      Acquistato {formatDate(a.created_at)}
+                      {tVideo("purchased")} {formatDate(a.created_at)}
                     </span>
                     {c && (
                       <Button
@@ -156,7 +157,7 @@ export default async function MieiVideoPage() {
                         className="rounded-xl bg-brand-600 hover:bg-brand-700"
                       >
                         <PlayCircle className="mr-1.5 size-4" />
-                        Riprendi
+                        {tVideo("resume")}
                       </Button>
                     )}
                   </div>

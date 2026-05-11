@@ -9,6 +9,7 @@ import {
   Ticket,
   Users,
 } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
@@ -28,6 +29,9 @@ export default async function EventoDetailPage({
 }) {
   const { id } = await params;
   const supabase = createAdminClient();
+  const tNav = await getTranslations("nav");
+  const tDetail = await getTranslations("detail");
+  const tCommon = await getTranslations("common");
 
   const { data: evento } = await supabase
     .from("eventi")
@@ -66,7 +70,7 @@ export default async function EventoDetailPage({
         className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="size-3.5" />
-        Tutti gli eventi
+        {tDetail("backToAll")}
       </Link>
 
       <div className="mt-6 overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
@@ -94,7 +98,7 @@ export default async function EventoDetailPage({
           <div className="space-y-5">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-wider text-brand-700">
-                Evento
+                {tNav("eventi")}
               </p>
               <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
                 {e.titolo}
@@ -108,13 +112,13 @@ export default async function EventoDetailPage({
             )}
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <InfoRow icon={Calendar} label="Inizio" value={formatDateTime(e.data_inizio)} />
-              <InfoRow icon={Clock} label="Fine" value={formatDateTime(e.data_fine)} />
-              <InfoRow icon={MapPin} label="Luogo" value={`${e.luogo}${e.citta ? ` · ${e.citta}` : ""}`} />
+              <InfoRow icon={Calendar} label={tDetail("start")} value={formatDateTime(e.data_inizio)} />
+              <InfoRow icon={Clock} label={tDetail("end")} value={formatDateTime(e.data_fine)} />
+              <InfoRow icon={MapPin} label={tDetail("location")} value={`${e.luogo}${e.citta ? ` · ${e.citta}` : ""}`} />
               <InfoRow
                 icon={Users}
-                label="Posti"
-                value={`${formatNumber(sold)} venduti su ${formatNumber(e.posti_totali)}`}
+                label={tDetail("seats")}
+                value={`${formatNumber(sold)} ${tDetail("seatsSold")} ${formatNumber(e.posti_totali)}`}
               />
             </div>
           </div>
@@ -122,10 +126,10 @@ export default async function EventoDetailPage({
           <aside className="space-y-4 rounded-2xl border border-border bg-muted/20 p-5">
             <div>
               <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                Prezzo biglietto
+                {tDetail("ticketPrice")}
               </p>
               <p className="mt-1 text-3xl font-semibold text-foreground">
-                {e.prezzo_cents === 0 ? "Gratis" : formatEurFromCents(e.prezzo_cents)}
+                {e.prezzo_cents === 0 ? tCommon("free") : formatEurFromCents(e.prezzo_cents)}
               </p>
             </div>
 
@@ -133,25 +137,23 @@ export default async function EventoDetailPage({
               <>
                 <div className="rounded-xl bg-brand-50 px-3 py-2 text-xs font-medium text-brand-700">
                   {soldOut
-                    ? "Esaurito — tutti i posti sono stati venduti."
-                    : `Ancora ${formatNumber(e.posti_disponibili)} posti disponibili`}
+                    ? tDetail("soldOutMessage")
+                    : `${formatNumber(e.posti_disponibili)} ${tDetail("seatsAvailable")}`}
                 </div>
 
                 <BuyTicketButton
                   eventoId={e.id}
                   disabled={soldOut}
-                  label={soldOut ? "Esaurito" : undefined}
+                  label={soldOut ? tCommon("soldOut") : undefined}
                 />
 
                 <p className="text-[11px] text-muted-foreground">
-                  Riceverai il biglietto nella sezione &laquo;I miei biglietti&raquo; con QR code
-                  utilizzabile in loco.
+                  {tDetail("ticketsHint")}
                 </p>
               </>
             ) : (
               <div className="rounded-xl bg-muted/50 px-3 py-3 text-xs text-muted-foreground">
-                La vendita biglietti per questo evento non è attiva. Per
-                informazioni rivolgiti direttamente agli organizzatori.
+                {tDetail("bookingsDisabledEvent")}
               </div>
             )}
           </aside>

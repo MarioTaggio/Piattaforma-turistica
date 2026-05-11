@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 import { requireUser } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
@@ -27,6 +28,7 @@ type ProfileRow = {
 
 export default async function ProfiloPage() {
   const user = await requireUser();
+  const tProfile = await getTranslations("profile");
 
   const supabase = await createClient();
   const { data: profile } = await supabase
@@ -40,16 +42,16 @@ export default async function ProfiloPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Il tuo profilo"
-        subtitle="Aggiorna le tue informazioni personali e la password."
+        title={tProfile("title")}
+        subtitle={tProfile("subtitle")}
       />
 
       <div className="grid gap-6 lg:grid-cols-5">
         <Card className="lg:col-span-3">
           <CardHeader>
-            <CardTitle>Informazioni personali</CardTitle>
+            <CardTitle>{tProfile("personalInfo")}</CardTitle>
             <CardDescription>
-              Queste informazioni sono visibili nel tuo account e nelle ricevute.
+              {tProfile("personalInfoDescription")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -67,9 +69,9 @@ export default async function ProfiloPage() {
 
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Password</CardTitle>
+            <CardTitle>{tProfile("password")}</CardTitle>
             <CardDescription>
-              Cambia la password del tuo account in qualsiasi momento.
+              {tProfile("passwordDescription")}
             </CardDescription>
           </CardHeader>
           <CardContent>

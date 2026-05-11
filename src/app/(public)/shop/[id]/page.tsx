@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Store } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatEurFromCents } from "@/lib/utils/format";
@@ -19,6 +20,9 @@ export default async function ProductDetailPage({
 }) {
   const { id } = await params;
   const supabase = createAdminClient();
+  const tNav = await getTranslations("nav");
+  const tDetail = await getTranslations("detail");
+  const tCommon = await getTranslations("common");
 
   const { data: prodotto } = await supabase
     .from("shop_prodotti")
@@ -50,7 +54,7 @@ export default async function ProductDetailPage({
         className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="size-3.5" />
-        Torna allo shop
+        {tDetail("backToAll")}
       </Link>
 
       <div className="mt-6 grid gap-8 overflow-hidden rounded-3xl border border-border bg-card shadow-sm md:grid-cols-2">
@@ -72,7 +76,7 @@ export default async function ProductDetailPage({
 
         <div className="flex flex-col gap-5 p-6 sm:p-10">
           <p className="text-xs font-semibold uppercase tracking-wider text-brand-700">
-            {p.shops?.nome ?? "Shop"}
+            {p.shops?.nome ?? tNav("shop")}
             {p.shops?.citta ? ` · ${p.shops.citta}` : ""}
           </p>
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -87,7 +91,7 @@ export default async function ProductDetailPage({
           <div className="mt-auto space-y-3 rounded-2xl bg-muted/30 p-4">
             <div>
               <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                Prezzo
+                {tCommon("price")}
               </p>
               <p className="text-3xl font-semibold text-foreground">
                 {formatEurFromCents(p.prezzo_cents)}

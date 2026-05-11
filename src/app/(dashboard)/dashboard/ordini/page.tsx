@@ -11,6 +11,7 @@ import {
   Store,
   UtensilsCrossed,
 } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { requireUser } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
@@ -79,18 +80,18 @@ type Ordine = {
   }[];
 };
 
-const TIPO_LABEL: Record<string, string> = {
-  asporto: "Asporto",
-  consegna: "Consegna",
-  al_tavolo: "Al tavolo",
-};
+// Le label di TIPO_LABEL e STAGES vengono ora risolte a runtime da
+// useTranslations dentro la pagina (mappa key → t("order.tipo_*")) per
+// supportare i18n. La struttura resta una const con `key` icona.
+const TIPO_KEYS = ["asporto", "consegna", "al_tavolo"] as const;
 
 const STAGES = [
-  { key: "in_attesa", label: "Ricevuto", icon: Clock },
-  { key: "in_preparazione", label: "In preparazione", icon: ChefHat },
-  { key: "pronto", label: "Pronto", icon: PackageCheck },
-  { key: "consegnato", label: "Consegnato", icon: Truck },
+  { key: "in_attesa", t: "stage_received", icon: Clock },
+  { key: "in_preparazione", t: "stage_preparing", icon: ChefHat },
+  { key: "pronto", t: "stage_ready", icon: PackageCheck },
+  { key: "consegnato", t: "stage_delivered", icon: Truck },
 ] as const;
+void TIPO_KEYS;
 
 function stageIndex(stato: string): number {
   if (stato === "annullato") return -1;
@@ -101,6 +102,7 @@ function stageIndex(stato: string): number {
 export default async function OrdiniPage() {
   const user = await requireUser();
   const supabase = await createClient();
+  const tOrder = await getTranslations("order");
 
   const [{ data: ristoranteRows }, { data: shopRows }] = await Promise.all([
     supabase
@@ -164,15 +166,15 @@ export default async function OrdiniPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="I miei ordini"
-        subtitle="Cronologia degli ordini dai ristoranti e dagli shop."
+        title={tOrder("title")}
+        subtitle={tOrder("subtitle")}
       />
 
       {ordini.length === 0 ? (
         <EmptyState
           icon={ShoppingBag}
-          title="Nessun ordine ancora"
-          description="Quando ordinerai da un ristorante o da uno shop della piattaforma vedrai qui lo stato di preparazione e consegna."
+          title={tOrder("noOrders")}
+          description={tOrder("noOrdersDescription")}
           action={
             <div className="flex flex-wrap items-center justify-center gap-2">
               <Button
@@ -180,7 +182,7 @@ export default async function OrdiniPage() {
                 className="rounded-xl bg-brand-600 hover:bg-brand-700"
               >
                 <Compass className="mr-1.5 size-4" />
-                Esplora ristoranti
+                {tOrder("exploreRestaurants")}
               </Button>
               <Button
                 variant="outline"
@@ -188,7 +190,7 @@ export default async function OrdiniPage() {
                 className="rounded-xl"
               >
                 <Store className="mr-1.5 size-4" />
-                Vai allo shop
+                {tOrder("goToShop")}
               </Button>
             </div>
           }
@@ -213,7 +215,7 @@ export default async function OrdiniPage() {
                   <div>
                     <p className="mb-1 inline-flex items-center gap-1.5 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                       <KindIcon className="size-3" />
-                      {o.kind === "shop" ? "Shop" : "Ristorante"}
+                      {o.kind === "shop" ? tOrder("shopLabel") : tOrder("restaurantLabel")}
                     </p>
                     <h3 className="text-base font-semibold">{o.source}</h3>
                     <p className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
@@ -221,7 +223,13 @@ export default async function OrdiniPage() {
                       {formatDateTime(o.created_at)}
                       {o.tipo && (
                         <span className="rounded-full bg-muted px-2 py-0.5 text-[11px]">
-                          {TIPO_LABEL[o.tipo] ?? o.tipo}
+                          {(() => {
+                            try {
+                              return tOrder(`tipo_${o.tipo}` as Parameters<typeof tOrder>[0]);
+                            } catch {
+                              return o.tipo;
+                            }
+                          })()}
                         </span>
                       )}
                     </p>
@@ -261,7 +269,7 @@ export default async function OrdiniPage() {
                               reached ? "text-foreground" : "text-muted-foreground",
                             )}
                           >
-                            {s.label}
+                            {tOrder(s.t)}
                           </span>
                         </li>
                       );
@@ -290,15 +298,14 @@ export default async function OrdiniPage() {
                   ))}
                   {o.voci.length > 4 && (
                     <p className="pt-1 text-xs text-muted-foreground">
-                      e altri {o.voci.length - 4} prodotti…
+                      {tOrder("andOthers")} {o.voci.length - 4} {tOrder("products")}…
                     </p>
                   )}
                 </div>
 
                 <footer className="mt-4 flex items-center justify-between border-t border-border pt-3">
                   <span className="text-xs text-muted-foreground">
-                    {formatNumber(itemsCount)} prodott
-                    {itemsCount === 1 ? "o" : "i"}
+                    {formatNumber(itemsCount)} {tOrder("items")}
                   </span>
                   <span className="text-base font-semibold">
                     {formatEurFromCents(o.totale_cents)}

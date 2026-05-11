@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Clock, GraduationCap, PlayCircle } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
@@ -22,6 +23,9 @@ export default async function CorsoDetailPage({
 }) {
   const { id } = await params;
   const supabase = createAdminClient();
+  const tNav = await getTranslations("nav");
+  const tDetail = await getTranslations("detail");
+  const tCommon = await getTranslations("common");
 
   const [{ data: corso }, { data: lezioni }] = await Promise.all([
     supabase
@@ -69,7 +73,7 @@ export default async function CorsoDetailPage({
         className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="size-3.5" />
-        Tutti i corsi
+        {tDetail("backToAll")}
       </Link>
 
       <div className="mt-6 grid gap-8 lg:grid-cols-[1.6fr_1fr]">
@@ -99,7 +103,7 @@ export default async function CorsoDetailPage({
 
           <header className="space-y-2">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-brand-700">
-              Video corso
+              {tNav("videolezioni")}
             </p>
             <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
               {c.titolo}
@@ -117,7 +121,7 @@ export default async function CorsoDetailPage({
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <PlayCircle className="size-3.5" />
-                {lez.length} lezion{lez.length === 1 ? "e" : "i"}
+                {lez.length} {tDetail("lessons").toLowerCase()}
               </span>
             </div>
           </header>
@@ -130,11 +134,11 @@ export default async function CorsoDetailPage({
 
           <div>
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              Programma del corso
+              {tDetail("lessons")}
             </h3>
             {lez.length === 0 ? (
               <p className="rounded-2xl border border-dashed border-border bg-muted/30 p-6 text-sm text-muted-foreground">
-                Nessuna lezione pubblicata.
+                {tDetail("noProductsYet")}
               </p>
             ) : (
               <ul className="space-y-2">
@@ -159,7 +163,7 @@ export default async function CorsoDetailPage({
                     <div className="flex items-center gap-3">
                       {l.anteprima_gratuita && (
                         <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-700">
-                          Anteprima
+                          {tDetail("preview")}
                         </span>
                       )}
                       <span className="text-xs text-muted-foreground">
@@ -175,20 +179,14 @@ export default async function CorsoDetailPage({
 
         <aside className="rounded-2xl border border-border bg-card p-5 shadow-sm lg:sticky lg:top-24 lg:self-start">
           <p className="text-xs uppercase tracking-wider text-muted-foreground">
-            Prezzo corso
+            {tCommon("price")}
           </p>
           <p className="mt-1 text-3xl font-semibold text-foreground">
-            {free ? "Gratis" : formatEurFromCents(c.prezzo_cents)}
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Accesso illimitato a tutte le lezioni del corso.
+            {free ? tCommon("free") : formatEurFromCents(c.prezzo_cents)}
           </p>
           <div className="mt-4">
             <BuyCorsoButton corsoId={c.id} free={free} />
           </div>
-          <p className="mt-2 text-[11px] text-muted-foreground">
-            Lo trovi nella sezione &laquo;I miei video&raquo; nella dashboard.
-          </p>
         </aside>
       </div>
     </article>

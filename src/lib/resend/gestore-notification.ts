@@ -1,6 +1,9 @@
 import "server-only";
 
+import { getTranslations } from "next-intl/server";
+
 import { createAdminClient } from "@/lib/supabase/admin";
+import { DEFAULT_LOCALE, type Locale } from "@/i18n/config";
 
 import { FROM_EMAIL, resend } from "./client";
 
@@ -29,6 +32,10 @@ export type GestoreNotificationInput = {
   // Override dell'acquirente (quando i dati sono già in mano al chiamante,
   // es. shop checkout con shipping_email/nome diversi dall'utente).
   buyerOverride?: { nome?: string | null; email?: string | null };
+  // Locale del destinatario (gestore). Se omesso si usa DEFAULT_LOCALE.
+  // I caller possono passare la preferenza salvata nei platform_settings,
+  // nel profilo utente o nel cookie corrente.
+  locale?: Locale;
 };
 
 const BRAND = "#1B4332";
@@ -92,6 +99,15 @@ export async function sendGestoreNotificationEmail(
   const ctaUrl = absoluteUrl(input.ctaPath);
   const dashboardUrl = absoluteUrl("/dashboard");
 
+  // Carichiamo le traduzioni "emails" nel locale del destinatario.
+  // getTranslations() accetta un locale esplicito; passiamo quello indicato
+  // dal caller (o fallback al default IT). Niente cookie-read qui: l'email
+  // viene inviata in background, non c'è una request user-facing.
+  const tEmails = await getTranslations({
+    locale: input.locale ?? DEFAULT_LOCALE,
+    namespace: "emails",
+  });
+
   const html = render({
     subject: input.subject,
     modulo: input.modulo,
@@ -100,6 +116,10 @@ export async function sendGestoreNotificationEmail(
     ctaUrl,
     dashboardUrl,
     gestoreNome: g.nome ?? null,
+    cta: tEmails("managerCta"),
+    footer: tEmails("footer"),
+    openDashboard: tEmails("openDashboard"),
+    intro: tEmails("newActivityIntro"),
   });
 
   try {
@@ -137,6 +157,10 @@ function render(input: {
   ctaUrl: string;
   dashboardUrl: string;
   gestoreNome: string | null;
+  cta: string;
+  footer: string;
+  openDashboard: string;
+  intro: string;
 }): string {
   const rowsHtml = input.rows
     .map(
@@ -148,15 +172,15 @@ function render(input: {
     .join("");
 
   const greeting = input.gestoreNome
-    ? `Ciao ${escapeHtml(input.gestoreNome)},`
-    : "Ciao,";
+    ? `${escapeHtml(input.gestoreNome)},`
+    : "";
 
   return `<!doctype html>
 <html><body style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#f6f7f9;margin:0;padding:24px">
   <div style="max-width:600px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #e5e7eb">
     <!-- HEADER -->
     <div style="background:${BRAND};padding:24px 28px;color:#fff">
-      <p style="margin:0;font-size:12px;text-transform:uppercase;letter-spacing:0.1em;opacity:0.85">BorghiON · Dashboard gestore</p>
+      <p style="margin:0;font-size:12px;text-transform:uppercase;letter-spacing:0.1em;opacity:0.85">BorghiON · Dashboard</p>
       <h1 style="margin:8px 0 0;font-size:22px;font-weight:600">${escapeHtml(input.evento)}</h1>
       <p style="margin:4px 0 0;font-size:13px;opacity:0.85">${escapeHtml(input.modulo)}</p>
     </div>
@@ -164,8 +188,7 @@ function render(input: {
     <!-- BODY -->
     <div style="padding:24px 28px;color:#374151;font-size:14px;line-height:1.55">
       ${greeting}<br/>
-      hai ricevuto una nuova attività sul tuo modulo <strong>${escapeHtml(input.modulo)}</strong>.
-      Trovi qui sotto tutti i dettagli; clicca su "Gestisci ora" per aprire direttamente la dashboard.
+      ${escapeHtml(input.intro)} <strong>${escapeHtml(input.modulo)}</strong>.
     </div>
 
     <!-- DETAILS -->
@@ -177,14 +200,14 @@ function render(input: {
     <div style="padding:18px 28px 28px">
       <a href="${escapeHtml(input.ctaUrl)}"
          style="display:inline-block;background:${BRAND};color:#fff;border-radius:12px;padding:12px 22px;font-weight:600;font-size:14px;text-decoration:none">
-        Gestisci ora →
+        ${escapeHtml(input.cta)} →
       </a>
     </div>
 
     <!-- FOOTER -->
     <div style="padding:14px 28px;background:#f9fafb;color:#6b7280;font-size:12px;border-top:1px solid #e5e7eb">
-      Ricevi questa email come gestore BorghiON.
-      <a href="${escapeHtml(input.dashboardUrl)}" style="color:${BRAND};text-decoration:none">Apri la dashboard</a>
+      ${escapeHtml(input.footer)}
+      <a href="${escapeHtml(input.dashboardUrl)}" style="color:${BRAND};text-decoration:none">${escapeHtml(input.openDashboard)}</a>
     </div>
   </div>
 </body></html>`;

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, MapPin, Star, Wifi } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatEurFromCents } from "@/lib/utils/format";
@@ -19,6 +20,8 @@ export default async function StrutturaDetailPage({
 }) {
   const { id } = await params;
   const supabase = createAdminClient();
+  const tNav = await getTranslations("nav");
+  const tDetail = await getTranslations("detail");
 
   const [{ data: struttura }, { data: camere }] = await Promise.all([
     supabase
@@ -72,7 +75,7 @@ export default async function StrutturaDetailPage({
         className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="size-3.5" />
-        Tutte le strutture
+        {tDetail("backToAll")}
       </Link>
 
       {/* gallery */}
@@ -119,7 +122,7 @@ export default async function StrutturaDetailPage({
         <section className="space-y-6">
           <header className="space-y-2">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-brand-700">
-              Struttura
+              {tNav("bnb")}
             </p>
             <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
               {s.nome}
@@ -148,7 +151,7 @@ export default async function StrutturaDetailPage({
           {s.servizi?.length > 0 && (
             <div>
               <h3 className="mb-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                Servizi inclusi
+                {tDetail("amenities")}
               </h3>
               <ul className="flex flex-wrap gap-2">
                 {s.servizi.map((srv) => (
@@ -166,11 +169,11 @@ export default async function StrutturaDetailPage({
 
           <div>
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              Camere
+              {tDetail("rooms")}
             </h3>
             {cam.length === 0 ? (
               <p className="rounded-2xl border border-dashed border-border bg-muted/30 p-6 text-sm text-muted-foreground">
-                Nessuna camera disponibile al momento.
+                {tDetail("noProductsYet")}
               </p>
             ) : (
               <ul className="space-y-2">
@@ -187,7 +190,7 @@ export default async function StrutturaDetailPage({
                         </p>
                       )}
                       <p className="mt-1 text-[11px] uppercase tracking-wider text-muted-foreground">
-                        Fino a {c.capacita} ospiti
+                        {tDetail("upTo")} {c.capacita} {tDetail("guests")}
                       </p>
                     </div>
                     <div className="text-right">
@@ -195,7 +198,7 @@ export default async function StrutturaDetailPage({
                         {formatEurFromCents(c.prezzo_notte_cents)}
                       </p>
                       <p className="text-[10px] uppercase text-muted-foreground">
-                        per notte
+                        {tDetail("perNight")}
                       </p>
                     </div>
                   </li>
@@ -207,7 +210,7 @@ export default async function StrutturaDetailPage({
 
         {prenotazioniAttive && (
           <aside className="rounded-2xl border border-border bg-card p-5 shadow-sm lg:sticky lg:top-24 lg:self-start">
-            <h3 className="mb-4 text-base font-semibold">Prenota il tuo soggiorno</h3>
+            <h3 className="mb-4 text-base font-semibold">{tDetail("bookYourStay")}</h3>
             <BnbBookingForm strutturaId={s.id} camere={cam} />
           </aside>
         )}
@@ -215,8 +218,7 @@ export default async function StrutturaDetailPage({
 
       {!prenotazioniAttive && (
         <p className="mt-8 rounded-2xl border border-dashed border-border bg-muted/30 p-5 text-sm text-muted-foreground">
-          Le prenotazioni online per questa struttura non sono attive. Per
-          informazioni e disponibilità contatta direttamente la struttura.
+          {tDetail("bookingsDisabledBnb")}
         </p>
       )}
     </article>

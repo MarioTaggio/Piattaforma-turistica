@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import QRCode from "qrcode";
 import { CalendarDays, MapPin, Ticket, Compass } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { requireUser } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
@@ -41,6 +42,7 @@ type BigliettoRow = {
 export default async function BigliettiPage() {
   const user = await requireUser();
   const supabase = await createClient();
+  const tTicket = await getTranslations("ticket");
 
   const { data } = await supabase
     .from("biglietti")
@@ -68,22 +70,22 @@ export default async function BigliettiPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="I miei biglietti"
-        subtitle="Tutti i biglietti che hai acquistato per eventi sulla piattaforma."
+        title={tTicket("title")}
+        subtitle={tTicket("subtitle")}
       />
 
       {biglietti.length === 0 ? (
         <EmptyState
           icon={Ticket}
-          title="Nessun biglietto ancora"
-          description="Quando acquisterai un biglietto per un evento lo troverai qui, pronto da mostrare all'ingresso."
+          title={tTicket("noTickets")}
+          description={tTicket("subtitle")}
           action={
             <Button
               render={<Link href="/eventi" />}
               className="rounded-xl bg-brand-600 hover:bg-brand-700"
             >
               <Compass className="mr-1.5 size-4" />
-              Esplora eventi
+              {tTicket("exploreEvents")}
             </Button>
           }
         />
@@ -128,7 +130,7 @@ export default async function BigliettiPage() {
                     )}
 
                     <div className="flex items-center justify-between border-t border-border pt-3 text-xs">
-                      <span className="text-muted-foreground">Codice</span>
+                      <span className="text-muted-foreground">{tTicket("code")}</span>
                       <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px]">
                         {b.codice.slice(0, 8)}…
                       </code>
@@ -153,7 +155,7 @@ export default async function BigliettiPage() {
                       className="rounded-lg ring-1 ring-border"
                     />
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                      Scansiona all&apos;ingresso
+                      {tTicket("qrHint")}
                     </span>
                   </div>
                 </div>

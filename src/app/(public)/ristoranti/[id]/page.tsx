@@ -9,6 +9,7 @@ import {
   Phone,
   UtensilsCrossed,
 } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatEurFromCents } from "@/lib/utils/format";
@@ -26,6 +27,8 @@ export default async function RistoranteDetailPage({
 }) {
   const { id } = await params;
   const supabase = createAdminClient();
+  const tNav = await getTranslations("nav");
+  const tDetail = await getTranslations("detail");
 
   const [{ data: ristorante }, { data: tavoli }, { data: prodotti }] =
     await Promise.all([
@@ -85,7 +88,7 @@ export default async function RistoranteDetailPage({
         className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="size-3.5" />
-        Tutti i ristoranti
+        {tDetail("backToAll")}
       </Link>
 
       <div className="mt-6 overflow-hidden rounded-3xl border border-border bg-card">
@@ -116,7 +119,7 @@ export default async function RistoranteDetailPage({
         <section className="space-y-8">
           <header className="space-y-2">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-brand-700">
-              Ristorante
+              {tNav("ristoranti")}
             </p>
             <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
               {r.nome}
@@ -154,7 +157,7 @@ export default async function RistoranteDetailPage({
               </span>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Orari di apertura
+                  {tDetail("openingHours")}
                 </p>
                 <p className="mt-1 whitespace-pre-line text-sm text-foreground">
                   {orari}
@@ -183,7 +186,7 @@ export default async function RistoranteDetailPage({
             return (
               <div className="space-y-6">
                 <h2 className="text-xl font-semibold tracking-tight">
-                  Menu del ristorante
+                  {tDetail("menu")}
                 </h2>
                 {Array.from(groups.entries()).map(([categoria, list]) => (
                   <div key={categoria}>
@@ -235,7 +238,7 @@ export default async function RistoranteDetailPage({
 
         {prenotazioniAttive && (
           <aside className="rounded-2xl border border-border bg-card p-5 shadow-sm lg:sticky lg:top-24 lg:self-start">
-            <h3 className="mb-4 text-base font-semibold">Prenota un tavolo</h3>
+            <h3 className="mb-4 text-base font-semibold">{tDetail("bookATable")}</h3>
             <TavoloBookingForm ristoranteId={r.id} tavoli={tavoliData} />
           </aside>
         )}
@@ -243,8 +246,7 @@ export default async function RistoranteDetailPage({
 
       {!prenotazioniAttive && (
         <p className="mt-8 rounded-2xl border border-dashed border-border bg-muted/30 p-5 text-sm text-muted-foreground">
-          Le prenotazioni online dei tavoli per questo ristorante non sono
-          attive. Per prenotare, contatta direttamente il ristorante.
+          {tDetail("bookingsDisabledRistorante")}
         </p>
       )}
     </article>

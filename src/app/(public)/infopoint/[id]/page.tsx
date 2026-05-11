@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Clock, Compass, Landmark, MapPin } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -18,6 +19,8 @@ export default async function AttrazioneDetailPage({
 }) {
   const { id } = await params;
   const supabase = createAdminClient();
+  const tNav = await getTranslations("nav");
+  const tDetail = await getTranslations("detail");
 
   const [{ data: attrazione }, { data: visite }, { data: tour }] =
     await Promise.all([
@@ -86,7 +89,7 @@ export default async function AttrazioneDetailPage({
         className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="size-3.5" />
-        Tutte le attrazioni
+        {tDetail("backToAll")}
       </Link>
 
       <div className="mt-6 overflow-hidden rounded-3xl border border-border bg-card">
@@ -111,7 +114,7 @@ export default async function AttrazioneDetailPage({
         <section className="space-y-6">
           <header className="space-y-2">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-brand-700">
-              Attrazione
+              {tNav("infopoint")}
             </p>
             <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
               {a.nome}
@@ -135,7 +138,7 @@ export default async function AttrazioneDetailPage({
               </span>
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Orari
+                  {tDetail("openingHours")}
                 </p>
                 <p className="mt-1 whitespace-pre-line text-sm">{orari}</p>
               </div>
@@ -181,7 +184,7 @@ export default async function AttrazioneDetailPage({
         </section>
 
         <aside className="rounded-2xl border border-border bg-card p-5 shadow-sm lg:sticky lg:top-24 lg:self-start">
-          <h3 className="mb-4 text-base font-semibold">Visite guidate</h3>
+          <h3 className="mb-4 text-base font-semibold">{tNav("infopoint")}</h3>
           <VisitaForm attrazioneId={a.id} visite={v} />
         </aside>
       </div>
