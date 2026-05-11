@@ -127,8 +127,8 @@ export default async function HomePage() {
               </Button>
             </div>
 
-            {/* Search bar — DENTRO la hero, sfondo bianco con shadow */}
-            <div className="mx-auto mt-4 w-full max-w-4xl">
+            {/* Search bar — DENTRO la hero, glassmorphism */}
+            <div className="mx-auto mt-4 w-full max-w-5xl">
               <HomeSearch />
             </div>
           </div>

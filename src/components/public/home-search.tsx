@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 type Tab = "eventi" | "bnb" | "ristoranti" | "tour";
@@ -22,6 +21,11 @@ const TABS: { value: Tab; label: string; icon: typeof CalendarDays }[] = [
   { value: "ristoranti", label: "Ristoranti", icon: UtensilsCrossed },
   { value: "tour", label: "Tour virtuali", icon: Compass },
 ];
+
+// Stili condivisi per i campi input/select — sfondo bianco semi-trasparente,
+// testo scuro per leggibilità, alti h-12.
+const FIELD_BASE =
+  "h-12 w-full rounded-xl border border-white/50 bg-white/90 px-4 text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70";
 
 export function HomeSearch() {
   const router = useRouter();
@@ -75,8 +79,9 @@ export function HomeSearch() {
   }
 
   return (
-    <div className="rounded-3xl bg-white p-3 text-foreground shadow-2xl ring-1 ring-black/5 sm:p-4">
-      <div className="grid grid-cols-2 gap-1 border-b border-border pb-3 sm:flex sm:flex-wrap">
+    <div className="space-y-3">
+      {/* Bottoni categoria — pill, glassmorphism */}
+      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-center">
         {TABS.map((t) => {
           const Icon = t.icon;
           const isActive = tab === t.value;
@@ -86,10 +91,10 @@ export function HomeSearch() {
               type="button"
               onClick={() => setTab(t.value)}
               className={cn(
-                "inline-flex items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium transition sm:justify-start",
+                "inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3 text-sm font-medium transition",
                 isActive
-                  ? "bg-brand-600 text-white"
-                  : "text-foreground/70 hover:bg-muted",
+                  ? "bg-white text-brand-700 font-bold shadow-md"
+                  : "border border-white/30 bg-white/20 text-white backdrop-blur-md hover:bg-white/30",
               )}
             >
               <Icon className="size-4" />
@@ -99,136 +104,163 @@ export function HomeSearch() {
         })}
       </div>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          submit();
-        }}
-        className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-5"
-      >
-        {tab === "eventi" && (
-          <>
-            <Input
-              placeholder="Città"
-              value={evCitta}
-              onChange={(e) => setEvCitta(e.target.value)}
-              className="lg:col-span-2"
-            />
-            <Input
-              type="date"
-              value={evData}
-              onChange={(e) => setEvData(e.target.value)}
-            />
-            <select
-              value={evCat}
-              onChange={(e) => setEvCat(e.target.value)}
-              className="h-9 rounded-lg border border-input bg-background px-3 text-sm"
-            >
-              <option value="">Categoria</option>
-              <option value="musica">Musica</option>
-              <option value="arte">Arte</option>
-              <option value="sport">Sport</option>
-              <option value="gastronomia">Gastronomia</option>
-              <option value="cultura">Cultura</option>
-            </select>
-            <Button type="submit" className="rounded-xl bg-brand-600 hover:bg-brand-700">
-              <Search className="mr-1.5 size-4" />
-              Cerca eventi
-            </Button>
-          </>
-        )}
+      {/* Card glassmorphism */}
+      <div className="rounded-3xl border border-white/30 bg-white/20 p-6 shadow-2xl backdrop-blur-md sm:p-8">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            submit();
+          }}
+          className="flex flex-col gap-3"
+        >
+          {tab === "eventi" && (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1.4fr_1fr_1fr_auto]">
+              <input
+                type="text"
+                placeholder="Città"
+                value={evCitta}
+                onChange={(e) => setEvCitta(e.target.value)}
+                className={FIELD_BASE}
+              />
+              <input
+                type="date"
+                value={evData}
+                onChange={(e) => setEvData(e.target.value)}
+                className={FIELD_BASE}
+              />
+              <select
+                value={evCat}
+                onChange={(e) => setEvCat(e.target.value)}
+                className={FIELD_BASE}
+              >
+                <option value="">Categoria</option>
+                <option value="musica">Musica</option>
+                <option value="arte">Arte</option>
+                <option value="sport">Sport</option>
+                <option value="gastronomia">Gastronomia</option>
+                <option value="cultura">Cultura</option>
+              </select>
+              <Button
+                type="submit"
+                className="h-12 rounded-xl bg-brand-700 px-6 text-base font-semibold text-white shadow-md hover:bg-brand-800"
+              >
+                <Search className="mr-1.5 size-4" />
+                Cerca eventi
+              </Button>
+            </div>
+          )}
 
-        {tab === "bnb" && (
-          <>
-            <Input
-              placeholder="Destinazione"
-              value={bnbCitta}
-              onChange={(e) => setBnbCitta(e.target.value)}
-            />
-            <Input
-              type="date"
-              value={bnbIn}
-              onChange={(e) => setBnbIn(e.target.value)}
-            />
-            <Input
-              type="date"
-              value={bnbOut}
-              onChange={(e) => setBnbOut(e.target.value)}
-            />
-            <Input
-              type="number"
-              min={1}
-              placeholder="Ospiti"
-              value={bnbOspiti}
-              onChange={(e) => setBnbOspiti(e.target.value)}
-            />
-            <Button type="submit" className="rounded-xl bg-brand-600 hover:bg-brand-700">
-              <Search className="mr-1.5 size-4" />
-              Cerca alloggi
-            </Button>
-          </>
-        )}
+          {tab === "bnb" && (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1.3fr_1fr_1fr_0.7fr_auto]">
+              <input
+                type="text"
+                placeholder="Destinazione"
+                value={bnbCitta}
+                onChange={(e) => setBnbCitta(e.target.value)}
+                className={FIELD_BASE}
+              />
+              <input
+                type="date"
+                placeholder="Check-in"
+                value={bnbIn}
+                onChange={(e) => setBnbIn(e.target.value)}
+                className={FIELD_BASE}
+              />
+              <input
+                type="date"
+                placeholder="Check-out"
+                value={bnbOut}
+                onChange={(e) => setBnbOut(e.target.value)}
+                className={FIELD_BASE}
+              />
+              <input
+                type="number"
+                min={1}
+                placeholder="Ospiti"
+                value={bnbOspiti}
+                onChange={(e) => setBnbOspiti(e.target.value)}
+                className={FIELD_BASE}
+              />
+              <Button
+                type="submit"
+                className="h-12 rounded-xl bg-brand-700 px-6 text-base font-semibold text-white shadow-md hover:bg-brand-800"
+              >
+                <Search className="mr-1.5 size-4" />
+                Cerca
+              </Button>
+            </div>
+          )}
 
-        {tab === "ristoranti" && (
-          <>
-            <Input
-              placeholder="Città"
-              value={riCitta}
-              onChange={(e) => setRiCitta(e.target.value)}
-              className="lg:col-span-2"
-            />
-            <Input
-              type="date"
-              value={riData}
-              onChange={(e) => setRiData(e.target.value)}
-            />
-            <Input
-              type="time"
-              value={riOra}
-              onChange={(e) => setRiOra(e.target.value)}
-            />
-            <div className="flex gap-2">
-              <Input
+          {tab === "ristoranti" && (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1.4fr_1fr_1fr_0.7fr_auto]">
+              <input
+                type="text"
+                placeholder="Città"
+                value={riCitta}
+                onChange={(e) => setRiCitta(e.target.value)}
+                className={FIELD_BASE}
+              />
+              <input
+                type="date"
+                value={riData}
+                onChange={(e) => setRiData(e.target.value)}
+                className={FIELD_BASE}
+              />
+              <input
+                type="time"
+                value={riOra}
+                onChange={(e) => setRiOra(e.target.value)}
+                className={FIELD_BASE}
+              />
+              <input
                 type="number"
                 min={1}
                 placeholder="Coperti"
                 value={riCoperti}
                 onChange={(e) => setRiCoperti(e.target.value)}
-                className="flex-1"
+                className={FIELD_BASE}
               />
-              <Button type="submit" className="rounded-xl bg-brand-600 hover:bg-brand-700">
-                <Search className="size-4" />
+              <Button
+                type="submit"
+                className="h-12 rounded-xl bg-brand-700 px-6 text-base font-semibold text-white shadow-md hover:bg-brand-800"
+              >
+                <Search className="mr-1.5 size-4" />
+                Cerca
               </Button>
             </div>
-          </>
-        )}
+          )}
 
-        {tab === "tour" && (
-          <>
-            <Input
-              placeholder="Cerca per nome o luogo"
-              value={tourQ}
-              onChange={(e) => setTourQ(e.target.value)}
-              className="lg:col-span-3"
-            />
-            <select
-              value={tourTipo}
-              onChange={(e) => setTourTipo(e.target.value)}
-              className="h-9 rounded-lg border border-input bg-background px-3 text-sm"
-            >
-              <option value="">Tipo</option>
-              <option value="borghi">Borghi</option>
-              <option value="musei">Musei</option>
-              <option value="natura">Natura</option>
-              <option value="arte">Arte</option>
-            </select>
-            <Button type="submit" className="rounded-xl bg-brand-600 hover:bg-brand-700">
-              <Search className="mr-1.5 size-4" />
-              Esplora
-            </Button>
-          </>
-        )}
-      </form>
+          {tab === "tour" && (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-[2fr_1fr_auto]">
+              <input
+                type="text"
+                placeholder="Cerca per nome o luogo"
+                value={tourQ}
+                onChange={(e) => setTourQ(e.target.value)}
+                className={FIELD_BASE}
+              />
+              <select
+                value={tourTipo}
+                onChange={(e) => setTourTipo(e.target.value)}
+                className={FIELD_BASE}
+              >
+                <option value="">Tipo</option>
+                <option value="borghi">Borghi</option>
+                <option value="musei">Musei</option>
+                <option value="natura">Natura</option>
+                <option value="arte">Arte</option>
+              </select>
+              <Button
+                type="submit"
+                className="h-12 rounded-xl bg-brand-700 px-6 text-base font-semibold text-white shadow-md hover:bg-brand-800"
+              >
+                <Search className="mr-1.5 size-4" />
+                Esplora
+              </Button>
+            </div>
+          )}
+        </form>
+      </div>
     </div>
   );
 }
