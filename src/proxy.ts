@@ -9,6 +9,12 @@ const PROTECTED_PREFIXES = ["/dashboard", "/admin", "/profilo"];
 // Auth pages — already-authenticated users get bounced back to /dashboard.
 const AUTH_PREFIXES = ["/login", "/register", "/reset-password"];
 
+// Eccezioni al bounce: pagine sotto un AUTH_PREFIX a cui un utente già loggato
+// DEVE poter accedere. /reset-password/confirm: arriva qui dal recovery link
+// email — verifyOtp() lo autentica, ma deve poter completare il reset password
+// invece di essere rispedito al dashboard.
+const AUTH_BOUNCE_EXCEPTIONS = ["/reset-password/confirm"];
+
 function startsWithAny(pathname: string, prefixes: string[]) {
   return prefixes.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
@@ -58,7 +64,11 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (user && startsWithAny(pathname, AUTH_PREFIXES)) {
+  if (
+    user &&
+    startsWithAny(pathname, AUTH_PREFIXES) &&
+    !startsWithAny(pathname, AUTH_BOUNCE_EXCEPTIONS)
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);
