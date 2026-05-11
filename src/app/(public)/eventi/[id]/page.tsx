@@ -17,6 +17,7 @@ import {
   formatEurFromCents,
   formatNumber,
 } from "@/lib/utils/format";
+import { ReviewsSection } from "@/components/recensioni/reviews-section";
 
 import { BuyTicketButton } from "./_components/buy-button";
 
@@ -158,6 +159,10 @@ export default async function EventoDetailPage({
             )}
           </aside>
         </div>
+      </div>
+
+      <div className="mt-12">
+        <ReviewsSection target={{ evento_id: e.id }} />
       </div>
     </article>
   );

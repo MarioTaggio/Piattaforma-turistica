@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ExternalLink, Star } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PageHeader } from "@/components/dashboard/page-header";
@@ -48,7 +48,7 @@ export default async function AdminBnbPage({
   let query = supabase
     .from("strutture")
     .select(
-      "id, nome, citta, stelle, stato, gestore_id, users:gestore_id(nome, cognome, email)",
+      "id, nome, citta, stato, gestore_id, users:gestore_id(nome, cognome, email)",
       { count: "exact" },
     );
   if (q) {
@@ -114,7 +114,6 @@ export default async function AdminBnbPage({
             id: string;
             nome: string;
             citta: string;
-            stelle: number | null;
             stato: StatoPubblicazione;
             gestore_id: string;
             users: { nome: string | null; cognome: string | null; email: string } | null;
@@ -125,12 +124,6 @@ export default async function AdminBnbPage({
                 <Td>
                   <div className="flex items-center gap-2 font-medium">
                     {s.nome}
-                    {s.stelle && (
-                      <span className="inline-flex items-center gap-0.5 text-xs text-amber-600">
-                        <Star className="size-3 fill-current" />
-                        {s.stelle}
-                      </span>
-                    )}
                   </div>
                 </Td>
                 <Td className="text-xs">

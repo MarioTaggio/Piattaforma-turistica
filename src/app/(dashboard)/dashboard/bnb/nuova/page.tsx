@@ -52,7 +52,6 @@ export default async function NuovaStrutturaPage() {
               indirizzo: "",
               citta: "",
               cap: "",
-              stelle: undefined,
               servizi: "",
               immagini: "",
               stato: "bozza",

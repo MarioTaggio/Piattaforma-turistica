@@ -7,6 +7,7 @@ import { PageHero } from "@/components/public/page-hero";
 import { FilterBar } from "@/components/public/filter-bar";
 import { ListingCard } from "@/components/public/listing-card";
 import { formatDateTime, formatEurFromCents } from "@/lib/utils/format";
+import { getRatingSummariesBatch } from "@/lib/recensioni/queries";
 
 export const metadata: Metadata = {
   title: "Eventi — Piattaforma Turistica",
@@ -51,6 +52,9 @@ export default async function PublicEventiPage({
   const { data } = await query
     .order("data_inizio", { ascending: true })
     .limit(48);
+
+  const eventIds = ((data ?? []) as { id: string }[]).map((e) => e.id);
+  const ratingMap = await getRatingSummariesBatch("evento_id", eventIds);
 
   // Distinct city options for filter
   const { data: citiesRaw } = await supabase
@@ -109,24 +113,32 @@ export default async function PublicEventiPage({
               data_inizio: string;
               prezzo_cents: number;
               immagine_url: string | null;
-            }>).map((e) => (
-              <ListingCard
-                key={e.id}
-                href={`/eventi/${e.id}`}
-                title={e.titolo}
-                description={e.descrizione}
-                imageUrl={e.immagine_url}
-                fallbackIcon={CalendarDays}
-                meta={`${formatDateTime(e.data_inizio)} · ${e.luogo}`}
-                topBadge={e.citta ?? undefined}
-                price={
-                  e.prezzo_cents === 0
-                    ? tCommon("free")
-                    : formatEurFromCents(e.prezzo_cents)
-                }
-                cta={tMod("eventi.buy")}
-              />
-            ))}
+            }>).map((e) => {
+              const rating = ratingMap.get(e.id);
+              return (
+                <ListingCard
+                  key={e.id}
+                  href={`/eventi/${e.id}`}
+                  title={e.titolo}
+                  description={e.descrizione}
+                  imageUrl={e.immagine_url}
+                  fallbackIcon={CalendarDays}
+                  meta={`${formatDateTime(e.data_inizio)} · ${e.luogo}`}
+                  topBadge={e.citta ?? undefined}
+                  bottomBadge={
+                    rating && rating.count > 0
+                      ? `★ ${rating.average}`
+                      : undefined
+                  }
+                  price={
+                    e.prezzo_cents === 0
+                      ? tCommon("free")
+                      : formatEurFromCents(e.prezzo_cents)
+                  }
+                  cta={tMod("eventi.buy")}
+                />
+              );
+            })}
           </div>
         )}
       </div>

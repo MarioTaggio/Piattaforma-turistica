@@ -79,6 +79,11 @@ export default async function AttrazioneLayout({
             href: `${base}/comunicazioni`,
             icon: "comunicazioni",
           },
+          {
+            label: "Recensioni",
+            href: `${base}/recensioni`,
+            icon: "recensioni",
+          },
         ]}
       />
 

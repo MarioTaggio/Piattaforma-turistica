@@ -269,6 +269,11 @@ function buildSections(
                   href: "/dashboard/admin/biglietti",
                   icon: "biglietti",
                 },
+                {
+                  label: t("recensioni"),
+                  href: "/dashboard/admin/recensioni",
+                  icon: "recensioni",
+                },
               ],
             },
             {

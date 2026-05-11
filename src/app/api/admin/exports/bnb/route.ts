@@ -14,7 +14,7 @@ export async function GET(req: Request) {
   let query = supabase
     .from("strutture")
     .select(
-      "id, nome, indirizzo, citta, cap, stelle, stato, gestore_id, users:gestore_id(email)",
+      "id, nome, indirizzo, citta, cap, stato, gestore_id, users:gestore_id(email)",
     );
   if (q) {
     const like = `%${q.replace(/[%_]/g, "")}%`;
@@ -30,7 +30,6 @@ export async function GET(req: Request) {
     indirizzo: string;
     citta: string;
     cap: string | null;
-    stelle: number | null;
     stato: string;
     users: { email: string } | null;
   }>).map((s) => ({
@@ -39,7 +38,6 @@ export async function GET(req: Request) {
     indirizzo: s.indirizzo,
     citta: s.citta,
     cap: s.cap ?? "",
-    stelle: s.stelle ?? "",
     stato: s.stato,
     gestore_email: s.users?.email ?? "",
   }));
@@ -50,7 +48,6 @@ export async function GET(req: Request) {
     { key: "indirizzo", header: "indirizzo" },
     { key: "citta", header: "citta" },
     { key: "cap", header: "cap" },
-    { key: "stelle", header: "stelle" },
     { key: "stato", header: "stato" },
     { key: "gestore_email", header: "gestore_email" },
   ]);

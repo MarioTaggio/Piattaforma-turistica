@@ -148,6 +148,116 @@ export async function notifyUtenteNuovaPrenotazione(input: {
 }
 
 /**
+ * Notifica al gestore quando un utente lascia una nuova recensione (in_attesa).
+ */
+export async function notifyGestoreNuovaRecensione(input: {
+  gestoreId: string;
+  email?: string | null;
+  modulo: string;
+  riferimentoContenuto: string;
+  voto: number;
+  titolo: string;
+  link: string;
+}): Promise<void> {
+  await createNotifica({
+    userId: input.gestoreId,
+    titolo: `Nuova recensione: ${input.modulo}`,
+    messaggio: `${"★".repeat(input.voto)} ${input.titolo}`,
+    tipo: "info",
+    link: input.link,
+  });
+
+  if (input.email) {
+    await sendBookingStateEmail({
+      to: input.email,
+      subject: `Nuova recensione: ${input.riferimentoContenuto}`,
+      modulo: input.modulo,
+      stato: "Da approvare",
+      variante: "info",
+      intro:
+        "Hai ricevuto una nuova recensione. Approvala o rifiutala dalla dashboard.",
+      dettagli: [
+        { label: "Contenuto", value: input.riferimentoContenuto },
+        { label: "Voto", value: `${input.voto}/5` },
+        { label: "Titolo", value: input.titolo },
+      ],
+      cta: { label: "Apri recensioni", url: input.link },
+    });
+  }
+}
+
+/**
+ * Notifica all'utente quando il gestore approva la sua recensione.
+ */
+export async function notifyUtenteRecensioneApprovata(input: {
+  userId: string;
+  email?: string | null;
+  modulo: string;
+  riferimentoContenuto: string;
+  link: string;
+}): Promise<void> {
+  await createNotifica({
+    userId: input.userId,
+    titolo: "Recensione approvata",
+    messaggio: input.riferimentoContenuto,
+    tipo: "successo",
+    link: input.link,
+  });
+
+  if (input.email) {
+    await sendBookingStateEmail({
+      to: input.email,
+      subject: `Recensione approvata: ${input.riferimentoContenuto}`,
+      modulo: input.modulo,
+      stato: "Approvata",
+      variante: "successo",
+      intro: "La tua recensione è stata approvata ed è ora visibile sul sito.",
+      dettagli: [
+        { label: "Contenuto", value: input.riferimentoContenuto },
+      ],
+      cta: { label: "Vedi recensione", url: input.link },
+    });
+  }
+}
+
+/**
+ * Notifica all'utente quando il gestore rifiuta la sua recensione.
+ */
+export async function notifyUtenteRecensioneRifiutata(input: {
+  userId: string;
+  email?: string | null;
+  modulo: string;
+  riferimentoContenuto: string;
+  motivazione?: string | null;
+  link: string;
+}): Promise<void> {
+  await createNotifica({
+    userId: input.userId,
+    titolo: "Recensione non pubblicata",
+    messaggio: input.motivazione ?? input.riferimentoContenuto,
+    tipo: "avviso",
+    link: input.link,
+  });
+
+  if (input.email) {
+    await sendBookingStateEmail({
+      to: input.email,
+      subject: `Recensione rifiutata: ${input.riferimentoContenuto}`,
+      modulo: input.modulo,
+      stato: "Rifiutata",
+      variante: "errore",
+      intro:
+        "La tua recensione non è stata pubblicata. Trovi i dettagli qui sotto.",
+      dettagli: [
+        { label: "Contenuto", value: input.riferimentoContenuto },
+      ],
+      note: input.motivazione ?? undefined,
+      cta: { label: "Apri contenuto", url: input.link },
+    });
+  }
+}
+
+/**
  * Lookup utility: dato un user_id ritorna l'email dalla tabella users.
  * Usata dagli helper booking per arricchire notifiche con email.
  */

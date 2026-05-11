@@ -18,6 +18,7 @@ import {
   Settings,
   ShieldCheck,
   ShoppingBag,
+  Star,
   Store,
   Ticket,
   UserCircle,
@@ -49,6 +50,7 @@ const ICONS = {
   shop: Store,
   analytics: BarChart3,
   comunicazioni: Mail,
+  recensioni: Star,
 } as const;
 
 export type IconName = keyof typeof ICONS;

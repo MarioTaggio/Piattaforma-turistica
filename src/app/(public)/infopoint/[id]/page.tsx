@@ -5,6 +5,7 @@ import { ArrowLeft, Clock, Compass, Landmark, MapPin } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
+import { ReviewsSection } from "@/components/recensioni/reviews-section";
 
 import { VisitaForm } from "./_components/visita-form";
 
@@ -187,6 +188,10 @@ export default async function AttrazioneDetailPage({
           <h3 className="mb-4 text-base font-semibold">{tNav("infopoint")}</h3>
           <VisitaForm attrazioneId={a.id} visite={v} />
         </aside>
+      </div>
+
+      <div className="mt-12">
+        <ReviewsSection target={{ attrazione_id: a.id }} />
       </div>
     </article>
   );

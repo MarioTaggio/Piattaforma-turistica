@@ -13,6 +13,7 @@ import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatEurFromCents } from "@/lib/utils/format";
+import { ReviewsSection } from "@/components/recensioni/reviews-section";
 
 import { TavoloBookingForm } from "./_components/booking-form";
 
@@ -249,6 +250,10 @@ export default async function RistoranteDetailPage({
           {tDetail("bookingsDisabledRistorante")}
         </p>
       )}
+
+      <div className="mt-12">
+        <ReviewsSection target={{ ristorante_id: r.id }} />
+      </div>
     </article>
   );
 }

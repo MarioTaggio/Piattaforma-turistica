@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Hotel, MapPin, Plus, Star } from "lucide-react";
+import { Hotel, MapPin, Plus } from "lucide-react";
 
 import { requireRole } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
@@ -18,7 +18,6 @@ type StrutturaRow = {
   nome: string;
   citta: string;
   indirizzo: string;
-  stelle: number | null;
   immagini: string[];
   stato: string;
 };
@@ -29,7 +28,7 @@ export default async function BnbListPage() {
 
   const { data } = await supabase
     .from("strutture")
-    .select("id, nome, citta, indirizzo, stelle, immagini, stato")
+    .select("id, nome, citta, indirizzo, immagini, stato")
     .eq("gestore_id", user.id)
     .order("nome", { ascending: true });
 
@@ -96,13 +95,6 @@ export default async function BnbListPage() {
                   <h3 className="line-clamp-2 text-base font-semibold">
                     {s.nome}
                   </h3>
-                  {s.stelle != null && (
-                    <span className="flex shrink-0 items-center gap-0.5 text-xs text-amber-500">
-                      {Array.from({ length: s.stelle }).map((_, i) => (
-                        <Star key={i} className="size-3 fill-current" />
-                      ))}
-                    </span>
-                  )}
                 </div>
                 <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <MapPin className="size-3.5" />

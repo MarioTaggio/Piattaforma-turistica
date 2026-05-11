@@ -76,6 +76,11 @@ export default async function ShopLayout({
             icon: "ordini",
             badge: ordiniCount ?? 0,
           },
+          {
+            label: "Recensioni",
+            href: `${base}/recensioni`,
+            icon: "recensioni",
+          },
         ]}
       />
 

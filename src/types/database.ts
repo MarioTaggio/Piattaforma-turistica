@@ -38,3 +38,11 @@ export type StatoOrdine =
 export type TipoOrdine = "asporto" | "consegna" | "al_tavolo";
 export type LivelloCorso = "principiante" | "intermedio" | "avanzato";
 export type NotificaTipo = "info" | "successo" | "avviso" | "errore";
+export type StatoRecensione = "in_attesa" | "approvata" | "rifiutata";
+export type RecensioneModulo =
+  | "evento"
+  | "struttura"
+  | "ristorante"
+  | "prodotto"
+  | "corso"
+  | "attrazione";

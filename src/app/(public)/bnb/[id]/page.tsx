@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, MapPin, Star, Wifi } from "lucide-react";
+import { ArrowLeft, MapPin, Wifi } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatEurFromCents } from "@/lib/utils/format";
+import { ReviewsSection } from "@/components/recensioni/reviews-section";
 
 import { BnbBookingForm } from "./_components/booking-form";
 
@@ -27,7 +28,7 @@ export default async function StrutturaDetailPage({
     supabase
       .from("strutture")
       .select(
-        "id, nome, descrizione, indirizzo, citta, cap, stelle, servizi, immagini, stato, prenotazione_attiva",
+        "id, nome, descrizione, indirizzo, citta, cap, servizi, immagini, stato, prenotazione_attiva",
       )
       .eq("id", id)
       .single(),
@@ -48,7 +49,6 @@ export default async function StrutturaDetailPage({
     indirizzo: string;
     citta: string;
     cap: string | null;
-    stelle: number | null;
     servizi: string[];
     immagini: string[];
     prenotazione_attiva: boolean | null;
@@ -133,12 +133,6 @@ export default async function StrutturaDetailPage({
                 {s.indirizzo}, {s.citta}
                 {s.cap ? ` · ${s.cap}` : ""}
               </span>
-              {s.stelle && (
-                <span className="inline-flex items-center gap-1 text-amber-600">
-                  <Star className="size-3.5 fill-current" />
-                  {s.stelle}
-                </span>
-              )}
             </div>
           </header>
 
@@ -221,6 +215,10 @@ export default async function StrutturaDetailPage({
           {tDetail("bookingsDisabledBnb")}
         </p>
       )}
+
+      <div className="mt-12">
+        <ReviewsSection target={{ struttura_id: s.id }} />
+      </div>
     </article>
   );
 }

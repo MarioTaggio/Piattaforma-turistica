@@ -6,6 +6,7 @@ import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatEurFromCents } from "@/lib/utils/format";
+import { ReviewsSection } from "@/components/recensioni/reviews-section";
 
 import { AddToCartButton } from "../_components/add-to-cart";
 
@@ -113,6 +114,10 @@ export default async function ProductDetailPage({
             </p>
           </div>
         </div>
+      </div>
+
+      <div className="mt-12">
+        <ReviewsSection target={{ prodotto_id: p.id }} />
       </div>
     </article>
   );

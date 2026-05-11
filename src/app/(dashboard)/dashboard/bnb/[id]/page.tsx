@@ -43,7 +43,6 @@ export default async function StrutturaDettaglioPage({
     indirizzo: string;
     citta: string;
     cap: string | null;
-    stelle: number | null;
     servizi: string[];
     immagini: string[];
     stato: "bozza" | "pubblicato" | "archiviato";
@@ -83,7 +82,6 @@ export default async function StrutturaDettaglioPage({
             indirizzo: s.indirizzo,
             citta: s.citta,
             cap: s.cap ?? "",
-            stelle: s.stelle ?? undefined,
             servizi: s.servizi.join(", "),
             immagini: s.immagini.join(", "),
             stato: s.stato,

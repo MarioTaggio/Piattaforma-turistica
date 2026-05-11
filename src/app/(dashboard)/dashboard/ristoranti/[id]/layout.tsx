@@ -87,6 +87,11 @@ export default async function RistoranteLayout({
             href: `${base}/agenda`,
             icon: "agenda",
           },
+          {
+            label: "Recensioni",
+            href: `${base}/recensioni`,
+            icon: "recensioni",
+          },
         ]}
       />
 

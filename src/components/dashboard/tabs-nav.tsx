@@ -16,6 +16,7 @@ import {
   ScanLine,
   ShoppingBag,
   Sofa,
+  Star,
   Ticket,
   Users,
   UtensilsCrossed,
@@ -43,6 +44,7 @@ const TAB_ICONS = {
   iscritti: Users,
   menu: UtensilsCrossed,
   scanner: ScanLine,
+  recensioni: Star,
 } as const;
 
 export type TabIconName = keyof typeof TAB_ICONS;

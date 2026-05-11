@@ -75,6 +75,11 @@ export default async function EventoLayout({
             href: `${base}/comunicazioni`,
             icon: "comunicazioni",
           },
+          {
+            label: "Recensioni",
+            href: `${base}/recensioni`,
+            icon: "recensioni",
+          },
         ]}
       />
 

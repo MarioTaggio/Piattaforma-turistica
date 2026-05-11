@@ -43,7 +43,7 @@ export default async function HomePage() {
       .limit(3),
     supabase
       .from("strutture")
-      .select("id, nome, descrizione, citta, stelle, immagini")
+      .select("id, nome, descrizione, citta, immagini")
       .eq("stato", "pubblicato")
       .order("created_at", { ascending: false })
       .limit(3),
@@ -195,7 +195,6 @@ export default async function HomePage() {
             nome: string;
             descrizione: string | null;
             citta: string;
-            stelle: number | null;
             immagini: string[];
           }>).map((s) => (
             <ListingCard
@@ -206,7 +205,6 @@ export default async function HomePage() {
               imageUrl={s.immagini?.[0] ?? null}
               fallbackIcon={Hotel}
               meta={s.citta}
-              topBadge={s.stelle ? `${s.stelle}★` : undefined}
               cta={tMod("bnb.book")}
             />
           ))}

@@ -95,19 +95,6 @@ export function StrutturaForm({ mode, id, defaultValues }: Props) {
         </Field>
 
         <Field
-          label={tForm("stars")}
-          hint={tForm("starsHint")}
-          error={errors.stelle?.message}
-        >
-          <Input
-            type="number"
-            min={1}
-            max={5}
-            {...register("stelle")}
-          />
-        </Field>
-
-        <Field
           label={tForm("stato")}
           error={errors.stato?.message}
         >

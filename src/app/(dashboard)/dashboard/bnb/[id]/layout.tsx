@@ -76,6 +76,11 @@ export default async function StrutturaLayout({
             href: `${base}/calendario`,
             icon: "calendario",
           },
+          {
+            label: "Recensioni",
+            href: `${base}/recensioni`,
+            icon: "recensioni",
+          },
         ]}
       />
 

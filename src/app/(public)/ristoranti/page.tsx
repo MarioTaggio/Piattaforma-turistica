@@ -6,6 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { PageHero } from "@/components/public/page-hero";
 import { FilterBar } from "@/components/public/filter-bar";
 import { ListingCard } from "@/components/public/listing-card";
+import { getRatingSummariesBatch } from "@/lib/recensioni/queries";
 
 export const metadata: Metadata = {
   title: "Ristoranti — Piattaforma Turistica",
@@ -42,6 +43,9 @@ export default async function PublicRistorantiPage({
   const { data } = await query
     .order("nome", { ascending: true })
     .limit(48);
+
+  const ristIds = ((data ?? []) as { id: string }[]).map((r) => r.id);
+  const ratingMap = await getRatingSummariesBatch("ristorante_id", ristIds);
 
   // Distinct city & cucina options
   const { data: optsRaw } = await supabase
@@ -99,19 +103,27 @@ export default async function PublicRistorantiPage({
               citta: string;
               tipo_cucina: string | null;
               immagini: string[];
-            }>).map((r) => (
-              <ListingCard
-                key={r.id}
-                href={`/ristoranti/${r.id}`}
-                title={r.nome}
-                description={r.descrizione}
-                imageUrl={r.immagini?.[0] ?? null}
-                fallbackIcon={UtensilsCrossed}
-                meta={r.tipo_cucina ?? r.citta}
-                topBadge={r.citta}
-                cta={tMod("ristoranti.book")}
-              />
-            ))}
+            }>).map((r) => {
+              const rating = ratingMap.get(r.id);
+              return (
+                <ListingCard
+                  key={r.id}
+                  href={`/ristoranti/${r.id}`}
+                  title={r.nome}
+                  description={r.descrizione}
+                  imageUrl={r.immagini?.[0] ?? null}
+                  fallbackIcon={UtensilsCrossed}
+                  meta={r.tipo_cucina ?? r.citta}
+                  topBadge={r.citta}
+                  bottomBadge={
+                    rating && rating.count > 0
+                      ? `★ ${rating.average}`
+                      : undefined
+                  }
+                  cta={tMod("ristoranti.book")}
+                />
+              );
+            })}
           </div>
         )}
       </div>

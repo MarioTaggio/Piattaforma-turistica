@@ -76,6 +76,11 @@ export default async function CorsoLayout({
             href: `${base}/analytics`,
             icon: "analytics",
           },
+          {
+            label: "Recensioni",
+            href: `${base}/recensioni`,
+            icon: "recensioni",
+          },
         ]}
       />
 

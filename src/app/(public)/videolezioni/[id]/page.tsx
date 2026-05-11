@@ -9,6 +9,7 @@ import {
   formatDuration,
   formatEurFromCents,
 } from "@/lib/utils/format";
+import { ReviewsSection } from "@/components/recensioni/reviews-section";
 
 import { BuyCorsoButton } from "./_components/buy-corso";
 
@@ -188,6 +189,10 @@ export default async function CorsoDetailPage({
             <BuyCorsoButton corsoId={c.id} free={free} />
           </div>
         </aside>
+      </div>
+
+      <div className="mt-12">
+        <ReviewsSection target={{ corso_id: c.id }} />
       </div>
     </article>
   );

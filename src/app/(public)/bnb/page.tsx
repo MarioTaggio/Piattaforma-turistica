@@ -7,6 +7,7 @@ import { PageHero } from "@/components/public/page-hero";
 import { FilterBar } from "@/components/public/filter-bar";
 import { ListingCard } from "@/components/public/listing-card";
 import { formatEurFromCents } from "@/lib/utils/format";
+import { getRatingSummariesBatch } from "@/lib/recensioni/queries";
 
 export const metadata: Metadata = {
   title: "B&B — Piattaforma Turistica",
@@ -26,14 +27,13 @@ export default async function PublicBnbPage({
   const tCommon = await getTranslations("common");
   const q = (sp.q as string | undefined)?.trim() ?? "";
   const citta = (sp.citta as string | undefined)?.trim() ?? "";
-  const stelle = (sp.stelle as string | undefined) ?? "";
   const prezzoMax = (sp.prezzoMax as string | undefined) ?? "";
 
   const supabase = createAdminClient();
 
   let strutQuery = supabase
     .from("strutture")
-    .select("id, nome, descrizione, citta, stelle, immagini")
+    .select("id, nome, descrizione, citta, immagini")
     .eq("stato", "pubblicato");
 
   if (q) {
@@ -41,10 +41,6 @@ export default async function PublicBnbPage({
     strutQuery = strutQuery.or(`nome.ilike.${like},descrizione.ilike.${like}`);
   }
   if (citta) strutQuery = strutQuery.ilike("citta", `%${citta.replace(/[%_]/g, "")}%`);
-  if (stelle) {
-    const n = parseInt(stelle, 10);
-    if (Number.isFinite(n)) strutQuery = strutQuery.gte("stelle", n);
-  }
 
   const { data: strutture } = await strutQuery
     .order("nome", { ascending: true })
@@ -66,6 +62,8 @@ export default async function PublicBnbPage({
       minPriceByStruct.set(c.struttura_id, c.prezzo_notte_cents);
     }
   }
+
+  const ratingMap = await getRatingSummariesBatch("struttura_id", ids);
 
   const filteredByPrice = prezzoMax
     ? ((strutture ?? []) as Array<{ id: string }>).filter((s) => {
@@ -108,18 +106,6 @@ export default async function PublicBnbPage({
               options: cities.map((c) => ({ value: c, label: c })),
             },
             {
-              type: "select",
-              param: "stelle",
-              placeholder: "★",
-              options: [
-                { value: "1", label: "1★ +" },
-                { value: "2", label: "2★ +" },
-                { value: "3", label: "3★ +" },
-                { value: "4", label: "4★ +" },
-                { value: "5", label: "5★" },
-              ],
-            },
-            {
               type: "number",
               param: "prezzoMax",
               placeholder: tCommon("priceMax"),
@@ -139,12 +125,12 @@ export default async function PublicBnbPage({
               nome: string;
               descrizione: string | null;
               citta: string;
-              stelle: number | null;
               immagini: string[];
             }>)
               .filter((s) => visibleIds.has(s.id))
               .map((s) => {
                 const price = minPriceByStruct.get(s.id);
+                const rating = ratingMap.get(s.id);
                 return (
                   <ListingCard
                     key={s.id}
@@ -155,7 +141,9 @@ export default async function PublicBnbPage({
                     fallbackIcon={Hotel}
                     meta={s.citta}
                     topBadge={
-                      s.stelle ? `${"★".repeat(s.stelle)}` : undefined
+                      rating && rating.count > 0
+                        ? `★ ${rating.average} (${rating.count})`
+                        : undefined
                     }
                     price={
                       price !== undefined
