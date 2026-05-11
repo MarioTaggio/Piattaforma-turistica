@@ -37,7 +37,17 @@ async function currentUserId(): Promise<string | null> {
 // ──────────────────────────────────────────────────────────────────────────
 // Biglietti eventi
 // ──────────────────────────────────────────────────────────────────────────
-export async function acquistaBiglietto(eventoId: string): Promise<Result> {
+export type IntestatarioBiglietto = {
+  nome: string;
+  cognome: string;
+  email: string;
+  telefono?: string;
+};
+
+export async function acquistaBiglietto(
+  eventoId: string,
+  intestatario?: IntestatarioBiglietto | null,
+): Promise<Result> {
   const userId = await currentUserId();
   if (!userId) return { redirectTo: `/login?next=/eventi/${eventoId}` };
 
@@ -67,6 +77,10 @@ export async function acquistaBiglietto(eventoId: string): Promise<Result> {
     utente_id: userId,
     prezzo_pagato_cents: ev.prezzo_cents,
     stato: "valido",
+    intestatario_nome: intestatario?.nome ?? null,
+    intestatario_cognome: intestatario?.cognome ?? null,
+    intestatario_email: intestatario?.email ?? null,
+    intestatario_telefono: intestatario?.telefono ?? null,
   });
   if (insErr) {
     // Rollback the seat counter.
@@ -97,7 +111,7 @@ export async function acquistaBiglietto(eventoId: string): Promise<Result> {
 
     await notifyUtenteNuovaPrenotazione({
       userId,
-      email: await getUserEmail(userId),
+      email: intestatario?.email ?? (await getUserEmail(userId)),
       modulo: "Evento",
       riferimento: e.titolo,
       link: "/dashboard/biglietti",

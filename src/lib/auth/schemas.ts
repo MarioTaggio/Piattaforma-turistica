@@ -29,6 +29,12 @@ export const resetPasswordSchema = z.object({
 export const updateProfileSchema = z.object({
   nome: z.string().trim().min(2, "Almeno 2 caratteri").max(60),
   cognome: z.string().trim().min(2, "Almeno 2 caratteri").max(60),
+  username: z
+    .string()
+    .trim()
+    .regex(/^[A-Za-z0-9_]{3,20}$/, "3-20 caratteri: lettere, numeri, _")
+    .optional()
+    .or(z.literal("")),
   telefono: z
     .string()
     .trim()

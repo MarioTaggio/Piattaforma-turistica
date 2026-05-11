@@ -24,6 +24,10 @@ type CartCtx = {
   items: CartItem[];
   count: number;
   totalCents: number;
+  isOpen: boolean;
+  bounceTick: number;
+  open: () => void;
+  close: () => void;
   add: (item: Omit<CartItem, "qty">, qty?: number) => void;
   setQty: (id: string, qty: number) => void;
   remove: (id: string) => void;
@@ -37,6 +41,11 @@ const STORAGE_KEY = "pt:cart";
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [hydrated, setHydrated] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [bounceTick, setBounceTick] = useState(0);
+
+  const open = useCallback(() => setIsOpen(true), []);
+  const close = useCallback(() => setIsOpen(false), []);
 
   useEffect(() => {
     try {
@@ -67,6 +76,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
       return [...prev, { ...item, qty }];
     });
+    setIsOpen(true);
+    setBounceTick((t) => t + 1);
   }, []);
 
   const setQty = useCallback((id: string, qty: number) => {
@@ -86,8 +97,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const value = useMemo<CartCtx>(() => {
     const count = items.reduce((s, x) => s + x.qty, 0);
     const totalCents = items.reduce((s, x) => s + x.qty * x.prezzo_cents, 0);
-    return { items, count, totalCents, add, setQty, remove, clear };
-  }, [items, add, setQty, remove, clear]);
+    return {
+      items,
+      count,
+      totalCents,
+      isOpen,
+      bounceTick,
+      open,
+      close,
+      add,
+      setQty,
+      remove,
+      clear,
+    };
+  }, [items, isOpen, bounceTick, open, close, add, setQty, remove, clear]);
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

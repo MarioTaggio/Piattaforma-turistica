@@ -13,6 +13,7 @@ import { getTranslations } from "next-intl/server";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Button } from "@/components/ui/button";
+import { HomeSearch } from "@/components/public/home-search";
 import { ListingCard } from "@/components/public/listing-card";
 import { SectionHeading } from "@/components/public/section-heading";
 import { formatDateTime, formatEurFromCents } from "@/lib/utils/format";
@@ -138,6 +139,13 @@ export default async function HomePage() {
               </div>
             ))}
           </dl>
+        </div>
+      </section>
+
+      {/* SEARCH BAR contestuale */}
+      <section className="-mt-12 px-4 pb-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-5xl">
+          <HomeSearch />
         </div>
       </section>
 

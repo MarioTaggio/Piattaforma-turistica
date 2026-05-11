@@ -17,7 +17,7 @@ export async function SiteNavbar() {
   const t = await getTranslations("nav");
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-white lg:bg-background/95 lg:backdrop-blur lg:supports-[backdrop-filter]:bg-background/80">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <SiteLogo />
 

@@ -74,6 +74,36 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Onboarding gate: utente loggato che entra nella dashboard senza
+  // aver completato l'onboarding (username/telefono mancanti) viene
+  // dirottato a /onboarding. /onboarding stesso e i logout sono esclusi.
+  if (
+    user &&
+    startsWithAny(pathname, PROTECTED_PREFIXES) &&
+    !pathname.startsWith("/onboarding")
+  ) {
+    const { data: profile } = await supabase
+      .from("users")
+      .select("username, telefono, onboarding_completato")
+      .eq("id", user.id)
+      .maybeSingle();
+    const p = (profile ?? null) as {
+      username: string | null;
+      telefono: string | null;
+      onboarding_completato: boolean | null;
+    } | null;
+    if (
+      p &&
+      !p.onboarding_completato &&
+      (!p.username || !p.telefono)
+    ) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/onboarding";
+      url.search = "";
+      return NextResponse.redirect(url);
+    }
+  }
+
   return response;
 }
 

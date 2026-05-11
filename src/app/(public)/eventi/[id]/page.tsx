@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
+import { getSessionUser } from "@/lib/auth/dal";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   formatDateTime,
@@ -35,13 +36,41 @@ export default async function EventoDetailPage({
   const tCommon = await getTranslations("common");
   const tMod = await getTranslations("modules");
 
-  const { data: evento } = await supabase
-    .from("eventi")
-    .select(
-      "id, titolo, descrizione, data_inizio, data_fine, luogo, citta, prezzo_cents, posti_totali, posti_disponibili, immagine_url, stato, prenotazione_attiva",
-    )
-    .eq("id", id)
-    .single();
+  const [{ data: evento }, sessionUser] = await Promise.all([
+    supabase
+      .from("eventi")
+      .select(
+        "id, titolo, descrizione, data_inizio, data_fine, luogo, citta, prezzo_cents, posti_totali, posti_disponibili, immagine_url, stato, prenotazione_attiva",
+      )
+      .eq("id", id)
+      .single(),
+    getSessionUser(),
+  ]);
+
+  let buyerData: {
+    nome: string;
+    cognome: string;
+    email: string;
+    telefono: string;
+  } | undefined;
+  if (sessionUser) {
+    const { data: profileRow } = await supabase
+      .from("users")
+      .select("nome, cognome, telefono")
+      .eq("id", sessionUser.id)
+      .maybeSingle();
+    const p = profileRow as {
+      nome: string | null;
+      cognome: string | null;
+      telefono: string | null;
+    } | null;
+    buyerData = {
+      nome: p?.nome ?? sessionUser.nome ?? "",
+      cognome: p?.cognome ?? sessionUser.cognome ?? "",
+      email: sessionUser.email,
+      telefono: p?.telefono ?? "",
+    };
+  }
 
   if (!evento || (evento as { stato: string }).stato !== "pubblicato")
     notFound();
@@ -146,6 +175,7 @@ export default async function EventoDetailPage({
                 <BuyTicketButton
                   eventoId={e.id}
                   disabled={soldOut}
+                  buyer={buyerData}
                   label={
                     soldOut
                       ? tCommon("soldOut")

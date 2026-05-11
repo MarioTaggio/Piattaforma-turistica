@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Check, PlayCircle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { formatDuration } from "@/lib/utils/format";
+import { saveVideoProgress, getVideoProgress } from "@/lib/video/progress";
 
 export type Lezione = {
   id: string;
@@ -23,6 +24,44 @@ type Props = {
 export function CoursePlayer({ lezioni }: Props) {
   const [activeId, setActiveId] = useState(lezioni[0]?.id ?? null);
   const active = lezioni.find((l) => l.id === activeId) ?? lezioni[0];
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const lastSavedRef = useRef<number>(0);
+  const activeKey = active?.id;
+
+  useEffect(() => {
+    if (!activeKey) return;
+    let cancelled = false;
+    (async () => {
+      const p = await getVideoProgress(activeKey);
+      if (cancelled || !videoRef.current) return;
+      if (p && p.secondi > 0 && !p.completata) {
+        videoRef.current.currentTime = p.secondi;
+      }
+      lastSavedRef.current = p?.secondi ?? 0;
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [activeKey]);
+
+  function handleTimeUpdate() {
+    const v = videoRef.current;
+    if (!v || !active) return;
+    const now = Math.floor(v.currentTime);
+    if (Math.abs(now - lastSavedRef.current) >= 10) {
+      lastSavedRef.current = now;
+      void saveVideoProgress({ lezioneId: active.id, secondiVisti: now });
+    }
+  }
+
+  function handleEnded() {
+    if (!active) return;
+    void saveVideoProgress({
+      lezioneId: active.id,
+      secondiVisti: active.durata_secondi,
+      completata: true,
+    });
+  }
 
   if (!active) {
     return (
@@ -37,10 +76,16 @@ export function CoursePlayer({ lezioni }: Props) {
       <div className="space-y-4 lg:col-span-3">
         <div className="overflow-hidden rounded-2xl bg-black shadow-sm">
           <video
+            ref={videoRef}
             key={active.id}
             src={active.video_url}
             controls
-            controlsList="nodownload"
+            controlsList="nodownload noremoteplayback"
+            disablePictureInPicture
+            disableRemotePlayback
+            onContextMenu={(e) => e.preventDefault()}
+            onTimeUpdate={handleTimeUpdate}
+            onEnded={handleEnded}
             playsInline
             className="aspect-video w-full"
           />

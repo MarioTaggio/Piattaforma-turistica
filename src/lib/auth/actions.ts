@@ -128,19 +128,25 @@ export async function updateProfile(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Sessione scaduta. Accedi di nuovo." };
 
-  const { nome, cognome, telefono, avatar_url } = parsed.data;
+  const { nome, cognome, username, telefono, avatar_url } = parsed.data;
 
   const { error } = await supabase
     .from("users")
     .update({
       nome,
       cognome,
+      username: username ? username.toLowerCase() : null,
       telefono: telefono || null,
       avatar_url: avatar_url || null,
     })
     .eq("id", user.id);
 
-  if (error) return { error: error.message };
+  if (error) {
+    if (error.code === "23505") {
+      return { error: "Username già in uso" };
+    }
+    return { error: error.message };
+  }
 
   revalidatePath("/dashboard/profilo");
   revalidatePath("/dashboard");

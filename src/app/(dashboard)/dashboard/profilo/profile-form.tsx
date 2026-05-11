@@ -1,15 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, User as UserIcon, Phone, Image as ImageIcon } from "lucide-react";
+import { AtSign, Loader2, User as UserIcon, Phone, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { createClient } from "@/lib/supabase/client";
 import { updateProfile } from "@/lib/auth/actions";
 import {
   updateProfileSchema,
@@ -32,6 +33,7 @@ export function ProfileForm({ email, initial }: Props) {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isSubmitting, isDirty },
     reset,
   } = useForm<UpdateProfileInput>({
@@ -40,10 +42,51 @@ export function ProfileForm({ email, initial }: Props) {
   });
 
   const [serverError, setServerError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const nome = watch("nome");
   const cognome = watch("cognome");
   const avatarUrl = watch("avatar_url");
+
+  async function uploadAvatar(file: File) {
+    const accepted = ["image/jpeg", "image/png", "image/webp"];
+    if (!accepted.includes(file.type)) {
+      toast.error("Formato non supportato (usa JPG, PNG o WebP)");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("File troppo grande (max 2MB)");
+      return;
+    }
+    setUploading(true);
+    try {
+      const supabase = createClient();
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) {
+        toast.error("Sessione scaduta");
+        return;
+      }
+      const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
+      const path = `${auth.user.id}/avatar-${Date.now()}.${ext}`;
+      const { error } = await supabase.storage
+        .from("avatars")
+        .upload(path, file, {
+          cacheControl: "3600",
+          upsert: true,
+          contentType: file.type,
+        });
+      if (error) {
+        toast.error(`Upload fallito: ${error.message}`);
+        return;
+      }
+      const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+      setValue("avatar_url", data.publicUrl, { shouldDirty: true });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }
 
   async function onSubmit(values: UpdateProfileInput) {
     setServerError(null);
@@ -60,16 +103,54 @@ export function ProfileForm({ email, initial }: Props) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
       <div className="flex items-center gap-4">
-        <Avatar className="size-16">
+        <Avatar className="size-20">
           {avatarUrl && <AvatarImage src={avatarUrl} alt="Avatar" />}
-          <AvatarFallback className="bg-brand-600 text-base font-semibold text-white">
+          <AvatarFallback className="bg-brand-600 text-lg font-semibold text-white">
             {initialsOf(nome ?? "", cognome ?? "", email)}
           </AvatarFallback>
         </Avatar>
-        <div className="space-y-0.5">
+        <div className="space-y-1">
           <p className="text-sm font-medium">{email}</p>
-          <p className="text-xs text-muted-foreground">
-            L&apos;email è gestita da Supabase Auth — non modificabile da qui.
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) void uploadAvatar(f);
+              }}
+            />
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              disabled={uploading}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {uploading ? (
+                <Loader2 className="mr-1.5 size-3.5 animate-spin" />
+              ) : (
+                <Upload className="mr-1.5 size-3.5" />
+              )}
+              Carica foto
+            </Button>
+            {avatarUrl && (
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                disabled={uploading}
+                onClick={() => setValue("avatar_url", "", { shouldDirty: true })}
+                className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+              >
+                Rimuovi
+              </Button>
+            )}
+          </div>
+          <p className="text-[11px] text-muted-foreground">
+            JPG / PNG / WebP · max 2MB
           </p>
         </div>
       </div>
@@ -106,6 +187,28 @@ export function ProfileForm({ email, initial }: Props) {
         </div>
 
         <div className="space-y-1.5">
+          <Label htmlFor="username">Username</Label>
+          <div className="relative">
+            <AtSign className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              id="username"
+              autoComplete="off"
+              placeholder="mario_rossi"
+              className="pl-9"
+              aria-invalid={!!errors.username}
+              {...register("username")}
+            />
+          </div>
+          {errors.username ? (
+            <p className="text-xs text-destructive">{errors.username.message}</p>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              3-20 caratteri · lettere, numeri, underscore
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-1.5">
           <Label htmlFor="telefono">Telefono</Label>
           <div className="relative">
             <Phone className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -121,26 +224,6 @@ export function ProfileForm({ email, initial }: Props) {
           </div>
           {errors.telefono && (
             <p className="text-xs text-destructive">{errors.telefono.message}</p>
-          )}
-        </div>
-
-        <div className="space-y-1.5">
-          <Label htmlFor="avatar_url">URL avatar</Label>
-          <div className="relative">
-            <ImageIcon className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              id="avatar_url"
-              type="url"
-              placeholder="https://…"
-              className="pl-9"
-              aria-invalid={!!errors.avatar_url}
-              {...register("avatar_url")}
-            />
-          </div>
-          {errors.avatar_url && (
-            <p className="text-xs text-destructive">
-              {errors.avatar_url.message}
-            </p>
           )}
         </div>
       </div>

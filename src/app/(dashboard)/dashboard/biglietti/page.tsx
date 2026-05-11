@@ -1,20 +1,16 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import QRCode from "qrcode";
-import { CalendarDays, MapPin, Ticket, Compass } from "lucide-react";
+import { Ticket, Compass } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { requireUser } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
-import {
-  formatDateTime,
-  formatEurFromCents,
-} from "@/lib/utils/format";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { EmptyState } from "@/components/dashboard/empty-state";
-import { StatusBadge } from "@/components/dashboard/status-badge";
 import { Button } from "@/components/ui/button";
+
+import { BigliettiView } from "./_components/biglietti-view";
 
 export const metadata: Metadata = {
   title: "I miei biglietti — Piattaforma Turistica",
@@ -56,7 +52,6 @@ export default async function BigliettiPage() {
 
   const biglietti = (data ?? []) as unknown as BigliettoRow[];
 
-  // Generate QR codes server-side, in parallel.
   const qrDataUrls = await Promise.all(
     biglietti.map((b) =>
       QRCode.toDataURL(b.codice, {
@@ -90,79 +85,24 @@ export default async function BigliettiPage() {
           }
         />
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {biglietti.map((b, i) => {
-            const evento = b.eventi;
-            return (
-              <article
-                key={b.id}
-                className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
-              >
-                {evento?.immagine_url && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={evento.immagine_url}
-                    alt={evento.titolo}
-                    className="h-32 w-full object-cover"
-                  />
-                )}
-                <div className="flex flex-col gap-4 p-5 sm:flex-row">
-                  <div className="min-w-0 flex-1 space-y-3">
-                    <div className="flex items-start justify-between gap-3">
-                      <h3 className="truncate text-base font-semibold">
-                        {evento?.titolo ?? "Evento eliminato"}
-                      </h3>
-                      <StatusBadge kind="biglietto" value={b.stato} />
-                    </div>
-
-                    {evento && (
-                      <ul className="space-y-1.5 text-sm text-muted-foreground">
-                        <li className="flex items-center gap-2">
-                          <CalendarDays className="size-3.5 shrink-0" />
-                          {formatDateTime(evento.data_inizio)}
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <MapPin className="size-3.5 shrink-0" />
-                          {evento.luogo}
-                          {evento.citta ? `, ${evento.citta}` : ""}
-                        </li>
-                      </ul>
-                    )}
-
-                    <div className="flex items-center justify-between border-t border-border pt-3 text-xs">
-                      <span className="text-muted-foreground">{tTicket("code")}</span>
-                      <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-[11px]">
-                        {b.codice.slice(0, 8)}…
-                      </code>
-                    </div>
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-muted-foreground">
-                        Prezzo pagato
-                      </span>
-                      <span className="font-medium">
-                        {formatEurFromCents(b.prezzo_pagato_cents)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex shrink-0 flex-col items-center gap-1.5">
-                    <Image
-                      src={qrDataUrls[i]}
-                      alt={`QR code biglietto ${b.codice}`}
-                      width={120}
-                      height={120}
-                      unoptimized
-                      className="rounded-lg ring-1 ring-border"
-                    />
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                      {tTicket("qrHint")}
-                    </span>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
-        </div>
+        <BigliettiView
+          biglietti={biglietti.map((b, i) => ({
+            id: b.id,
+            codice: b.codice,
+            stato: b.stato,
+            prezzo_pagato_cents: b.prezzo_pagato_cents,
+            evento: b.eventi
+              ? {
+                  titolo: b.eventi.titolo,
+                  data_inizio: b.eventi.data_inizio,
+                  luogo: b.eventi.luogo,
+                  citta: b.eventi.citta,
+                  immagine_url: b.eventi.immagine_url,
+                }
+              : null,
+            qrDataUrl: qrDataUrls[i]!,
+          }))}
+        />
       )}
     </div>
   );
