@@ -127,8 +127,9 @@ export default async function HomePage() {
               </Button>
             </div>
 
-            {/* Search bar — DENTRO la hero, glassmorphism */}
-            <div className="mx-auto mt-4 w-full max-w-5xl">
+            {/* Search bar — allineata a sinistra come i CTA, larga quanto
+                il container hero (max-w-7xl) senza centratura. */}
+            <div className="mt-4 w-full">
               <HomeSearch />
             </div>
           </div>

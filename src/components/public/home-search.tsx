@@ -80,8 +80,8 @@ export function HomeSearch() {
 
   return (
     <div className="space-y-3">
-      {/* Bottoni categoria — pill, glassmorphism */}
-      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-center">
+      {/* Bottoni categoria — pill glassmorphism, allineati a sinistra */}
+      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:justify-start">
         {TABS.map((t) => {
           const Icon = t.icon;
           const isActive = tab === t.value;
