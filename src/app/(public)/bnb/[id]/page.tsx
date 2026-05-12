@@ -7,6 +7,7 @@ import { getTranslations } from "next-intl/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatEurFromCents } from "@/lib/utils/format";
 import { ReviewsSection } from "@/components/recensioni/reviews-section";
+import { BnbGallery } from "@/components/public/bnb-gallery";
 
 import { BnbBookingForm } from "./_components/booking-form";
 
@@ -65,8 +66,7 @@ export default async function StrutturaDetailPage({
     disponibile: boolean;
   }>).filter((c) => c.disponibile);
 
-  const cover = s.immagini?.[0] ?? null;
-  const gallery = (s.immagini ?? []).slice(1, 5);
+  const immagini = (s.immagini ?? []).filter(Boolean) as string[];
 
   return (
     <article className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
@@ -78,38 +78,8 @@ export default async function StrutturaDetailPage({
         {tDetail("backToAll")}
       </Link>
 
-      {/* gallery */}
-      <div className="mt-6 grid gap-3 lg:grid-cols-[2fr_1fr]">
-        <div className="overflow-hidden rounded-3xl border border-border bg-brand-50">
-          <div className="relative aspect-[16/9]">
-            {cover ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={cover} alt={s.nome} className="size-full object-cover" />
-            ) : (
-              <div className="grid size-full place-items-center text-brand-700/50">
-                <MapPin className="size-12" />
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          {gallery.length > 0
-            ? gallery.map((src, i) => (
-                <div
-                  key={i}
-                  className="overflow-hidden rounded-2xl border border-border bg-brand-50"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={src} alt="" className="aspect-square w-full object-cover" />
-                </div>
-              ))
-            : Array.from({ length: 4 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="aspect-square rounded-2xl border border-dashed border-border bg-muted/40"
-                />
-              ))}
-        </div>
+      <div className="mt-6">
+        <BnbGallery images={immagini} alt={s.nome} />
       </div>
 
       <div
