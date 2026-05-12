@@ -68,8 +68,13 @@ export function ImageUploaderMulti({
       const {
         data: { user },
       } = await supabase.auth.getUser();
+      console.log("=== UPLOAD DEBUG ===");
+      console.log("Bucket:", bucket);
+      console.log("User authenticated:", !!user, user?.id);
+      console.log("Files:", list.map((f) => ({ name: f.name, size: f.size, type: f.type })));
       if (!user) {
         toast.error("Devi essere autenticato per caricare file");
+        console.warn("[uploader] no auth session");
         return;
       }
 
@@ -79,30 +84,51 @@ export function ImageUploaderMulti({
       for (const file of list) {
         if (!ACCEPTED_TYPES.includes(file.type)) {
           toast.error(`Formato non supportato: ${file.name}`);
+          console.warn("[uploader] mime rejected", file.type);
           continue;
         }
         if (file.size > maxSizeMb * 1024 * 1024) {
           toast.error(`Troppo grande (max ${maxSizeMb}MB): ${file.name}`);
+          console.warn("[uploader] size rejected", file.size);
           continue;
         }
 
         const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
         const path = `${subFolder}/${crypto.randomUUID()}.${ext}`;
 
-        const { error } = await supabase.storage
+        console.log("[uploader] uploading", { bucket, path });
+        const { data: upData, error } = await supabase.storage
           .from(bucket)
           .upload(path, file, {
             cacheControl: "3600",
             upsert: false,
             contentType: file.type,
           });
+        console.log("[uploader] result", { ok: !error, upData, error });
+
         if (error) {
-          toast.error(`Upload fallito (${file.name}): ${error.message}`);
+          // Diagnostica più chiara per gli errori più comuni.
+          const msg = error.message.toLowerCase();
+          let hint = error.message;
+          if (msg.includes("bucket") && msg.includes("not found")) {
+            hint = `Bucket "${bucket}" non esiste su Supabase. Esegui la migration storage.`;
+          } else if (msg.includes("policy") || msg.includes("not authorized")) {
+            hint = `Policy RLS blocca l'upload sul bucket "${bucket}".`;
+          } else if (msg.includes("mime")) {
+            hint = `MIME non in allowlist del bucket.`;
+          } else if (msg.includes("size") || msg.includes("payload")) {
+            hint = `File oltre il limite del bucket.`;
+          }
+          toast.error(`Upload fallito (${file.name}): ${hint}`);
           continue;
         }
         const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+        console.log("[uploader] public URL", data.publicUrl);
         uploaded.push(data.publicUrl);
       }
+
+      console.log("[uploader] uploaded count:", uploaded.length);
+      console.log("====================");
 
       if (uploaded.length > 0) {
         onChange([...value, ...uploaded]);
