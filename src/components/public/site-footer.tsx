@@ -1,8 +1,31 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Camera, Globe, MessageCircle, Video } from "lucide-react";
+import { FaFacebook, FaInstagram, FaTiktok, FaYoutube } from "react-icons/fa";
 
 import { SiteLogo } from "@/components/shared/site-logo";
+
+const SOCIALS = [
+  {
+    Icon: FaInstagram,
+    label: "Instagram BorghiON",
+    href: "https://www.instagram.com/borghion.it/",
+  },
+  {
+    Icon: FaFacebook,
+    label: "Facebook BorghiON",
+    href: "https://www.facebook.com/profile.php?id=61589242067927",
+  },
+  {
+    Icon: FaTiktok,
+    label: "TikTok BorghiON",
+    href: "https://www.tiktok.com/@borghion",
+  },
+  {
+    Icon: FaYoutube,
+    label: "YouTube BorghiON",
+    href: "https://www.youtube.com/@BorghiONN",
+  },
+];
 
 const COLUMNS = [
   {
@@ -44,20 +67,17 @@ export async function SiteFooter() {
               soggiorni, ristoranti, esperienze digitali e visite guidate.
             </p>
             <div className="flex gap-2">
-              {[
-                { Icon: Globe, label: "Sito web", href: "#" },
-                { Icon: Camera, label: "Galleria", href: "#" },
-                { Icon: MessageCircle, label: "Contattaci", href: "#" },
-                { Icon: Video, label: "Video", href: "#" },
-              ].map(({ Icon, label, href }) => (
-                <Link
+              {SOCIALS.map(({ Icon, label, href }) => (
+                <a
                   key={label}
                   href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={label}
-                  className="grid size-9 place-items-center rounded-xl bg-white/10 text-white transition hover:bg-white/20"
+                  className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
                 >
-                  <Icon className="size-4" />
-                </Link>
+                  <Icon className="size-5" />
+                </a>
               ))}
             </div>
           </div>
