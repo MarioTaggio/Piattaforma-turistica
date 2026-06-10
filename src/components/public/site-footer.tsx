@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   Camera,
@@ -92,6 +93,29 @@ export function SiteFooter() {
               </ul>
             </div>
           ))}
+        </div>
+
+        <div className="mt-8 border-t border-white/20 pt-8">
+          <div className="flex flex-col items-center gap-6 text-center md:flex-row md:text-left">
+            <div className="flex flex-shrink-0 items-center gap-4">
+              <Image
+                src="/loghi-eu.svg"
+                alt="Loghi UE NextGenerationEU PNRR"
+                width={300}
+                height={60}
+                className="h-12 w-auto"
+              />
+            </div>
+            <div className="text-xs leading-relaxed text-white/80">
+              <p className="mb-1 font-semibold text-white">
+                Progetto finanziato dall&apos;Unione europea – NextGenerationEU
+              </p>
+              <p>PNRR – M1C3 Investimento 2.1 Linea C</p>
+              <p>Codice progetto: BRG0001867</p>
+              <p>CUP: C15H23004870001</p>
+              <p>COR: 24525186</p>
+            </div>
+          </div>
         </div>
 
         <div className="mt-12 flex flex-col gap-3 border-t border-white/15 pt-6 text-xs text-white/65 sm:flex-row sm:items-center sm:justify-between">
