@@ -1,12 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Camera,
-  Globe,
-  MessageCircle,
-  MountainSnow,
-  Video,
-} from "lucide-react";
+import { Camera, Globe, MessageCircle, Video } from "lucide-react";
+
+import { SiteLogo } from "@/components/shared/site-logo";
 
 const COLUMNS = [
   {
@@ -36,21 +32,13 @@ const COLUMNS = [
   },
 ];
 
-export function SiteFooter() {
+export async function SiteFooter() {
   return (
     <footer className="mt-24 bg-brand-700 text-white">
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[1.5fr_repeat(3,1fr)]">
           <div className="space-y-4">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 text-base font-semibold tracking-tight text-white"
-            >
-              <span className="grid size-9 place-items-center rounded-xl bg-white/15 text-white">
-                <MountainSnow className="size-5" strokeWidth={2.25} />
-              </span>
-              Piattaforma Turistica
-            </Link>
+            <SiteLogo className="text-white" />
             <p className="max-w-sm text-sm text-white/75">
               Tutto quello che ti serve per esplorare il territorio: eventi,
               soggiorni, ristoranti, esperienze digitali e visite guidate.
@@ -119,7 +107,7 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-12 flex flex-col gap-3 border-t border-white/15 pt-6 text-xs text-white/65 sm:flex-row sm:items-center sm:justify-between">
-          <span>© {new Date().getFullYear()} Piattaforma Turistica. Tutti i diritti riservati.</span>
+          <span>© {new Date().getFullYear()} BorghiON. Tutti i diritti riservati.</span>
           <div className="flex gap-4">
             <Link href="#" className="hover:text-white">Privacy</Link>
             <Link href="#" className="hover:text-white">Termini</Link>
